@@ -1,5 +1,5 @@
 import express from 'express';
-import mongodb from './frameworks/config/database'
+import mongodb from './infrastructure/config/connectDB'
 import dotenv from 'dotenv'
 dotenv.config()
 const app = express();
