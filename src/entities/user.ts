@@ -9,7 +9,14 @@ interface user{
     location:string,
     about:string,
     is_blocked:boolean,
-    githuburl?:string,
-    portfolio?:string,
+    github_url:string,
+    portfolio_url:string,
+    resume_url:string,
+    skills:[string],
+    qualification:[string]
+    experience:[object],
+
 
 }
+
+export default user
