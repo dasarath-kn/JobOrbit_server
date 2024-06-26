@@ -11,7 +11,19 @@ class userRepository implements IUserInterface{
             throw new Error("unable to find userdata");
             
         }    
-    }  
+    } 
+    async saveUser(user:user):Promise<user | null>{
+        try {
+            const newUser = new userModel(user)
+            await newUser.save()
+            return newUser?newUser:null
+            
+        } catch (error:any) {
+            console.error(error);
+            throw new Error("unable to save newuser");
+            
+        }
+    }
 }
 
 
