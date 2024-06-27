@@ -8,6 +8,7 @@ interface user{
     field:string,
     location:string,
     about:string,
+    is_verified:boolean,
     is_blocked:boolean,
     github_url:string,
     portfolio_url:string,

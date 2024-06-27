@@ -1,5 +1,6 @@
 interface otp{
-    _id:string,
-    email:string,
-    otp:number
+    user_id:string|undefined,
+    otp:string
 }
+
+export default otp

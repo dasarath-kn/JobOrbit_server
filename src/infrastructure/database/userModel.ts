@@ -34,6 +34,10 @@ const userSchema:Schema<user> =new Schema({
         about:{
             type:String
         },
+        is_verified:{
+            type:Boolean,
+            default:false
+        },
         is_blocked:{
             type:Boolean,
             default:false

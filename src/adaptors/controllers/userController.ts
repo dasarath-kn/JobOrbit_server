@@ -11,7 +11,6 @@ class userController {
         try {
             const {firstname,lastname,email,password,phonenumber,field,location} =req.body
             const userData ={firstname,lastname,email,password,phonenumber,field,location}
-              console.log(userData);
               const exists = await this.userUsecases.findUser(userData as user)
               console.log(exists);
               if(!exists.data){
@@ -33,18 +32,33 @@ class userController {
         try {
             const {email,password} =req.body
             const userExist = await this.userUsecases.login(email,password)
-            if(userExist.data){
+            if(userExist.success){
                 let {userExistdata} =userExist
-                console.log("user logined sucessfully");
-                res.status(200).json({message:"user logined sucessfully",userExistdata})               
-            }else{                
-                res.status(400).json({message:"user not found"})
+                res.status(200).json({message:userExist.message,userExistdata})               
+            }else{ 
+                res.status(400).json({message:userExist.message})
             }
             
 
         } catch (error) {
             console.error(error);
             res.status(500).json({success:false,message:'Internal server error'})             
+        }
+
+    }
+    async otp(req:Request,res:Response){
+        try {
+         let{otp} =req.body
+         console.log(otp);
+           let verifiedOtp = await this.userUsecases.verfiyOtp(otp)
+           if(verifiedOtp.success){
+            res.status(200).json({message:verifiedOtp.message})
+           }
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:'Internal server error'})
+            
         }
     }
 }

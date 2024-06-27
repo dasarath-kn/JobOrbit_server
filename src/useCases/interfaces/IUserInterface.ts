@@ -1,8 +1,11 @@
+import otp from "../../entities/otp";
 import user from "../../entities/user";
-
 interface IUserInterface{
     findUserByEmail(email:string):Promise<user | null>
     saveUser(user:user):Promise<user | null>
+    verifyUser(id:string):Promise<boolean>
+    saveOtp(id:string|undefined,otp:string):Promise<boolean>
+    checkOtp(otp:string):Promise<string|undefined>
 }
 
 
