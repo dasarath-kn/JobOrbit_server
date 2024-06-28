@@ -1,5 +1,5 @@
 interface otp{
-    user_id:string|undefined,
+    email:string,
     otp:string
 }
 

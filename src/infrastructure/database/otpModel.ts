@@ -2,7 +2,7 @@ import mongoose,{ Schema,model } from "mongoose";
 import otp from "../../entities/otp";
 
 const otpSchema:Schema<otp> =new Schema({
-        user_id:{
+        email:{
             type:String,
             required:true
         },

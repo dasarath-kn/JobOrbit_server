@@ -10,6 +10,7 @@ interface user{
     about:string,
     is_verified:boolean,
     is_blocked:boolean,
+    is_admin:boolean,
     github_url:string,
     portfolio_url:string,
     resume_url:string,

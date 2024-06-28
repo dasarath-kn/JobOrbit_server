@@ -41,9 +41,9 @@ class userRepository implements IUserInterface {
 
         }
     }
-   async saveOtp(id:string|undefined,otp:string): Promise<boolean> {
+   async saveOtp(email:string|undefined,otp:string): Promise<boolean> {
         try {
-            const saveOtp = await otpModel.updateOne({user_id:id},{$set:{otp:otp}},{upsert:true})
+            const saveOtp = await otpModel.updateOne({email:email},{$set:{otp:otp}},{upsert:true})
             return saveOtp.acknowledged
         } catch (error:any) {
             console.error(error);
@@ -56,7 +56,7 @@ class userRepository implements IUserInterface {
     async checkOtp(otp: string): Promise<string|undefined> {
         try {
             let checkedOtp = await otpModel.findOne({otp:otp})            
-            return checkedOtp?checkedOtp.user_id:undefined
+            return checkedOtp?checkedOtp.email
         } catch (error) {
             console.error(error);
             throw new Error("Unable to find the otp")

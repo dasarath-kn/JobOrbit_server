@@ -1,5 +1,5 @@
 
-import mongoose,{Schema,model} from "mongoose";
+import {Schema,model} from "mongoose";
 import user from "../../entities/user";
 
 const userSchema:Schema<user> =new Schema({
@@ -39,6 +39,10 @@ const userSchema:Schema<user> =new Schema({
             default:false
         },
         is_blocked:{
+            type:Boolean,
+            default:false
+        },
+        is_admin:{
             type:Boolean,
             default:false
         },

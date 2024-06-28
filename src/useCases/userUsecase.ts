@@ -25,17 +25,15 @@ class userUsecase {
                 let hashed = await this.hashPassword.hashPassword(userData.password)
                 userData.password = hashed as string
                 let userSave = await this.userRepo.saveUser(userData);
-                let otp = this.otpGenerator.otpgenerate()
+                let otp = await this.otpGenerator.otpgenerate()
                 await this.nodeMailer.sendEmail(userData.email, otp)
-                let user_id =userSave?._id
-                
-              await this.userRepo.saveOtp(user_id,otp)
+                await this.userRepo.saveOtp(userSave?.email, otp)
                 return { data: false, userSave }
             }
 
         } catch (error) {
             console.error(error);
-            throw (error);
+            throw error;
 
         }
     }
@@ -44,50 +42,52 @@ class userUsecase {
         try {
             let userExistdata = await this.userRepo.findUserByEmail(email)
             if (userExistdata) {
-                let checkpassword = await this.hashPassword.comparePassword(password, userExistdata.password)
-                if (checkpassword &&userExistdata.is_verified) {
-                   
-                    return { success: true, userExistdata, message: "User logined successfully" }
-                } else if (userExistdata.is_blocked) {
-                    return { success: false, message: "You've been blocked admin" }
-                }
-                else if (!userExistdata.is_verified) {
-                    let otp = this.otpGenerator.otpgenerate()
-                    console.log(otp);
-                    
-                    await this.nodeMailer.sendEmail(userExistdata.email, otp)
-                    let user_id =userExistdata._id
-                    await this.userRepo.saveOtp(user_id,otp)
+                let checkPassword = await this.hashPassword.comparePassword(password, userExistdata.password)
+                if (checkPassword) {
+                    if (userExistdata.is_blocked) {
+                        return { success: false, message: "You've been blocked admin" }
+                    } else if (!userExistdata.is_verified) {
+                        let otp = this.otpGenerator.otpgenerate()
+                        console.log(otp);
 
-                    return {success:false,message:"Not verified user"}
+                        await this.nodeMailer.sendEmail(userExistdata.email, otp)
+                        let user_id = userExistdata._id
+                        await this.userRepo.saveOtp(user_id, otp)
+
+                        return { success: false, message: "Not verified user" }
+                    }
+                    else {
+
+                        return { success: true, userExistdata, message: "User logined successfully" }
+                    }
                 }
                 else {
                     return { success: false, message: "Invalid Password" }
                 }
             } else {
-                return { success: false }
+                return { success: false, message: 'Invalid Email' }
             }
 
         } catch (error) {
             console.error(error);
-            throw (error)
+            throw error
         }
     }
 
-    async verfiyOtp(otp:string){
+    async verfiyOtp(otp: string) {
         try {
-            let verifiedOtp =await this.userRepo.checkOtp(otp)
-            if(verifiedOtp){
+            let verifiedOtp = await this.userRepo.checkOtp(otp)
+            if (verifiedOtp) {
                 await this.userRepo.verifyUser(verifiedOtp)
-                return {success:true,message:'User verified successfully'}
-            }else{
-                return {success:false,message:'User not verified'}
+                return { success: true, message: 'User verified successfully' }
+            } else {
+                return { success: false, message: 'User not verified' }
             }
-           
+
         } catch (error) {
             console.error(error);
-            throw (error)
-            
+            throw error
+
         }
     }
 
