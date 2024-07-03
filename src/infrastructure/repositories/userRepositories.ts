@@ -28,10 +28,10 @@ class userRepository implements IUserInterface {
         }
     }
 
-    async verifyUser(id: string): Promise<boolean> {
+    async verifyUser(email: string): Promise<boolean> {
         try {
 
-            const verifiedUser = await userModel.updateOne({ _id: id }, { $set: { is_verified: true } })
+            const verifiedUser = await userModel.updateOne({ email: email }, { $set: { is_verified: true } })
             return verifiedUser.acknowledged
 
         }
@@ -41,26 +41,38 @@ class userRepository implements IUserInterface {
 
         }
     }
-   async saveOtp(email:string|undefined,otp:string): Promise<boolean> {
+    async saveOtp(email: string | undefined, otp: string): Promise<boolean> {
         try {
-            const saveOtp = await otpModel.updateOne({email:email},{$set:{otp:otp}},{upsert:true})
+            const saveOtp = await otpModel.updateOne({ email: email }, { $set: { otp: otp } }, { upsert: true })
             return saveOtp.acknowledged
-        } catch (error:any) {
+        } catch (error: any) {
             console.error(error);
             throw new Error("Unable to saveotp")
-            
+
         }
     }
 
 
-    async checkOtp(otp: string): Promise<string|undefined> {
+    async checkOtp(otp: string): Promise<string | null> {
         try {
-            let checkedOtp = await otpModel.findOne({otp:otp})            
-            return checkedOtp?checkedOtp.email
-        } catch (error) {
+            let checkedOtp = await otpModel.findOne({ otp: otp })
+            return checkedOtp ? checkedOtp.email : null
+        } catch (error: any) {
             console.error(error);
             throw new Error("Unable to find the otp")
-            
+
+        }
+    }
+
+    async getUserdata(user_id: string): Promise<user | null> {
+        try {
+            let userdata = await userModel.findOne({ _id: user_id })
+            return userdata ? userdata : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find userdata")
+
         }
     }
 

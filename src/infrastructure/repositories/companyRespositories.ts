@@ -1,6 +1,7 @@
 import company from "../../entities/company";
 import ICompanyInterface from "../../useCases/interfaces/ICompanyInterface";
 import companyModel from "../database/companyModel";
+import otpModel from "../database/otpModel";
 
 class CompanyRepositories implements ICompanyInterface{
   
@@ -26,6 +27,29 @@ class CompanyRepositories implements ICompanyInterface{
         throw new Error("Unable to find company");
         
        }
+   }
+   async checkOtp(otp:string):Promise<string | null>{
+      try {
+         let checkedOtp = await otpModel.findOne({otp:otp})
+         return checkedOtp?checkedOtp.email:null
+         
+      } catch (error) {
+         console.error(error);
+         throw new Error("Unable to find otp")
+         
+      }
+   }
+
+    async verifyCompany(email: string): Promise<boolean> {
+      try {
+         let verifyCompany = await companyModel.updateOne({email:email},{$set:{is_verified:true}},{upsert:true})
+         return verifyCompany.acknowledged
+         
+      } catch (error) {
+        console.error(error);
+        throw new Error("Unable to verfiy company")
+         
+      }
    }
 }
 

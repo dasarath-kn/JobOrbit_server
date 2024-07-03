@@ -16,7 +16,7 @@ interface user{
     resume_url:string,
     skills:[string],
     qualification:[string]
-    experience:[object],
+    experience:[object]
 
 
 }

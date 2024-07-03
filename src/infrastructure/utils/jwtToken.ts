@@ -9,10 +9,14 @@ class Jwt {
     }
     generateToken(id:string,role:string){
         try {
-            
+            const payload ={id,role}
+            const token = jwt.sign(payload,this.jwtsecretkey as string,{expiresIn:"1d"})            
+            return token
         } catch (error) {
             console.error(error);
             
         }
     }
 }
+
+export default Jwt

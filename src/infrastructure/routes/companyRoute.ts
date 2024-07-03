@@ -12,11 +12,12 @@ const hashedPassword =new HashPassword()
 const userRepo = new userRepository()
 const nodeMailer = new NodeMailer()
 const generateOtp = new Otpgenerator()
-const companyUsecase =new CompanyUsecase(companyRepo,hashedPassword,userRepo,nodeMailer,generateOtp)
+const companyUsecase =new CompanyUsecase(companyRepo,hashedPassword,userRepo,generateOtp,nodeMailer)
 const companyController =new CompanyController(companyUsecase)
 
-companyRoute.post('/login',(req,res)=>companyController)
+companyRoute.post('/login',(req,res)=>companyController.login(req,res))
 companyRoute.post('/signup',(req,res)=>companyController.signUp(req,res))
+companyRoute.post('/otp',(req,res)=>companyController.verifyOtp(req,res))
 
 
 export default companyRoute

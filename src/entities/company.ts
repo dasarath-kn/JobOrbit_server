@@ -11,7 +11,8 @@ interface company {
     about:string,
     is_blocked:boolean,
     website_url:string,
-    is_verified:boolean
+    is_verified:boolean,
+    admin_verified:boolean
  
 }
 

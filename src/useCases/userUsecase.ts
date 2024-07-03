@@ -1,6 +1,7 @@
 import user from "../entities/user";
 import userRepository from "../infrastructure/repositories/userRepositories";
 import HashPassword from "../infrastructure/utils/hashedPassword";
+import Jwt from "../infrastructure/utils/jwtToken";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
 import Otpgenerator from "../infrastructure/utils/otpGenerator";
 import jwt from 'jsonwebtoken';
@@ -9,11 +10,13 @@ class userUsecase {
     private hashPassword: HashPassword
     private otpGenerator: Otpgenerator
     private nodeMailer: NodeMailer
-    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer) {
+    private jwttoken:Jwt
+    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer,jwttoken:Jwt) {
         this.userRepo = userRepo
         this.hashPassword = hashPassword
         this.otpGenerator = otpGenerator
         this.nodeMailer = nodeMailer
+        this.jwttoken=jwttoken
     }
 
     async findUser(userData: user) {
@@ -24,11 +27,11 @@ class userUsecase {
             } else {
                 let hashed = await this.hashPassword.hashPassword(userData.password)
                 userData.password = hashed as string
-                let userSave = await this.userRepo.saveUser(userData);
+                let userSaved = await this.userRepo.saveUser(userData);
                 let otp = await this.otpGenerator.otpgenerate()
                 await this.nodeMailer.sendEmail(userData.email, otp)
-                await this.userRepo.saveOtp(userSave?.email, otp)
-                return { data: false, userSave }
+                await this.userRepo.saveOtp(userSaved?.email, otp)
+                return { data: false, userSaved }
             }
 
         } catch (error) {
@@ -46,19 +49,10 @@ class userUsecase {
                 if (checkPassword) {
                     if (userExistdata.is_blocked) {
                         return { success: false, message: "You've been blocked admin" }
-                    } else if (!userExistdata.is_verified) {
-                        let otp = this.otpGenerator.otpgenerate()
-                        console.log(otp);
-
-                        await this.nodeMailer.sendEmail(userExistdata.email, otp)
-                        let user_id = userExistdata._id
-                        await this.userRepo.saveOtp(user_id, otp)
-
-                        return { success: false, message: "Not verified user" }
                     }
                     else {
-
-                        return { success: true, userExistdata, message: "User logined successfully" }
+                        let token = await this.jwttoken.generateToken(userExistdata._id,"user")                        
+                        return { success: true, userExistdata, message: "User logined successfully",token }
                     }
                 }
                 else {
@@ -81,7 +75,7 @@ class userUsecase {
                 await this.userRepo.verifyUser(verifiedOtp)
                 return { success: true, message: 'User verified successfully' }
             } else {
-                return { success: false, message: 'User not verified' }
+                return { success: false, message: 'Incorrect otp' }
             }
 
         } catch (error) {
@@ -90,7 +84,37 @@ class userUsecase {
 
         }
     }
+    
+    async resendOtp(email:string){
+        try {
+            let otp = this.otpGenerator.otpgenerate()
+             await this.nodeMailer.sendEmail(email, otp)
+            await this.userRepo.saveOtp(email, otp)
+            return {success:true,message:"Otp send successfully"}
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+            
+        }
+    }
 
+    async userData(user_id:string){
+        try {
+            let userData = await this.userRepo.getUserdata(user_id)
+            if(userData){
+                return {success:true ,message:"Userdata sent successfully",userData}
+            }else{
+                return {success:false,message:"Failed to sent userdata"}
+            }
+
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+            
+        }
+    }
 
 
 

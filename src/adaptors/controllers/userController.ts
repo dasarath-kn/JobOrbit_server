@@ -14,11 +14,11 @@ class userController {
               const exists = await this.userUsecases.findUser(userData as user)
               console.log(exists);
               if(!exists.data){
-                console.log("saved user");
-                res.status(200).json({success:true, message:"saved user",exists})
+                let {userSaved} =exists
+                res.status(200).json({success:true, message:"saved user",userSaved})
               }else{
-                console.log("user already exist");
-                res.status(400).json({success:false,message:'user already exist'})
+                console.log("Email already exist");
+                res.status(400).json({success:false,message:'Email already exist'})
               }
               
         } catch (error) {
@@ -30,11 +30,15 @@ class userController {
 
     async login(req:Request,res:Response){
         try {
+            
             const {email,password} =req.body
             const userExist = await this.userUsecases.login(email,password)
+            
             if(userExist.success){
                 let {userExistdata} =userExist
-                res.status(200).json({message:userExist.message,userExistdata})               
+                console.log(userExistdata);
+                let {token} =userExist
+                res.status(200).json({message:userExist.message,userExistdata,token})               
             }else{ 
                 res.status(400).json({message:userExist.message})
             }
@@ -49,16 +53,55 @@ class userController {
     async otp(req:Request,res:Response){
         try {
          let{otp} =req.body
-         console.log(otp);
            let verifiedOtp = await this.userUsecases.verfiyOtp(otp)
            if(verifiedOtp.success){
             res.status(200).json({message:verifiedOtp.message})
+           }else{
+            res.status(400).json({message:verifiedOtp.message})
            }
 
         } catch (error) {
             console.error(error);
             res.status(500).json({success:false,message:'Internal server error'})
             
+        }
+    }
+
+    async resendOtp(req:Request,res:Response){
+        try {
+            let {email} = req.body
+            console.log(email);
+            
+            let resendOtp = await this.userUsecases.resendOtp(email)
+            if(resendOtp.success){
+                res.status(200).json({success:true,message:resendOtp.message})
+            }else{
+                res.status(200).json({success:false,message:"Failed to sent otp"})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:'Internal server error'})
+            
+        }
+
+    }
+
+    async getUserdata(req:Request,res:Response){
+        try {
+            let {user_id} =req.query
+            let data = await this.userUsecases.userData(user_id)
+            if(data.success){
+                let {userData} =data
+                res.status(200).json({success:true,message:data.message,userData})
+            }else{
+                res.status(400).json({success:false,message:data.message})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:'Internal server error'})
+
         }
     }
 }

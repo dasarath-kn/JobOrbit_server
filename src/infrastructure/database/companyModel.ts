@@ -47,6 +47,10 @@ const company:Schema<company> =new Schema({
         is_verified:{
             type:Boolean,
             default:false
+        },
+        admin_verified:{
+            type:Boolean,
+            default:false
         }
 }) 
 

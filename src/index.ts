@@ -5,10 +5,18 @@ import bodyParser from 'body-parser';
 import userRoute from './infrastructure/routes/userRoute'
 import adminRoute from './infrastructure/routes/adminRoute';
 import companyRoute from './infrastructure/routes/companyRoute';
+import cors from 'cors'
 dotenv.config()
 const app = express();
 const port =process.env.PORT
 mongodb()
+const corsOptions = {
+  origin: 'http://localhost:5173', 
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, 
+  optionsSuccessStatus: 204
+};
+app.use(cors(corsOptions))
 app.use(express.json());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
