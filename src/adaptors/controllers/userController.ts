@@ -54,8 +54,9 @@ class userController {
         try {
          let{otp} =req.body
            let verifiedOtp = await this.userUsecases.verfiyOtp(otp)
+           let {token} =verifiedOtp
            if(verifiedOtp.success){
-            res.status(200).json({message:verifiedOtp.message})
+            res.status(200).json({message:verifiedOtp.message,token})
            }else{
             res.status(400).json({message:verifiedOtp.message})
            }
@@ -89,8 +90,9 @@ class userController {
 
     async getUserdata(req:Request,res:Response){
         try {
-            let {user_id} =req.query
-            let data = await this.userUsecases.userData(user_id)
+            let {user_id} =req
+            
+            let data = await this.userUsecases.userData(user_id as string)
             if(data.success){
                 let {userData} =data
                 res.status(200).json({success:true,message:data.message,userData})

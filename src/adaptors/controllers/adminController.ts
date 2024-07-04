@@ -10,7 +10,8 @@ class adminController {
             let {email,password} =req.body
             let adminExist =await this.adminUsecases.login(email,password)
             if(adminExist?.success){
-                  res.status(200).json({success:true,message:adminExist.message})
+                let {token} =adminExist
+                  res.status(200).json({success:true,message:adminExist.message,token})
             }else{
                 res.status(400).json({success:false,message:adminExist?.message})
             }

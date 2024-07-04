@@ -10,13 +10,13 @@ class userUsecase {
     private hashPassword: HashPassword
     private otpGenerator: Otpgenerator
     private nodeMailer: NodeMailer
-    private jwttoken:Jwt
-    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer,jwttoken:Jwt) {
+    private jwttoken: Jwt
+    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer, jwttoken: Jwt) {
         this.userRepo = userRepo
         this.hashPassword = hashPassword
         this.otpGenerator = otpGenerator
         this.nodeMailer = nodeMailer
-        this.jwttoken=jwttoken
+        this.jwttoken = jwttoken
     }
 
     async findUser(userData: user) {
@@ -31,6 +31,8 @@ class userUsecase {
                 let otp = await this.otpGenerator.otpgenerate()
                 await this.nodeMailer.sendEmail(userData.email, otp)
                 await this.userRepo.saveOtp(userSaved?.email, otp)
+                let token = await this.jwttoken.generateToken(userData._id, "user")
+
                 return { data: false, userSaved }
             }
 
@@ -51,8 +53,8 @@ class userUsecase {
                         return { success: false, message: "You've been blocked admin" }
                     }
                     else {
-                        let token = await this.jwttoken.generateToken(userExistdata._id,"user")                        
-                        return { success: true, userExistdata, message: "User logined successfully",token }
+                        let token = await this.jwttoken.generateToken(userExistdata._id, "user")
+                        return { success: true, userExistdata, message: "User logined successfully", token }
                     }
                 }
                 else {
@@ -73,7 +75,9 @@ class userUsecase {
             let verifiedOtp = await this.userRepo.checkOtp(otp)
             if (verifiedOtp) {
                 await this.userRepo.verifyUser(verifiedOtp)
-                return { success: true, message: 'User verified successfully' }
+                let userData = await this.userRepo.findUserByEmail(verifiedOtp)
+                let token = await this.jwttoken.generateToken(userData?._id as string, "user")
+                return { success: true, message: 'User verified successfully', token }
             } else {
                 return { success: false, message: 'Incorrect otp' }
             }
@@ -84,35 +88,35 @@ class userUsecase {
 
         }
     }
-    
-    async resendOtp(email:string){
+
+    async resendOtp(email: string) {
         try {
             let otp = this.otpGenerator.otpgenerate()
-             await this.nodeMailer.sendEmail(email, otp)
+            await this.nodeMailer.sendEmail(email, otp)
             await this.userRepo.saveOtp(email, otp)
-            return {success:true,message:"Otp send successfully"}
-            
+            return { success: true, message: "Otp send successfully" }
+
         } catch (error) {
             console.error(error);
             throw error
-            
+
         }
     }
 
-    async userData(user_id:string){
+    async userData(user_id: string) {
         try {
             let userData = await this.userRepo.getUserdata(user_id)
-            if(userData){
-                return {success:true ,message:"Userdata sent successfully",userData}
-            }else{
-                return {success:false,message:"Failed to sent userdata"}
+            if (userData) {
+                return { success: true, message: "Userdata sent successfully", userData }
+            } else {
+                return { success: false, message: "Failed to sent userdata" }
             }
 
-            
+
         } catch (error) {
             console.error(error);
             throw error
-            
+
         }
     }
 

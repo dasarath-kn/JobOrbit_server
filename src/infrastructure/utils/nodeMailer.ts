@@ -19,14 +19,12 @@ class NodeMailer implements NodeMailerIterface {
         });
     }
     async sendEmail(id: string, otp: string): Promise<any> {
-        try {
-        console.log(id,otp);
-        
+        try {        
             const mailOptions = {
                 from: process.env.NODEMAILER_EMAIL,
                 to: id,
                 subject: 'Otp verification',
-                text: `<p>Hi,Your otp is <strong>${otp}</strong></p>`
+                html: `<p>Hi, your OTP is <strong>${otp}</strong></p>`
             };
 
             this.transporter.sendMail(mailOptions,(error:any) =>  {

@@ -13,7 +13,8 @@ class CompanyController{
             let companyDetails = await this.companyusecase.login(email,password)
             let {companyData} =companyDetails            
             if(companyDetails.success){
-                res.status(200).json({success:true,message:companyDetails.message,companyData})
+                let {token} =companyDetails
+                res.status(200).json({success:true,message:companyDetails.message,companyData,token})
             }else{
                 res.status(400).json({success:false,message:companyDetails.message})
             }
@@ -52,7 +53,8 @@ class CompanyController{
             
             let verfiyOtp =await this.companyusecase.verifyOtp(otp)
             if(verfiyOtp.success){
-                res.status(200).json({success:true,message:verfiyOtp.message})
+                const {token} =verfiyOtp
+                res.status(200).json({success:true,message:verfiyOtp.message,token})
             }else{
                 res.status(400).json({success:false,message:verfiyOtp.message})
             }

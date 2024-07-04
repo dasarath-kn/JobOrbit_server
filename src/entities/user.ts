@@ -7,6 +7,7 @@ interface user{
     phonenumber:number,
     field:string,
     location:string,
+    img_url?:string,
     about:string,
     is_verified:boolean,
     is_blocked:boolean,

@@ -1,12 +1,15 @@
 import { json } from "body-parser"
 import AdminRespositories from "../infrastructure/repositories/adminRepositories"
 import HashPassword from "../infrastructure/utils/hashedPassword"
+import Jwt from "../infrastructure/utils/jwtToken"
 class AdminUsecase {
     private adminRepo: AdminRespositories
     private hashPassword: HashPassword
-    constructor(adminRepo: AdminRespositories, hashPassword: HashPassword) {
+    private jwttoken :Jwt
+    constructor(adminRepo: AdminRespositories, hashPassword: HashPassword,jwttoken:Jwt) {
         this.adminRepo = adminRepo
         this.hashPassword = hashPassword
+        this.jwttoken =jwttoken
     }
     async login(email: string, password: string) {
         try {
@@ -15,7 +18,11 @@ class AdminUsecase {
                 let checkPassword = await this.hashPassword.comparePassword(password, adminExistdata.password)
                 if (checkPassword) {                    
                     if (adminExistdata.is_admin) {
-                        return { success: true, adminExistdata, message: 'Admin logined successfully' }
+                        let id =adminExistdata._id.toString()
+                        
+                        let token = await this.jwttoken.generateToken(id,"admin")
+                       
+                        return { success: true, adminExistdata, message: 'Admin logined successfully',token }
                     } else {
                         return { success: false, message: 'Invalid admin ' }
                     }

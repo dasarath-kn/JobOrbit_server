@@ -34,6 +34,9 @@ const userSchema:Schema<user> =new Schema({
         about:{
             type:String
         },
+        img_url:{
+            type:String
+        },
         is_verified:{
             type:Boolean,
             default:false

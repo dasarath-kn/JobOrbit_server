@@ -6,13 +6,15 @@ import HashPassword from '../utils/hashedPassword'
 import userRepository from '../repositories/userRepositories'
 import NodeMailer from '../utils/nodeMailer'
 import Otpgenerator from '../utils/otpGenerator'
+import Jwt from '../utils/jwtToken'
 const companyRoute =express.Router()
 const companyRepo =new CompanyRepositories()
 const hashedPassword =new HashPassword()
 const userRepo = new userRepository()
 const nodeMailer = new NodeMailer()
 const generateOtp = new Otpgenerator()
-const companyUsecase =new CompanyUsecase(companyRepo,hashedPassword,userRepo,generateOtp,nodeMailer)
+const jwt = new Jwt()
+const companyUsecase =new CompanyUsecase(companyRepo,hashedPassword,userRepo,generateOtp,nodeMailer,jwt)
 const companyController =new CompanyController(companyUsecase)
 
 companyRoute.post('/login',(req,res)=>companyController.login(req,res))

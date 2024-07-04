@@ -2,6 +2,7 @@ import company from "../entities/company";
 import CompanyRepositories from "../infrastructure/repositories/companyRespositories";
 import userRepository from "../infrastructure/repositories/userRepositories";
 import HashPassword from "../infrastructure/utils/hashedPassword";
+import Jwt from "../infrastructure/utils/jwtToken";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
 import Otpgenerator from "../infrastructure/utils/otpGenerator";
 
@@ -11,12 +12,14 @@ class CompanyUsecase {
     private userRepo:userRepository
     private otpGenerator:Otpgenerator
     private nodeMailer:NodeMailer
-    constructor(companyRepo:CompanyRepositories,hashPassword:HashPassword,userRepo:userRepository,otpGenerator:Otpgenerator,nodeMailer:NodeMailer){
+    private jwttoken :Jwt
+    constructor(companyRepo:CompanyRepositories,hashPassword:HashPassword,userRepo:userRepository,otpGenerator:Otpgenerator,nodeMailer:NodeMailer,jwttoken:Jwt){
         this.companyRepo = companyRepo
         this.hashPassword =hashPassword
         this.otpGenerator = otpGenerator
         this.userRepo =userRepo
         this.nodeMailer= nodeMailer
+        this.jwttoken =jwttoken
     }
     async signUp(companyData :company){
         try {
@@ -65,8 +68,8 @@ class CompanyUsecase {
                         return {success:false,message:"You've been blocked by admin"}
                     }
                     else{
-
-                        return {success:true,message:"Company logined successfully",companyData}
+                let token = await this.jwttoken.generateToken(companyData._id,"company")
+                        return {success:true,message:"Company logined successfully",companyData,token}
                     }
                 }else{
                     return {success:false,message:"Invalid Password"}
@@ -88,7 +91,9 @@ class CompanyUsecase {
             
             if(findOtp){
                 await this.companyRepo.verifyCompany(findOtp)
-                return {success:true,message:"Company verified successfully"}
+                const companyData =await this.companyRepo.findCompanyByEmail(findOtp)
+                const token = await this.jwttoken.generateToken(companyData?._id as string,"company")
+                return {success:true,message:"Company verified successfully",token}
             }else{
                 return {success:false,message:"Incorrect otp"}
             }

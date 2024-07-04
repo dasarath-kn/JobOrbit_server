@@ -32,6 +32,8 @@ class userRepository implements IUserInterface {
         try {
 
             const verifiedUser = await userModel.updateOne({ email: email }, { $set: { is_verified: true } })
+            console.log(verifiedUser);
+            
             return verifiedUser.acknowledged
 
         }
