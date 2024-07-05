@@ -9,6 +9,7 @@ interface company {
     city:string,
     address:string,
     about:string,
+    is_google:boolean,
     img_url?:string
     is_blocked:boolean,
     website_url:string,

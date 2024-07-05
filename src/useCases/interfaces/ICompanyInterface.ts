@@ -5,6 +5,7 @@ interface ICompanyInterface{
     saveCompany(companyData:company):Promise<company |null>
     checkOtp(otp:string):Promise<string | null>
     verifyCompany(email:string):Promise<boolean>
+    saveCompanydata(company:company):Promise<company | null>
 }
 
 export default ICompanyInterface

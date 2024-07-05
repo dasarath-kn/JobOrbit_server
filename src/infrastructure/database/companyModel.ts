@@ -11,34 +11,30 @@ const company:Schema<company> =new Schema({
         },
         password:{
             type:String,
-            required:true
         },
         phonenumber:{
             type:Number,
-            required:true
         },
         industry:{
             type:String,
-            required:true
         },
         state:{
             type:String,
-            required:true
         },
         city:{
             type:String,
-            required:true
         },
         address:{
             type:String,
-            required:true
         },
         about:{
             type:String,
-            required:true
         },
         img_url:{
             type:String
+        },
+        is_google:{
+            type:Boolean
         },
         is_blocked:{
             type:Boolean,

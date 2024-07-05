@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 
 class HashPassword {
 
-    async hashPassword(password:string){
+    async hashPassword(password:string):Promise<string |undefined>{
         try {
             
             const hashedPassword = await bcrypt.hash(password,10)
@@ -14,7 +14,7 @@ class HashPassword {
         
     }
 
-    async comparePassword(password:string,hashed:string){
+    async comparePassword(password:string,hashed:string):Promise<boolean | undefined>{
         try {
             
             const comparedPassword = await bcrypt.compare(password,hashed)

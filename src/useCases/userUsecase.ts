@@ -120,6 +120,22 @@ class userUsecase {
         }
     }
 
+    async googleSaveuser(userdata:user){
+        try {
+           
+            let saved = await this.userRepo.saveUserdata(userdata)
+            if(saved){
+                let token =this.jwttoken.generateToken(saved._id,"user")
+                return {success:true,message:" Logined successfully",token}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+            
+        }
+    }
+
 
 
 }

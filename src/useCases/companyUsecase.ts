@@ -105,7 +105,20 @@ class CompanyUsecase {
         }
     }
 
-    
+    async googleSavecompany(companydata:company){
+        try {
+            let saved = await this.companyRepo.saveCompanydata(companydata)
+            if(saved){
+                let token = this.jwttoken.generateToken(saved._id,"company")
+                return {success:true,message:"Logined successfully",token}
+            }else{
+                return{success:false,message:"Logined failed"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 
 }
 export default CompanyUsecase

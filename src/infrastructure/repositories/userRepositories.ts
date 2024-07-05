@@ -33,7 +33,7 @@ class userRepository implements IUserInterface {
 
             const verifiedUser = await userModel.updateOne({ email: email }, { $set: { is_verified: true } })
             console.log(verifiedUser);
-            
+
             return verifiedUser.acknowledged
 
         }
@@ -79,7 +79,28 @@ class userRepository implements IUserInterface {
     }
 
 
+    async saveUserdata(userdata: user): Promise<user | null> {
+        try {
+            let finduser = await userModel.findOne({email:userdata.email})
+            if(finduser){
+            return finduser
+            }else{
+            let saveUser = new userModel(userdata)
+            await saveUser.save()
+            if (saveUser) {
+                let data = await userModel.findOne({ email: userdata.email })
+                return data 
+            }else{
+                return null
+            }
+        }
 
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to save userdata")
+
+        }
+    }
 }
 
 

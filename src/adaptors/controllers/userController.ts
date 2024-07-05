@@ -106,6 +106,28 @@ class userController {
 
         }
     }
+    async googleSignup(req:Request,res:Response){
+        try {            
+            let {name,email,isGoogle} =req.body
+            let firstname =name
+            let is_google=isGoogle
+            const userdata ={firstname,email,is_google}
+            console.log(userdata);
+            
+            let userSaveddata = await this.userUsecases.googleSaveuser(userdata as user)
+            if(userSaveddata?.success){
+                let {token} =userSaveddata
+                res.status(200).json({success:true,message:userSaveddata.message,token})
+            }else{
+                res.status(400).json({success:false,message:userSaveddata?.message})
+            }
+                        
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
 }
 
 export default userController

@@ -51,6 +51,28 @@ class CompanyRepositories implements ICompanyInterface{
          
       }
    }
+
+   async saveCompanydata(companydata: company): Promise<company | null> {
+      try {
+         let findCompany = await companyModel.findOne({email:companydata.email})
+         if(findCompany){
+            return findCompany
+         }else{
+            let saveCompany = new companyModel(companydata)
+            await saveCompany.save()
+            if(saveCompany){
+               let data = await companyModel.findOne({email:saveCompany.email})
+               return data
+            }else{
+               return null
+            }
+         }
+      } catch (error) {
+         console.error(error);
+         throw new Error("Unable to save companydata")
+         
+      }
+   }
 }
 
 export default CompanyRepositories

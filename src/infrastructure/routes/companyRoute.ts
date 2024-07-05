@@ -20,6 +20,7 @@ const companyController =new CompanyController(companyUsecase)
 companyRoute.post('/login',(req,res)=>companyController.login(req,res))
 companyRoute.post('/signup',(req,res)=>companyController.signUp(req,res))
 companyRoute.post('/otp',(req,res)=>companyController.verifyOtp(req,res))
+companyRoute.post('/googlesignup',(req,res)=>companyController.googleSignup(req,res))
 
 
 export default companyRoute

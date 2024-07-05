@@ -9,7 +9,6 @@ const userSchema:Schema<user> =new Schema({
         },
         lastname:{
             type:String,
-            required:true
         },
         email:{
             type:String,
@@ -17,19 +16,15 @@ const userSchema:Schema<user> =new Schema({
         },
         password:{
             type:String,
-            required:true
         },
         phonenumber:{
             type:Number,
-            required:true
         },
         field:{
             type:String,
-            required:true
         },
         location:{
             type:String,
-            required:true
         },
         about:{
             type:String
@@ -40,6 +35,9 @@ const userSchema:Schema<user> =new Schema({
         is_verified:{
             type:Boolean,
             default:false
+        },
+        is_google:{
+            type:Boolean
         },
         is_blocked:{
             type:Boolean,

@@ -20,6 +20,7 @@ router.post('/signup',(req,res)=>UserController.signup(req,res))
 router.post('/login',(req,res)=>UserController.login(req,res))
 router.post('/otp',(req,res)=>UserController.otp(req,res))
 router.post('/resendotp',(req,res)=>UserController.resendOtp(req,res))
+router.post('/googlesignup',(req,res)=>UserController.googleSignup(req,res))
 router.get('/getuserdata',userAuth,(req,res)=>UserController.getUserdata(req,res))
 
 
