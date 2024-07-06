@@ -7,6 +7,7 @@ import userRepository from '../repositories/userRepositories'
 import NodeMailer from '../utils/nodeMailer'
 import Otpgenerator from '../utils/otpGenerator'
 import Jwt from '../utils/jwtToken'
+import Auth from '../middlewares/userAuth'
 const companyRoute =express.Router()
 const companyRepo =new CompanyRepositories()
 const hashedPassword =new HashPassword()
@@ -21,6 +22,7 @@ companyRoute.post('/login',(req,res)=>companyController.login(req,res))
 companyRoute.post('/signup',(req,res)=>companyController.signUp(req,res))
 companyRoute.post('/otp',(req,res)=>companyController.verifyOtp(req,res))
 companyRoute.post('/googlesignup',(req,res)=>companyController.googleSignup(req,res))
+companyRoute.get('/getcompanydata',Auth,(req,res)=>companyController.getCompanydata(req,res))
 
 
 export default companyRoute

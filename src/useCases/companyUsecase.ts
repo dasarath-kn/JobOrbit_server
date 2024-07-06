@@ -109,6 +109,10 @@ class CompanyUsecase {
         try {
             let saved = await this.companyRepo.saveCompanydata(companydata)
             if(saved){
+                if(saved.is_blocked){
+                    return {success:false,message:"You've been blocked admin"}
+    
+                }
                 let token = this.jwttoken.generateToken(saved._id,"company")
                 return {success:true,message:"Logined successfully",token}
             }else{
@@ -117,6 +121,21 @@ class CompanyUsecase {
         } catch (error) {
             console.error(error);
             throw error
+        }
+    }
+    async companData(id:string){
+        try {
+            let companydata = await this.companyRepo.getCompanydata(id)
+            if(companydata){
+                return {success:true,message:"Companydata sent successfully",companydata}
+            }else{
+                return {success:false,message:"Failed to sent companydata"}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+            
         }
     }
 

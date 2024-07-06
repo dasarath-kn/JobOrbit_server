@@ -90,9 +90,9 @@ class userController {
 
     async getUserdata(req:Request,res:Response){
         try {
-            let {user_id} =req
+            let {id} =req
             
-            let data = await this.userUsecases.userData(user_id as string)
+            let data = await this.userUsecases.userData(id as string)
             if(data.success){
                 let {userData} =data
                 res.status(200).json({success:true,message:data.message,userData})
@@ -122,6 +122,25 @@ class userController {
                 res.status(400).json({success:false,message:userSaveddata?.message})
             }
                         
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
+    async verifyUser(req:Request,res:Response){
+        try {
+            let {email} =req.body
+            console.log(req.body);
+            
+            let userData = await this.userUsecases.userExist(email)           
+            if(userData.success){
+                const {Userdata}=userData
+                res.status(200).json({success:true,message:userData.message,Userdata})
+            }else{
+                res.status(400).json({success:false,message:userData.message})
+            }
+            
         } catch (error) {
             console.error(error);
             res.status(500).json({success:false,message:"Internal server error"})

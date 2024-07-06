@@ -88,5 +88,23 @@ class CompanyController {
         }
     }
 
+    async getCompanydata(req:Request,res:Response){
+        try {
+            let {id} =req
+            let companyData = await this.companyusecase.companData(id as string)
+            if(companyData.success){
+                let {companydata} =companyData
+                res.status(200).json({success:true,message:companyData.message,companydata})
+            }else{
+                res.status(400).json({success:false,message:companyData.message})
+            }
+                        
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
+
 }
 export default CompanyController

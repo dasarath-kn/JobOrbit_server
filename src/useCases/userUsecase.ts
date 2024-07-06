@@ -51,6 +51,11 @@ class userUsecase {
                 if (checkPassword) {
                     if (userExistdata.is_blocked) {
                         return { success: false, message: "You've been blocked admin" }
+                    }else if(!userExistdata.is_verified){
+                        let otp = this.otpGenerator.otpgenerate()
+                        await this.nodeMailer.sendEmail(email, otp)
+                        await this.userRepo.saveOtp(email, otp)
+                        return {success:true ,message:"User not verified",userExistdata}
                     }
                     else {
                         let token = await this.jwttoken.generateToken(userExistdata._id, "user")
@@ -125,8 +130,33 @@ class userUsecase {
            
             let saved = await this.userRepo.saveUserdata(userdata)
             if(saved){
+                if(saved.is_blocked){
+                    return {success:false,message:"You've been blocked admin"}
+    
+                }else{
                 let token =this.jwttoken.generateToken(saved._id,"user")
                 return {success:true,message:" Logined successfully",token}
+                }
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+            
+        }
+    }
+    async userExist(email:string){
+        try {
+            let Userdata = await this.userRepo.findUserByEmail(email)
+           console.log(Userdata);
+           
+            if(Userdata){
+                let otp = this.otpGenerator.otpgenerate()
+                await this.nodeMailer.sendEmail(email, otp)
+                await this.userRepo.saveOtp(email, otp)
+                return {success:true,message:"Otp sent sucessfully",Userdata}
+            }else{
+                return {success:false,message:"Email not found "}
             }
             
         } catch (error) {

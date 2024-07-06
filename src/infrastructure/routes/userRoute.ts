@@ -6,7 +6,7 @@ import HashPassword from "../utils/hashedPassword";
 import Otpgenerator from '../utils/otpGenerator'
 import NodeMailer from "../utils/nodeMailer";
 import Jwt from "../utils/jwtToken";
-import userAuth from "../middlewares/userAuth";
+import Auth from "../middlewares/userAuth";
 const router = express.Router()
 const userRepo =new userRepository()
 const hashPassword = new HashPassword()
@@ -21,7 +21,8 @@ router.post('/login',(req,res)=>UserController.login(req,res))
 router.post('/otp',(req,res)=>UserController.otp(req,res))
 router.post('/resendotp',(req,res)=>UserController.resendOtp(req,res))
 router.post('/googlesignup',(req,res)=>UserController.googleSignup(req,res))
-router.get('/getuserdata',userAuth,(req,res)=>UserController.getUserdata(req,res))
+router.get('/getuserdata',Auth,(req,res)=>UserController.getUserdata(req,res))
+router.post('/verfiyuser',(req,res)=>UserController.verifyUser(req,res))
 
 
 

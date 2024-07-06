@@ -73,6 +73,18 @@ class CompanyRepositories implements ICompanyInterface{
          
       }
    }
+
+   async getCompanydata(id: string): Promise<company | null> {
+      try {
+         let companData = await companyModel.findOne({_id:id})
+         return companData ? companData :null
+         
+      } catch (error) {
+         console.error(error);
+         throw new Error("Unable to get companydata")
+         
+      }
+   }
 }
 
 export default CompanyRepositories
