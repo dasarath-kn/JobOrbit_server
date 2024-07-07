@@ -138,6 +138,46 @@ class CompanyUsecase {
             
         }
     }
+    async companyExist(email:string){
+        try {
+            let companyData = await this.companyRepo.findCompanyByEmail(email)
+           
+            if(companyData){
+                let otp = this.otpGenerator.otpgenerate()
+                await this.nodeMailer.sendEmail(email, otp)
+                await this.userRepo.saveOtp(email, otp)
+                return {success:true,message:"Otp sent sucessfully",companyData}
+            }else{
+                return {success:false,message:"Email not found "}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+            
+        }
+    }
+    async passwordReset(companydata:company){
+        try {
+            let {password} =companydata
+            let hashed = await this.hashPassword.hashPassword(password)
+            console.log(hashed);
+            
+            companydata.password=hashed as string
+            
+            let data = await this.userRepo.resetPassword(companydata)
+            if(data){
+                return {success:true,message:"Password reset successfully"}
+            }else{
+                return {success:false,message:"Failed to reset password"}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+
 
 }
 export default CompanyUsecase

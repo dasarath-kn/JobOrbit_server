@@ -7,6 +7,7 @@ interface IUserInterface{
     checkOtp(otp:string):Promise<string|null>
     getUserdata(user_id:string):Promise<user|null>
     saveUserdata(user:user):Promise<user |null >
+    resetPassword(user:user):Promise<boolean|null >
 }
 
 

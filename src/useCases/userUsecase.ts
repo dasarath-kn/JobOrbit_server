@@ -166,6 +166,27 @@ class userUsecase {
         }
     }
 
+    async passwordReset(userdata:user){
+        try {
+            let {password} =userdata
+            let hashed = await this.hashPassword.hashPassword(password)
+            console.log(hashed);
+            
+            userdata.password=hashed as string
+            
+            let data = await this.userRepo.resetPassword(userdata)
+            if(data){
+                return {success:true,message:"Password reset successfully"}
+            }else{
+                return {success:false,message:"Failed to reset password"}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+
 
 
 }

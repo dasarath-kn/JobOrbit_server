@@ -23,6 +23,9 @@ companyRoute.post('/signup',(req,res)=>companyController.signUp(req,res))
 companyRoute.post('/otp',(req,res)=>companyController.verifyOtp(req,res))
 companyRoute.post('/googlesignup',(req,res)=>companyController.googleSignup(req,res))
 companyRoute.get('/getcompanydata',Auth,(req,res)=>companyController.getCompanydata(req,res))
+companyRoute.post('/verfiyuser',(req,res)=>companyController.verifyCompany(req,res))
+
+companyRoute.patch('/resetpassword',(req,res)=>companyController.resetPassword(req,res))
 
 
 export default companyRoute

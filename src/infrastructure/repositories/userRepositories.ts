@@ -101,6 +101,21 @@ class userRepository implements IUserInterface {
 
         }
     }
+    async resetPassword(user: user): Promise<boolean|null> {
+    try {
+        let {email,password}=user
+        let reset =await userModel.updateOne({email:email},{$set:{password:password}})
+        if(reset){
+            return reset.acknowledged
+        }  else{
+            return null
+        }      
+    } catch (error) {
+        console.error(error);
+        throw new Error("Unable to reset password")
+        
+    }        
+    }
 }
 
 

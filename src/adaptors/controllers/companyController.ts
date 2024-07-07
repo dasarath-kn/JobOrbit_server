@@ -105,6 +105,44 @@ class CompanyController {
             
         }
     }
+    async verifyCompany(req:Request,res:Response){
+        try {
+            let {email} =req.body            
+            let companydata = await this.companyusecase.companyExist(email)           
+            console.log(companydata);
+            
+            if(companydata.success){
+                const {companyData}=companydata
+                res.status(200).json({success:true,message:companydata.message,companyData})
+            }else{
+                res.status(400).json({success:false,message:companydata.message})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
+    async resetPassword(req:Request,res:Response){
+        try {
+            let {email,password} =req.body
+            const companydata ={email,password}
+            console.log(req.body);
+            
+            let resetpassword = await this.companyusecase.passwordReset(companydata as company)
+            if(resetpassword.success){
+                res.status(200).json({success:true,message:resetpassword.message})
+            }else{
+                res.status(400).json({success:false,message:resetpassword.message})
+
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+             
+        }
+    }
 
 }
 export default CompanyController

@@ -23,6 +23,7 @@ router.post('/resendotp',(req,res)=>UserController.resendOtp(req,res))
 router.post('/googlesignup',(req,res)=>UserController.googleSignup(req,res))
 router.get('/getuserdata',Auth,(req,res)=>UserController.getUserdata(req,res))
 router.post('/verfiyuser',(req,res)=>UserController.verifyUser(req,res))
+router.patch('/resetpassword',(req,res)=>UserController.resetPassword(req,res))
 
 
 

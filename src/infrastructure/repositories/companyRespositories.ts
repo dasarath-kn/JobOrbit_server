@@ -85,6 +85,21 @@ class CompanyRepositories implements ICompanyInterface{
          
       }
    }
+   async resetPassword(company: company): Promise<boolean|null> {
+      try {
+          let {email,password}=company
+          let reset =await companyModel.updateOne({email:email},{$set:{password:password}})
+          if(reset){
+              return reset.acknowledged
+          }  else{
+              return null
+          }      
+      } catch (error) {
+          console.error(error);
+          throw new Error("Unable to reset password")
+          
+      }        
+      }
 }
 
 export default CompanyRepositories
