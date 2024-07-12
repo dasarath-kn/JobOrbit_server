@@ -1,4 +1,5 @@
 import company from "../entities/company";
+import jobs from "../entities/jobs";
 import CompanyRepositories from "../infrastructure/repositories/companyRespositories";
 import userRepository from "../infrastructure/repositories/userRepositories";
 import HashPassword from "../infrastructure/utils/hashedPassword";
@@ -28,8 +29,9 @@ class CompanyUsecase {
                 if(!companyExist.is_verified){ 
                     const  otp = await this.otpGenerator.otpgenerate()
                     await this.nodeMailer.sendEmail(companyData.email,otp)
-                    await this.userRepo.saveOtp(companyExist.email,otp)                   
-                    return {success:true ,message:"company is not verified"}
+                   await this.userRepo.saveOtp(companyExist.email,otp)                   
+                    
+                   return {success:true ,message:"company is not verified"}
 
                 }else{
                     return {success:false ,message:"Email alreadyexist"}
@@ -165,7 +167,7 @@ class CompanyUsecase {
             
             companydata.password=hashed as string
             
-            let data = await this.userRepo.resetPassword(companydata)
+            let data = await this.companyRepo.resetPassword(companydata )
             if(data){
                 return {success:true,message:"Password reset successfully"}
             }else{
@@ -175,6 +177,47 @@ class CompanyUsecase {
         } catch (error) {
             console.error(error);
             throw error
+        }
+    }
+    async savingJobs(jobData:jobs){
+        try {
+
+            let savedJob = await this.companyRepo.saveJobs(jobData)
+            if(savedJob){
+                return {success:true,message:"Job created successfully"}
+            }else{
+                return {success:false,message:"Failed to create job"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+
+    async jobs(id:string){
+      try {
+        let jobData = await this.companyRepo.getJobs(id)
+        if(jobData){
+            return{success:true,message:"Jobs sent successfully",jobData}
+        } else{
+            return{success:false,message:"Failed to sent jobs"}
+        }
+      } catch (error) {
+        console.error(error);
+        throw error
+      }
+    }
+    async jobRemove(id:string){
+        try {
+            let removedJob =await this.companyRepo.removeJob(id)
+            if(removedJob){
+                return{success:true,message:"Job removed successfully"}
+            }else{
+                return {success:false,message:"Failed to remove job"}
+            }
+        } catch (error) {
+            console.error(error);
+        throw error
         }
     }
 

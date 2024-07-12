@@ -1,6 +1,8 @@
+import mongoose from "mongoose"
 import company from "../../entities/company"
 import CompanyUsecase from "../../useCases/companyUsecase"
 import { Response, Request } from "express"
+import jobs from "../../entities/jobs"
 class CompanyController {
     private companyusecase: CompanyUsecase
     constructor(companyusecase: CompanyUsecase) {
@@ -107,7 +109,7 @@ class CompanyController {
     }
     async verifyCompany(req:Request,res:Response){
         try {
-            let {email} =req.body            
+            let {email} =req.body                        
             let companydata = await this.companyusecase.companyExist(email)           
             console.log(companydata);
             
@@ -141,6 +143,54 @@ class CompanyController {
             console.error(error);
             res.status(500).json({success:false,message:"Internal server error"})
              
+        }
+    }
+    async addJobs(req:Request,res:Response){
+        try {
+            const{id}=req
+            const company_id=id
+            let {jobtitle,description,responsibilities,requirements,qualification,location,type} =req.body
+            const jobData ={description,responsibilities,requirements,qualification,jobtitle,location,type,company_id: new mongoose.Types.ObjectId(company_id)} 
+            let jobs = await this.companyusecase.savingJobs(jobData as jobs )
+            if(jobs.success){
+                res.status(200).json({success:true,message:jobs.message})
+            }else{
+                res.status(400).json({success:false,message:jobs.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
+
+    async getJobs(req:Request,res:Response){
+        try {
+            let {id} =req
+            let jobs = await this.companyusecase.jobs(id as string)
+            if(jobs.success){
+                const {jobData} =jobs
+                res.status(200).json({success:true,message:jobs.message,jobData})
+            }else{
+                res.status(400).json({success:false,message:jobs.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+        }
+    }
+    async deleteJob(req:Request,res:Response){
+        try {
+            let {id} =req.query            
+            let removed = await this.companyusecase.jobRemove(id as string)
+            if(removed.success){
+                res.status(200).json({success:true,message:removed.message})
+            }else{
+                res.status(400).json({success:false,message:removed.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"}) 
         }
     }
 

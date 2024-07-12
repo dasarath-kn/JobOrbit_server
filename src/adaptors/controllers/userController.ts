@@ -1,10 +1,13 @@
 import { Request,Response } from "express";
 import user from '../../entities/user'
 import userUsecase from "../../useCases/userUsecase";
+import Cloudinary from "../../infrastructure/utils/cloudinary";
 class userController {
     private userUsecases :userUsecase
-    constructor(userUsecases:userUsecase){
+    private Cloudinary:Cloudinary
+    constructor(userUsecases:userUsecase,cloud:Cloudinary){
         this.userUsecases =userUsecases
+        this.Cloudinary =cloud
     }
 
     async signup(req:Request,res:Response){
@@ -151,7 +154,6 @@ class userController {
         try {
             let {email,password} =req.body
             const userdata ={email,password}
-            console.log(req.body);
             
             let resetpassword = await this.userUsecases.passwordReset(userdata as user)
             if(resetpassword.success){
@@ -164,6 +166,44 @@ class userController {
             console.error(error);
             res.status(500).json({success:false,message:"Internal server error"})
              
+        }
+    }
+    async editProfile(req:Request,res:Response){
+        try {
+            const {id}=req
+            const {firstname,lastname,field,location,github_url,portfolio_url,about,qualification}=req.body
+            const userData ={firstname,lastname,field,location,github_url,portfolio_url,about,qualification,img_url:''}
+             const file =req.file?.path
+            let editProfile =await this.userUsecases.updateProfile(id as string,userData as user,file as string)
+            if(editProfile.success){
+                const {userData}=editProfile
+                res.status(200).json({success:true,message:editProfile.message,userData})
+            }else{
+                res.status(400).json({success:false,message:editProfile.message})
+                
+            }            
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
+
+    async getjobs(req:Request,res:Response){
+        try {
+            let findJobs = await this.userUsecases.jobs()
+            if(findJobs.success){
+                const {jobs} =findJobs
+                res.status(200).json({success:true,message:findJobs.message,jobs})
+            }else{
+                res.status(400).json({success:false,message:findJobs.message})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
         }
     }
 }

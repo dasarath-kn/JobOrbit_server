@@ -38,7 +38,7 @@ class adminController {
         }
     }
     async companyBlockUnblock(req:Request,res:Response){
-        let {company_id,status} =req.query
+        let {company_id,status} =req.query          
         let blockUnblockCompany = await this.adminUsecases.blockUnblockCompanies(company_id as string,status as string)
         if(blockUnblockCompany.success){
             res.status(200).json({success:true,message:blockUnblockCompany.message})
@@ -49,11 +49,12 @@ class adminController {
 
     async getUsers(req:Request,res:Response){
         try {
-            let userDetails= await this.adminUsecases.findUsers()
+            const {page} =req.query
+            let userDetails= await this.adminUsecases.findUsers(page as string)
             if(userDetails.success){
-               let {userDatas} =userDetails;
+               let {userDatas,count} =userDetails;
                 
-                res.status(200).json({success:true,message:userDetails.message,userDatas})
+                res.status(200).json({success:true,message:userDetails.message,userDatas,count})
             }else{
                 res.status(400).json({success:false,message:userDetails?.message})
             }
@@ -66,10 +67,11 @@ class adminController {
     }
     async getComapnies(req:Request,res:Response){
         try {
-            let companyDetails = await this.adminUsecases.findCompanies()
+            const {page}= req.query
+            let companyDetails = await this.adminUsecases.findCompanies(page as string)
             if(companyDetails.success){
-                const {companyDatas} =companyDetails
-                res.status(200).json({success:true,messsage:companyDetails.message,companyDatas})
+                const {companyDatas,count} =companyDetails
+                res.status(200).json({success:true,messsage:companyDetails.message,companyDatas,count})
             }else{
                 res.status(400).json({success:true,message:companyDetails.message})
             }

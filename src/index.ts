@@ -6,6 +6,7 @@ import userRoute from './infrastructure/routes/userRoute'
 import adminRoute from './infrastructure/routes/adminRoute';
 import companyRoute from './infrastructure/routes/companyRoute';
 import cors from 'cors'
+import path from 'path';
 dotenv.config()
 const app = express();
 const port =process.env.PORT
@@ -20,6 +21,7 @@ app.use(cors(corsOptions))
 app.use(express.json());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/public', express.static(path.join(__dirname, '../../public')));
 app.use('/',userRoute)
 app.use('/admin',adminRoute)
 app.use('/company',companyRoute)

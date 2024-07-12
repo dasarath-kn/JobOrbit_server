@@ -18,7 +18,7 @@ interface user{
     isGoogle:boolean,
     resume_url:string,
     skills:[string],
-    qualification:[string]
+    qualification:string
     experience:[object]
 
 

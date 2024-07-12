@@ -24,8 +24,10 @@ companyRoute.post('/otp',(req,res)=>companyController.verifyOtp(req,res))
 companyRoute.post('/googlesignup',(req,res)=>companyController.googleSignup(req,res))
 companyRoute.get('/getcompanydata',Auth,(req,res)=>companyController.getCompanydata(req,res))
 companyRoute.post('/verfiyuser',(req,res)=>companyController.verifyCompany(req,res))
-
 companyRoute.patch('/resetpassword',(req,res)=>companyController.resetPassword(req,res))
+companyRoute.post('/addjob',Auth,(req,res)=>companyController.addJobs(req,res))
+companyRoute.get('/getjobdata',Auth,(req,res)=>companyController.getJobs(req,res))
+companyRoute.delete('/deletejob',(req,res)=>companyController.deleteJob(req,res))
 
 
 export default companyRoute

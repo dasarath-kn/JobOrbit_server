@@ -60,7 +60,7 @@ const userSchema:Schema<user> =new Schema({
             type:[String]
         },
         qualification:{
-            type:[String]
+            type:String
         },
         experience:{
             typeKey:[Object]

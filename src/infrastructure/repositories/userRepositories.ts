@@ -1,6 +1,8 @@
+import jobs from "../../entities/jobs";
 import otp from "../../entities/otp";
 import user from "../../entities/user";
 import IUserInterface from '../../useCases/interfaces/IUserInterface'
+import jobModel from "../database/jobModel";
 import otpModel from "../database/otpModel";
 import userModel from "../database/userModel";
 class userRepository implements IUserInterface {
@@ -45,7 +47,9 @@ class userRepository implements IUserInterface {
     }
     async saveOtp(email: string | undefined, otp: string): Promise<boolean> {
         try {
+
             const saveOtp = await otpModel.updateOne({ email: email }, { $set: { otp: otp } }, { upsert: true })
+
             return saveOtp.acknowledged
         } catch (error: any) {
             console.error(error);
@@ -81,19 +85,19 @@ class userRepository implements IUserInterface {
 
     async saveUserdata(userdata: user): Promise<user | null> {
         try {
-            let finduser = await userModel.findOne({email:userdata.email})
-            if(finduser){
-            return finduser
-            }else{
-            let saveUser = new userModel(userdata)
-            await saveUser.save()
-            if (saveUser) {
-                let data = await userModel.findOne({ email: userdata.email })
-                return data 
-            }else{
-                return null
+            let finduser = await userModel.findOne({ email: userdata.email })
+            if (finduser) {
+                return finduser
+            } else {
+                let saveUser = new userModel(userdata)
+                await saveUser.save()
+                if (saveUser) {
+                    let data = await userModel.findOne({ email: userdata.email })
+                    return data
+                } else {
+                    return null
+                }
             }
-        }
 
         } catch (error) {
             console.error(error);
@@ -101,20 +105,40 @@ class userRepository implements IUserInterface {
 
         }
     }
-    async resetPassword(user: user): Promise<boolean|null> {
-    try {
-        let {email,password}=user
-        let reset =await userModel.updateOne({email:email},{$set:{password:password}})
-        if(reset){
-            return reset.acknowledged
-        }  else{
-            return null
-        }      
-    } catch (error) {
-        console.error(error);
-        throw new Error("Unable to reset password")
-        
-    }        
+    async resetPassword(user: user): Promise<boolean | null> {
+        try {
+            let { email, password } = user
+            let reset = await userModel.updateOne({ email: email }, { $set: { password: password } })
+            if (reset) {
+                return reset.acknowledged
+            } else {
+                return null
+            }
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to reset password")
+
+        }
+    }
+    async updateProfile(id: string, user: user): Promise<boolean> {
+        try {
+            let updated = await userModel.updateOne({ _id: id }, user, { new: true })
+            return updated.acknowledged
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to update userdata")
+        }
+    }
+    async viewjobs(): Promise<jobs[] | null> {
+        try {
+            let jobs = await jobModel.find({}).populate('company_id')            
+            return jobs ? jobs : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to update userdata")
+        }
     }
 }
 

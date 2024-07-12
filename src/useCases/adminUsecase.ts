@@ -39,11 +39,12 @@ class AdminUsecase {
 
         }
     }
-    async findUsers(){
+    async findUsers(page:string){
         try {
-            let userDatas = await this.adminRepo.getUserdatas()
-            if(userDatas){
-                return {success:true ,message:"Userdatas sent suceessfully",userDatas}
+            let userData = await this.adminRepo.getUserdatas(page)
+            if(userData){
+                const {count,userDatas}=userData
+                return {success:true ,message:"Userdatas sent suceessfully",userDatas,count}
             }else{
                 return {success:false ,message:"Failed to send userdata"}
             }
@@ -54,11 +55,12 @@ class AdminUsecase {
             
         }
     }
-    async findCompanies(){
+    async findCompanies(page:string){
         try {
-         let companyDatas = await this.adminRepo.getCompanydatas()
-         if(companyDatas){
-            return {success:true,message:"Companydatas sent successfully",companyDatas}
+         let companyData = await this.adminRepo.getCompanydatas(page)
+         if(companyData){
+            const {count,companyDatas}=companyData
+            return {success:true,message:"Companydatas sent successfully",count,companyDatas}
          }    else{
             return {success:false,message:"Failed to sent companydata"}
          }
@@ -86,6 +88,7 @@ class AdminUsecase {
     async blockUnblockCompanies(company_id:string,status:string){
         try {
             let changeStatus = await this.adminRepo.blockUnblockCompanies(company_id,status)
+            
             if(changeStatus){
                 return {success:true,message:changeStatus}
             }else{

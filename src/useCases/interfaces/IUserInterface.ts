@@ -1,3 +1,4 @@
+import jobs from "../../entities/jobs";
 import user from "../../entities/user";
 interface IUserInterface{
     findUserByEmail(email:string):Promise<user | null>
@@ -8,6 +9,8 @@ interface IUserInterface{
     getUserdata(user_id:string):Promise<user|null>
     saveUserdata(user:user):Promise<user |null >
     resetPassword(user:user):Promise<boolean|null >
+    updateProfile(id:string,user:user):Promise<boolean |null>
+    viewjobs():Promise<jobs[]|null>
 }
 
 

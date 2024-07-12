@@ -1,5 +1,6 @@
 import user from "../entities/user";
 import userRepository from "../infrastructure/repositories/userRepositories";
+import Cloudinary from "../infrastructure/utils/cloudinary";
 import HashPassword from "../infrastructure/utils/hashedPassword";
 import Jwt from "../infrastructure/utils/jwtToken";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
@@ -11,12 +12,14 @@ class userUsecase {
     private otpGenerator: Otpgenerator
     private nodeMailer: NodeMailer
     private jwttoken: Jwt
-    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer, jwttoken: Jwt) {
+    private cloundinary: Cloudinary
+    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer, jwttoken: Jwt, cloudinary: Cloudinary) {
         this.userRepo = userRepo
         this.hashPassword = hashPassword
         this.otpGenerator = otpGenerator
         this.nodeMailer = nodeMailer
         this.jwttoken = jwttoken
+        this.cloundinary = cloudinary
     }
 
     async findUser(userData: user) {
@@ -51,11 +54,11 @@ class userUsecase {
                 if (checkPassword) {
                     if (userExistdata.is_blocked) {
                         return { success: false, message: "You've been blocked admin" }
-                    }else if(!userExistdata.is_verified){
+                    } else if (!userExistdata.is_verified) {
                         let otp = this.otpGenerator.otpgenerate()
                         await this.nodeMailer.sendEmail(email, otp)
                         await this.userRepo.saveOtp(email, otp)
-                        return {success:true ,message:"User not verified",userExistdata}
+                        return { success: true, message: "User not verified", userExistdata }
                     }
                     else {
                         let token = await this.jwttoken.generateToken(userExistdata._id, "user")
@@ -125,68 +128,104 @@ class userUsecase {
         }
     }
 
-    async googleSaveuser(userdata:user){
+    async googleSaveuser(userdata: user) {
         try {
-           
+
             let saved = await this.userRepo.saveUserdata(userdata)
-            if(saved){
-                if(saved.is_blocked){
-                    return {success:false,message:"You've been blocked admin"}
-    
-                }else{
-                let token =this.jwttoken.generateToken(saved._id,"user")
-                return {success:true,message:" Logined successfully",token}
+            if (saved) {
+                if (saved.is_blocked) {
+                    return { success: false, message: "You've been blocked admin" }
+
+                } else {
+                    let token = this.jwttoken.generateToken(saved._id, "user")
+                    return { success: true, message: " Logined successfully", token }
                 }
             }
-            
+
         } catch (error) {
             console.error(error);
             throw error
-            
+
         }
     }
-    async userExist(email:string){
+    async userExist(email: string) {
         try {
             let Userdata = await this.userRepo.findUserByEmail(email)
-           console.log(Userdata);
-           
-            if(Userdata){
+            console.log(Userdata);
+
+            if (Userdata) {
                 let otp = this.otpGenerator.otpgenerate()
                 await this.nodeMailer.sendEmail(email, otp)
                 await this.userRepo.saveOtp(email, otp)
-                return {success:true,message:"Otp sent sucessfully",Userdata}
-            }else{
-                return {success:false,message:"Email not found "}
+                return { success: true, message: "Otp sent sucessfully", Userdata }
+            } else {
+                return { success: false, message: "Email not found " }
             }
-            
+
         } catch (error) {
             console.error(error);
             throw error
-            
+
         }
     }
 
-    async passwordReset(userdata:user){
+    async passwordReset(userdata: user) {
         try {
-            let {password} =userdata
+            let { password } = userdata
             let hashed = await this.hashPassword.hashPassword(password)
             console.log(hashed);
-            
-            userdata.password=hashed as string
-            
+
+            userdata.password = hashed as string
+
             let data = await this.userRepo.resetPassword(userdata)
-            if(data){
-                return {success:true,message:"Password reset successfully"}
-            }else{
-                return {success:false,message:"Failed to reset password"}
+            if (data) {
+                return { success: true, message: "Password reset successfully" }
+            } else {
+                return { success: false, message: "Failed to reset password" }
             }
-            
+
         } catch (error) {
             console.error(error);
             throw error
         }
     }
+    async updateProfile(id: string, user: user, file: string) {
+        try {
+            if (file) {
+                let cloudinary = await this.cloundinary.uploadImage(file, "User Profile")
+                user.img_url = cloudinary
+            }
 
+
+            let updatedData = await this.userRepo.updateProfile(id, user)
+            if (updatedData) {
+                let userData = await this.userRepo.getUserdata(id)
+                return { success: true, message: "User profile updated successfully", userData }
+            } else {
+                return { success: false, message: "Failed to update user profile" }
+            }
+
+        } catch (error) {
+            console.error(error);
+            throw error
+
+        }
+    }
+    async jobs(){
+        try {
+            let jobs =await this.userRepo.viewjobs()
+            if(jobs){
+                return{success:true,message:"Jobs sent successfully",jobs}
+            }else{
+                return{success:false,message:"Failed to sent job"}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+ 
+        }
+    }
 
 
 }
