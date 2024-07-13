@@ -1,7 +1,9 @@
 import company from "../entities/company";
 import jobs from "../entities/jobs";
+import { Post } from "../entities/posts";
 import CompanyRepositories from "../infrastructure/repositories/companyRespositories";
 import userRepository from "../infrastructure/repositories/userRepositories";
+import Cloudinary from "../infrastructure/utils/cloudinary";
 import HashPassword from "../infrastructure/utils/hashedPassword";
 import Jwt from "../infrastructure/utils/jwtToken";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
@@ -14,13 +16,15 @@ class CompanyUsecase {
     private otpGenerator:Otpgenerator
     private nodeMailer:NodeMailer
     private jwttoken :Jwt
-    constructor(companyRepo:CompanyRepositories,hashPassword:HashPassword,userRepo:userRepository,otpGenerator:Otpgenerator,nodeMailer:NodeMailer,jwttoken:Jwt){
+    private cloudinary:Cloudinary
+    constructor(companyRepo:CompanyRepositories,hashPassword:HashPassword,userRepo:userRepository,otpGenerator:Otpgenerator,nodeMailer:NodeMailer,jwttoken:Jwt,cloudinary:Cloudinary){
         this.companyRepo = companyRepo
         this.hashPassword =hashPassword
         this.otpGenerator = otpGenerator
         this.userRepo =userRepo
         this.nodeMailer= nodeMailer
         this.jwttoken =jwttoken
+        this.cloudinary=cloudinary
     }
     async signUp(companyData :company){
         try {
@@ -220,7 +224,39 @@ class CompanyUsecase {
         throw error
         }
     }
+    async savePost(postData:Post,files:[]){
+        try {
+            if(files){
+                let cloudinary =await this.cloudinary.uploadMultipleimages(files,"Post")
+                postData.images =cloudinary
+            }
+            let savedPost = await this.companyRepo.savePosts(postData)
+            if(savedPost){
+                return {success:true,message:'Post saved successfully'}
+            }else{
+                return {success:files,message:'Failed to save post'}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 
+    async Posts(id:string){
+        try {
+            let posts = await this.companyRepo.getPosts(id)
+            if(posts){
+                return {success:true,message:"Posts sent successfully",posts}
+            }else{
+                return {success:false,message:"Unable to sent posts"}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 
 }
 export default CompanyUsecase

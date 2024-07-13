@@ -211,22 +211,63 @@ class userUsecase {
 
         }
     }
-    async jobs(){
+    async jobs() {
         try {
-            let jobs =await this.userRepo.viewjobs()
-            if(jobs){
-                return{success:true,message:"Jobs sent successfully",jobs}
-            }else{
-                return{success:false,message:"Failed to sent job"}
+            let jobs = await this.userRepo.viewjobs()
+            if (jobs) {
+                return { success: true, message: "Jobs sent successfully", jobs }
+            } else {
+                return { success: false, message: "Failed to sent job" }
             }
-            
+
         } catch (error) {
             console.error(error);
             throw error
- 
+
         }
     }
+    async posts() {
+        try {
+            let posts = await this.userRepo.getPosts()
+            if (posts) {
+                return { success: true, message: "Posts sent sucessfully", posts }
+            } else {
+                return { success: false, message: "Failed to sent posts" }
+            }
 
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async manageLikeUnlike(post_id: string, user_id: string, status: string) {
+        try {
+            
+            if (status == "Like") {
+                
+                let liked = await this.userRepo.likePost(post_id, user_id)
+                if (liked) {
+                    return { success: true, message: " Post linked successfully" }
+                } else {
+                    return { success: false, message: " Failed to like post" }
+
+                }
+            } else {
+                let unliked = await this.userRepo.unlikePost(post_id, user_id)
+                if (unliked) {
+                    return { success: true, message: " Post unlinked successfully" }
+
+                } else {
+                    return { success: false, message: " Failed to unlike post" }
+
+                }
+            }
+
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 
 }
 

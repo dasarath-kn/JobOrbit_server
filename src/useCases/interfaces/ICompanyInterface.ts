@@ -1,5 +1,6 @@
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
+import { Post } from "../../entities/posts";
 
 interface ICompanyInterface {
     findCompanyByEmail(email: string): Promise<company | null>
@@ -11,7 +12,9 @@ interface ICompanyInterface {
     resetPassword(company: company): Promise<boolean | null>
     saveJobs(jobData: jobs): Promise<boolean | null>
     getJobs(id: string): Promise<jobs[] | null>
-    removeJob(id:string):Promise<boolean>
+    removeJob(id: string): Promise<boolean>
+    savePosts(postData: Post): Promise<boolean>
+    getPosts(id: string): Promise<Post[] | null>
 
 }
 

@@ -29,6 +29,8 @@ router.post('/verfiyuser',(req,res)=>UserController.verifyUser(req,res))
 router.patch('/resetpassword',(req,res)=>UserController.resetPassword(req,res))
 router.post('/editprofile',Auth,upload.single("image"),(req,res)=>UserController.editProfile(req,res))
 router.get('/jobs',(req,res)=>UserController.getjobs(req,res))
+router.get('/posts',(req,res)=>UserController.getPosts(req,res))
+router.patch('/likeunlike',Auth,(req,res)=>UserController.likeUnlike(req,res))
 
 
 

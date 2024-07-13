@@ -1,9 +1,11 @@
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
+import { Post } from "../../entities/posts";
 import ICompanyInterface from "../../useCases/interfaces/ICompanyInterface";
 import companyModel from "../database/companyModel";
 import jobModel from "../database/jobModel";
 import otpModel from "../database/otpModel";
+import postModel from "../database/postModel";
 
 class CompanyRepositories implements ICompanyInterface {
 
@@ -104,8 +106,6 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async saveJobs(jobData: jobs): Promise<boolean | null> {
       try {
-         console.log(jobData);
-
          const savedjob = new jobModel(jobData)
          await savedjob.save()
          if (savedjob) {
@@ -121,7 +121,7 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async getJobs(id: string): Promise<jobs[] | null> {
       try {
-         let jobs = await jobModel.find({ company_id: id }).sort({time:-1}).populate('company_id')
+         let jobs = await jobModel.find({ company_id: id }).sort({ time: -1 }).populate('company_id')
          return jobs ? jobs : null
       } catch (error) {
          console.error(error);
@@ -130,14 +130,35 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async removeJob(id: string): Promise<boolean> {
       try {
-         let removed =await jobModel.deleteOne({_id:id})
+         let removed = await jobModel.deleteOne({ _id: id })
          return removed.acknowledged
       } catch (error) {
          console.error(error);
          throw new Error("Unable to remove job")
-         
+
       }
    }
+   async savePosts(postData: Post): Promise<boolean> {
+      try {
+         let savedPost = new postModel(postData)
+         await savedPost.save()
+         return true
+
+      } catch (error) {
+         console.error(error);
+         throw new Error("Unable to save post")
+      }
+   }
+   async getPosts(id: string): Promise<Post[] | null> {
+     try {
+      let posts = await postModel.find({ company_id:id }).sort({time:-1}).populate('company_id')
+      return posts ? posts : null
+     } catch (error) {
+      console.error(error);
+      throw new Error("Unable to find post")
+     }
+   }
+
 }
 
 export default CompanyRepositories

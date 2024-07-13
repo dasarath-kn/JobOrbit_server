@@ -16,6 +16,7 @@ const Auth = async(req:Request,res:Response,next:NextFunction)=>{
     try {  
               
         const authHeader = req.headers['authorization'] 
+        
         if(!authHeader){
             return res.status(400).json({success:false,message:"Unauthorised Access "})
         }
@@ -24,6 +25,7 @@ const Auth = async(req:Request,res:Response,next:NextFunction)=>{
             return res.status(401).json({success:false,message:"Unauthorised Access -Invalid token"})
         }
         req.id=verify.id  
+        
         return next();
     } catch (error:any) {
         if (error.name === 'TokenExpiredError') {

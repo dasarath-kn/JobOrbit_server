@@ -90,109 +90,145 @@ class CompanyController {
         }
     }
 
-    async getCompanydata(req:Request,res:Response){
+    async getCompanydata(req: Request, res: Response) {
         try {
-            let {id} =req
+            let { id } = req
             let companyData = await this.companyusecase.companData(id as string)
-            if(companyData.success){
-                let {companydata} =companyData
-                res.status(200).json({success:true,message:companyData.message,companydata})
-            }else{
-                res.status(400).json({success:false,message:companyData.message})
+            if (companyData.success) {
+                let { companydata } = companyData
+                res.status(200).json({ success: true, message: companyData.message, companydata })
+            } else {
+                res.status(400).json({ success: false, message: companyData.message })
             }
-                        
+
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-            
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
-    async verifyCompany(req:Request,res:Response){
+    async verifyCompany(req: Request, res: Response) {
         try {
-            let {email} =req.body                        
-            let companydata = await this.companyusecase.companyExist(email)           
+            let { email } = req.body
+            let companydata = await this.companyusecase.companyExist(email)
             console.log(companydata);
-            
-            if(companydata.success){
-                const {companyData}=companydata
-                res.status(200).json({success:true,message:companydata.message,companyData})
-            }else{
-                res.status(400).json({success:false,message:companydata.message})
+
+            if (companydata.success) {
+                const { companyData } = companydata
+                res.status(200).json({ success: true, message: companydata.message, companyData })
+            } else {
+                res.status(400).json({ success: false, message: companydata.message })
             }
-            
+
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-            
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
-    async resetPassword(req:Request,res:Response){
+    async resetPassword(req: Request, res: Response) {
         try {
-            let {email,password} =req.body
-            const companydata ={email,password}
+            let { email, password } = req.body
+            const companydata = { email, password }
             console.log(req.body);
-            
+
             let resetpassword = await this.companyusecase.passwordReset(companydata as company)
-            if(resetpassword.success){
-                res.status(200).json({success:true,message:resetpassword.message})
-            }else{
-                res.status(400).json({success:false,message:resetpassword.message})
+            if (resetpassword.success) {
+                res.status(200).json({ success: true, message: resetpassword.message })
+            } else {
+                res.status(400).json({ success: false, message: resetpassword.message })
 
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-             
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
-    async addJobs(req:Request,res:Response){
+    async addJobs(req: Request, res: Response) {
         try {
-            const{id}=req
-            const company_id=id
-            let {jobtitle,description,responsibilities,requirements,qualification,location,type} =req.body
-            const jobData ={description,responsibilities,requirements,qualification,jobtitle,location,type,company_id: new mongoose.Types.ObjectId(company_id)} 
-            let jobs = await this.companyusecase.savingJobs(jobData as jobs )
-            if(jobs.success){
-                res.status(200).json({success:true,message:jobs.message})
-            }else{
-                res.status(400).json({success:false,message:jobs.message})
+            const { id } = req
+            const company_id = id
+            let { jobtitle, description, responsibilities, requirements, qualification, location, type } = req.body
+            const jobData = { description, responsibilities, requirements, qualification, jobtitle, location, type, company_id: new mongoose.Types.ObjectId(company_id) }
+            let jobs = await this.companyusecase.savingJobs(jobData as jobs)
+            if (jobs.success) {
+                res.status(200).json({ success: true, message: jobs.message })
+            } else {
+                res.status(400).json({ success: false, message: jobs.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-            
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
 
-    async getJobs(req:Request,res:Response){
+    async getJobs(req: Request, res: Response) {
         try {
-            let {id} =req
+            let { id } = req
             let jobs = await this.companyusecase.jobs(id as string)
-            if(jobs.success){
-                const {jobData} =jobs
-                res.status(200).json({success:true,message:jobs.message,jobData})
-            }else{
-                res.status(400).json({success:false,message:jobs.message})
+            if (jobs.success) {
+                const { jobData } = jobs
+                res.status(200).json({ success: true, message: jobs.message, jobData })
+            } else {
+                res.status(400).json({ success: false, message: jobs.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
+            res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
-    async deleteJob(req:Request,res:Response){
+    async deleteJob(req: Request, res: Response) {
         try {
-            let {id} =req.query            
+            let { id } = req.query
             let removed = await this.companyusecase.jobRemove(id as string)
-            if(removed.success){
-                res.status(200).json({success:true,message:removed.message})
-            }else{
-                res.status(400).json({success:false,message:removed.message})
+            if (removed.success) {
+                res.status(200).json({ success: true, message: removed.message })
+            } else {
+                res.status(400).json({ success: false, message: removed.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"}) 
+            res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
 
+    async addPost(req: Request, res: Response) {
+        try {
+            const { id } = req
+            const company_id=id
+            const files = req.files?.map((val) => val.path)
+            const { description } = req.body
+            const postData = {company_id,description, images: [] }
+            let post = await this.companyusecase.savePost(postData, files)
+            if (post.success) {
+                res.status(200).json({ success: true, message: post.message })
+            } else {
+                res.status(400).json({ success: false, message: post.message })
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+
+    async getPosts(req:Request,res:Response){
+        try {
+            const {id} =req
+            let postDatas = await this.companyusecase.Posts(id as string)
+            if(postDatas.success){
+                const {posts}=postDatas
+                res.status(200).json({success:true,message:postDatas,posts})
+            }else{
+                res.status(400).json({success:false,message:postDatas.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+        }
 }
+
+
 export default CompanyController

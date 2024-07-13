@@ -1,9 +1,11 @@
 import jobs from "../../entities/jobs";
 import otp from "../../entities/otp";
+import { Post } from "../../entities/posts";
 import user from "../../entities/user";
 import IUserInterface from '../../useCases/interfaces/IUserInterface'
 import jobModel from "../database/jobModel";
 import otpModel from "../database/otpModel";
+import postModel from "../database/postModel";
 import userModel from "../database/userModel";
 class userRepository implements IUserInterface {
 
@@ -132,12 +134,43 @@ class userRepository implements IUserInterface {
     }
     async viewjobs(): Promise<jobs[] | null> {
         try {
-            let jobs = await jobModel.find({}).populate('company_id')            
+            let jobs = await jobModel.find({}).populate('company_id')
             return jobs ? jobs : null
 
         } catch (error) {
             console.error(error);
             throw new Error("Unable to update userdata")
+        }
+    }
+
+    async getPosts(): Promise<Post[] | null> {
+        try {
+            let posts = await postModel.find({}).sort({ time: -1 }).populate('company_id')
+            return posts ? posts : null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to get posts")
+        }
+    }
+    async likePost(post_id: string, user_id: string): Promise<boolean | null> {
+        try {
+            console.log(user_id,"dfdf");
+            
+            let liked = await postModel.updateOne({ _id: post_id }, { $addToSet: { like: user_id } })
+            return liked.acknowledged ? liked.acknowledged : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error(`Unable to like post`)
+        }
+    }
+    async unlikePost(post_id: string, user_id: string): Promise<boolean | null> {
+        try {
+            let unLiked = await postModel.updateOne({ _id: post_id }, { $pull: { like: user_id } })
+            return unLiked.acknowledged ? unLiked.acknowledged : null
+        } catch (error) {
+            console.error(error);
+            throw new Error(`Unable to unlike post`)
         }
     }
 }

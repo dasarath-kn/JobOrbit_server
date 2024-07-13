@@ -10,9 +10,7 @@ cloudinary.config({
 });
 class Cloudinary implements ICloudinary{
     async uploadImage(image: any,folderName:string): Promise<string> {
-        try {
-            console.log(image);
-            
+        try {            
             const uploadResult = await cloudinary.uploader
             .upload(
                 image,{
@@ -26,6 +24,24 @@ class Cloudinary implements ICloudinary{
             console.error("Error uploading image to cloudinary",error);
             throw error
             
+        }
+    }
+
+    async uploadMultipleimages(images:[],folderName:string){
+        try {
+            const uploadPromises = images.map(async (image) => {
+                const uploadResult = await cloudinary.uploader.upload(image, {
+                    folder: folderName,
+                    resource_type: 'image'
+                });
+                return uploadResult.secure_url;
+            });
+    
+            const uploadedUrls = await Promise.all(uploadPromises);
+            return uploadedUrls;
+        } catch (error) {
+            console.error("Error uploading image to cloudinary",error);
+            throw error
         }
     }
 }

@@ -2,6 +2,7 @@ import { Request,Response } from "express";
 import user from '../../entities/user'
 import userUsecase from "../../useCases/userUsecase";
 import Cloudinary from "../../infrastructure/utils/cloudinary";
+import mongoose from "mongoose";
 class userController {
     private userUsecases :userUsecase
     private Cloudinary:Cloudinary
@@ -204,6 +205,43 @@ class userController {
             console.error(error);
             res.status(500).json({success:false,message:"Internal server error"})
             
+        }
+
+    }
+    async getPosts(req:Request,res:Response){
+        try {
+            let getPosts = await this.userUsecases.posts()
+            if(getPosts.success){
+                const {posts}=getPosts
+                res.status(200).json({success:true,messge:getPosts.message,posts})
+            }else{
+                res.status(400).json({success:false,message:getPosts.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+        }
+    }
+    async likeUnlike(req:Request,res:Response){
+        try {
+            const {post_id,status}=req.query
+            console.log(post_id,status);
+            
+            const {id}=req
+            
+           const userid= id
+           console.log(userid);
+           
+            let manageLikeUnlike = await this.userUsecases.manageLikeUnlike(post_id as string,userid as string,status as string)
+            if(manageLikeUnlike.success){
+                res.status(200).json({success:true,message:manageLikeUnlike.message})
+            }else{
+                res.status(400).json({success:false,message:manageLikeUnlike.message})
+   
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
         }
     }
 }
