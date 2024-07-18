@@ -158,6 +158,16 @@ class CompanyRepositories implements ICompanyInterface {
       throw new Error("Unable to find post")
      }
    }
+   async updateProfile(id: string, company: company): Promise<boolean> {
+      try {
+          let updated = await companyModel.updateOne({ _id: id }, company, { new: true })
+          return updated.acknowledged
+
+      } catch (error) {
+          console.error(error);
+          throw new Error("Unable to update companydata")
+      }
+  }
 
 }
 

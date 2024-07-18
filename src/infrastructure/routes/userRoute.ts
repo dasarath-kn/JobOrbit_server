@@ -28,9 +28,17 @@ router.get('/getuserdata',Auth,(req,res)=>UserController.getUserdata(req,res))
 router.post('/verfiyuser',(req,res)=>UserController.verifyUser(req,res))
 router.patch('/resetpassword',(req,res)=>UserController.resetPassword(req,res))
 router.post('/editprofile',Auth,upload.single("image"),(req,res)=>UserController.editProfile(req,res))
+router.post('/addexperience',Auth,(req,res)=>UserController.addexperience(req,res))
 router.get('/jobs',(req,res)=>UserController.getjobs(req,res))
+router.get('/viewjobdetails',(req,res)=>UserController.viewJobdetails(req,res))
 router.get('/posts',(req,res)=>UserController.getPosts(req,res))
 router.patch('/likeunlike',Auth,(req,res)=>UserController.likeUnlike(req,res))
+router.post('/savepost',Auth,(req,res)=>UserController.savePost(req,res))
+router.get('/getsavedpost',Auth,(req,res)=>UserController.getsavedPost(req,res))
+router.post('/comment',Auth,(req,res)=>UserController.postComment(req,res))
+router.get('/getcomment',Auth,(req,res)=>UserController.getcomments(req,res))
+router.patch('/jobapply',Auth,(req,res)=>UserController.applyJob(req,res))
+router.get('/getsubscriptionplan',Auth,(req,res)=>UserController.getSubscriptionPlans(req,res))
 
 
 

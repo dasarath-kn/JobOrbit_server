@@ -4,6 +4,7 @@ import AdminUsecase from '../../useCases/adminUsecase'
 import AdminRespositories from '../repositories/adminRepositories'
 import HashPassword from '../utils/hashedPassword'
 import Jwt from '../utils/jwtToken'
+import adminAuth from '../middlewares/adminAuth'
 const adminRoute = express.Router()
 const adminRepo =new AdminRespositories()
 const hashPassword =new HashPassword()
@@ -15,5 +16,10 @@ adminRoute.get('/userdata',(req,res)=>AdminController.getUsers(req,res))
 adminRoute.get('/companydata',(req,res)=>AdminController.getComapnies(req,res))
 adminRoute.patch('/userblockunblock',(req,res)=>AdminController.userBlockUnblock(req,res))
 adminRoute.patch('/companyblockunblock',(req,res)=>AdminController.companyBlockUnblock(req,res))
-
+adminRoute.post('/subscription',(req,res)=>AdminController.subscription(req,res))
+adminRoute.
+route('/getsubscriptionplan')
+.get((req,res)=>AdminController.getSubscriptionPlans(req,res))
+.delete((req,res)=>AdminController.deletePlan(req,res))
+.patch((req,res)=>AdminController.listUnlistPlan(req,res))
 export default adminRoute

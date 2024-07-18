@@ -18,10 +18,19 @@ interface user{
     isGoogle:boolean,
     resume_url:string,
     skills:[string],
-    qualification:string
-    experience:[object]
+    qualification:string,
+    experience:[{
+        experiencefield:string,
+        duration:number,
+        responisibilites:string
+    }]
 
 
 }
 
 export default user
+export interface experienceData{
+    experiencefield:string,
+        duration:string,
+        responisibilites:string
+}

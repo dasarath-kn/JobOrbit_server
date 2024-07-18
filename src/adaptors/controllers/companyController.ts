@@ -228,6 +228,28 @@ class CompanyController {
             res.status(500).json({ success: false, message: "Internal server error" })
         }
         }
+        async editProfile(req:Request,res:Response){
+            try {
+                const {id}=req
+                const {companyname,city,industry,address,website_url,about}=req.body
+                const companyData ={companyname,city,industry,address,website_url,about,img_url:''}
+                 const file =req.file?.path
+                let editProfile =await this.companyusecase.updateProfile(id as string,companyData as company,file as string)
+                if(editProfile.success){
+                    const {companyData}=editProfile
+                    res.status(200).json({success:true,message:editProfile.message,companyData})
+                }else{
+                    res.status(400).json({success:false,message:editProfile.message})
+                    
+                }            
+                
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({success:false,message:"Internal server error"})
+                
+            }
+        }
+       
 }
 
 

@@ -1,5 +1,6 @@
 import { Request,Response } from "express"
 import AdminUsecase from "../../useCases/adminUsecase";
+import subscriptions from "../../entities/subscriptions";
 class adminController {
     private adminUsecases:AdminUsecase
     constructor(adminUsecases:AdminUsecase){
@@ -82,5 +83,72 @@ class adminController {
         }
     }
     
+    async subscription(req:Request,res:Response){
+        try {
+            let {subscriptiontype,limit,month,price}=req.body
+            let subscriptionData ={subscriptiontype,limit,month,price}
+            console.log(
+            subscriptionData
+
+            );
+            
+            let save = await this.adminUsecases.savesubscriptionPlan(subscriptionData as subscriptions)
+            if(save.Success){
+                res.status(200).json({success:true,message:save.message})
+            }else{
+                res.status(400).json({success:false,message:save.message})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+              
+        }
+    }
+
+    async getSubscriptionPlans(req:Request,res:Response){
+        try {
+            let subscriptionData = await this.adminUsecases.subscriptionPlans()
+            if(subscriptionData.success){
+                const {subscriptionplan}=subscriptionData
+            res.status(200).json({success:true,message:subscriptionData.message,subscriptionplan})
+            }else{
+                res.status(400).json({success:false,message:subscriptionData.message})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+        }
+    }
+    async deletePlan(req:Request,res:Response){
+        try {
+             let {id} =req.query
+            let removed = await this.adminUsecases.removePlan(id as string)
+            if(removed?.success){
+                res.status(200).json({success:true,message:removed.message})
+            }else{
+                res.status(400).json({success:false,message:removed?.message})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+        }
+    }
+    async listUnlistPlan(req:Request,res:Response){
+        try {
+            const {id,message} =req.body
+            let manage = await this.adminUsecases.managePlans(id,message)
+            if(manage.success){
+                res.status(200).json({success:true,message:manage.message})
+            }else{
+                res.status(400).json({success:false,message:manage.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})  
+        }
+    }
 }
 export default adminController

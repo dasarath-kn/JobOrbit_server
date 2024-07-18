@@ -257,6 +257,28 @@ class CompanyUsecase {
             throw error
         }
     }
+    async updateProfile(id: string, company: company, file: string) {
+        try {
+            if (file) {
+                let cloudinary = await this.cloudinary.uploadImage(file, "User Profile")
+                company.img_url = cloudinary
+            }
+
+
+            let updatedData = await this.companyRepo.updateProfile(id, company as company )
+            if (updatedData) {
+                let companyData = await this.companyRepo.getCompanydata(id)
+                return { success: true, message: "Company profile updated successfully", companyData }
+            } else {
+                return { success: false, message: "Failed to update company profile" }
+            }
+
+        } catch (error) {
+            console.error(error);
+            throw error
+
+        }
+    }
 
 }
 export default CompanyUsecase

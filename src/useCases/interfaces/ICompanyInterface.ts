@@ -15,6 +15,8 @@ interface ICompanyInterface {
     removeJob(id: string): Promise<boolean>
     savePosts(postData: Post): Promise<boolean>
     getPosts(id: string): Promise<Post[] | null>
+    updateProfile(id: string, company: company): Promise<boolean | null>
+
 
 }
 

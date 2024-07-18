@@ -1,4 +1,6 @@
-import user from "../entities/user";
+import { comment } from "../entities/comment";
+import { savedPost } from "../entities/savedPost";
+import user, { experienceData } from "../entities/user";
 import userRepository from "../infrastructure/repositories/userRepositories";
 import Cloudinary from "../infrastructure/utils/cloudinary";
 import HashPassword from "../infrastructure/utils/hashedPassword";
@@ -62,7 +64,8 @@ class userUsecase {
                     }
                     else {
                         let token = await this.jwttoken.generateToken(userExistdata._id, "user")
-                        return { success: true, userExistdata, message: "User logined successfully", token }
+                        let refreshtoken = await this.jwttoken.generateRefreshtoken(userExistdata._id,"user")
+                        return { success: true, userExistdata, message: "User logined successfully", token,refreshtoken }
                     }
                 }
                 else {
@@ -269,6 +272,117 @@ class userUsecase {
         }
     }
 
+    async postSave(postData:savedPost){
+        try {
+            let savePost =await this.userRepo.savePost(postData)
+            if(savePost){
+                return {success:true,message:"Post saved to your collection"}
+            }else{
+                return {success:false,message:"Failed to save post"}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error 
+        }
+    }
+    async savedPosts(id:string){
+        try {
+            let savedPosts = await this.userRepo.getSavedpost(id)
+            if(savedPosts){
+                return {success:true,message:"Saved posts sent succcessfully",savedPosts}
+            }else{
+                return{success:false,message:"Failed to sent savedpost "}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
+
+    async shareComment(commentData:comment){
+        try {
+        const comment = await this.userRepo.postcomment(commentData)
+        if(comment){
+            return {success:true,message:"Comment added successfully"}
+        }else{
+            return {success:false,message:"Failed to add comment"}
+        }
+            
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
+    async comments(post_id:string){
+        try {
+            const comments =await this.userRepo.getcomment(post_id)
+            if(comments){
+                return {success:true,message:"Comments sent successfully",comments}
+            }
+            else{
+                return {success:false,message:"Failed to sent comments"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async jobDetails(job_id:string){
+        try {
+            let jobDetails = await this.userRepo.findJobdetails(job_id)
+            if(jobDetails){
+                return {success:true,message:"Jobdetails sent successfully",jobDetails}
+            }else{
+                return {success:false,message:"Failed to send jobdetails"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async experience(experienceData:experienceData,id:string){
+        try {
+            
+            let experience = await this.userRepo.addExperience(experienceData as experienceData,id as string)
+            if(experience){
+                return {success:true,message:'User experience added successfully'}
+            }else{
+                return {success:false,message:'Failed to add user experience'}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
+    async jobApplication(job_id:string,user_id:string){
+        try {
+            let job = await this.userRepo.applyJob(job_id,user_id)
+            if(job){
+                return {success:true,message:"Job applied successfully"}
+            }else{
+                return {success:false,message:'Failed to apply job'}
+
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
+    async subscriptionPlans(){
+        try {
+            let subscriptionplan = await this.userRepo.getsubscriptionplan()
+            if(subscriptionplan){
+                return {success:true,message:"Subscription plans sent successfully",subscriptionplan}
+            }else{
+                return {success:false,message:"Failed to sent subscription"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 }
 
 export default userUsecase

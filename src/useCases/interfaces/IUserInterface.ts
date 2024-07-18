@@ -1,7 +1,11 @@
+import { comment } from "../../entities/comment";
 import jobs from "../../entities/jobs";
 import { Post } from "../../entities/posts";
-import user from "../../entities/user";
+import { savedPost } from "../../entities/savedPost";
+import subscriptions from "../../entities/subscriptions";
+import user, { experienceData } from "../../entities/user";
 interface IUserInterface {
+    findUserById(id:string):Promise<user|null>
     findUserByEmail(email: string): Promise<user | null>
     saveUser(user: user): Promise<user | null>
     verifyUser(email: string): Promise<boolean>
@@ -15,6 +19,15 @@ interface IUserInterface {
     getPosts(): Promise<Post[] | null>
     likePost(post_id: string, user_id: string): Promise<boolean | null>
     unlikePost(post_id: string, user_id: string): Promise<boolean | null>
+    savePost(postData: savedPost): Promise<boolean>
+    getSavedpost(id: string): Promise<savedPost[] | null>
+    postcomment(commentData: comment): Promise<boolean>
+    getcomment(id: string): Promise<comment[] | null>
+    findJobdetails(id: string): Promise<jobs | null>
+    addExperience(experienceData:experienceData,id:string): Promise<boolean >
+    applyJob(job_id:string,user_id:string): Promise<boolean >
+    getsubscriptionplan(): Promise<subscriptions[] | null>
+
 }
 
 

@@ -1,13 +1,30 @@
+import { comment } from "../../entities/comment";
 import jobs from "../../entities/jobs";
 import otp from "../../entities/otp";
 import { Post } from "../../entities/posts";
-import user from "../../entities/user";
+import { savedPost } from "../../entities/savedPost";
+import subscriptions from "../../entities/subscriptions";
+import user, { experienceData } from "../../entities/user";
 import IUserInterface from '../../useCases/interfaces/IUserInterface'
+import commentModel from "../database/commentModel";
 import jobModel from "../database/jobModel";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
+import postSavedModel from "../database/savedPostModel";
+import subscriptionModel from "../database/subscription";
 import userModel from "../database/userModel";
 class userRepository implements IUserInterface {
+    async findUserById(id: string): Promise<user | null> {
+        try {
+            let userData = await userModel.findOne({ _id: id })
+            return userData ? userData : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("unable to find userdata");
+
+        }
+    }
 
     async findUserByEmail(email: string): Promise<user | null> {
         try {
@@ -154,8 +171,6 @@ class userRepository implements IUserInterface {
     }
     async likePost(post_id: string, user_id: string): Promise<boolean | null> {
         try {
-            console.log(user_id,"dfdf");
-            
             let liked = await postModel.updateOne({ _id: post_id }, { $addToSet: { like: user_id } })
             return liked.acknowledged ? liked.acknowledged : null
 
@@ -171,6 +186,85 @@ class userRepository implements IUserInterface {
         } catch (error) {
             console.error(error);
             throw new Error(`Unable to unlike post`)
+        }
+    }
+    async savePost(postData: savedPost): Promise<boolean> {
+        try {
+            let saved = new postSavedModel(postData)
+            await saved.save()
+            return true
+        } catch (error) {
+            console.error(error);
+            throw new Error(`Unable to save post`)
+        }
+    }
+    async getSavedpost(id: string): Promise<savedPost[] | null> {
+        try {
+            let savedPost = await postSavedModel.find({ user_id: id })
+            return savedPost ? savedPost : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error(`Unable to get savedpost`)
+        }
+    }
+    async postcomment(commentData: comment): Promise<boolean> {
+        try {
+            const postcomment = new commentModel(commentData)
+            await postcomment.save()
+            return true
+        } catch (error) {
+            console.error(error);
+            throw new Error(`Unable to post comment`)
+        }
+
+    }
+    async getcomment(id: string): Promise<comment[] | null> {
+        try {
+            const comments = await commentModel.find({ post_id: id }).populate('user_id')
+            return comments ? comments : null
+        } catch (error) {
+            console.error(error);
+            throw new Error(`Unable to find comments`)
+        }
+    }
+    async findJobdetails(id: string): Promise<jobs | null> {
+        try {
+            let jobs = await jobModel.findOne({ _id: id }).populate('company_id')
+            return jobs ? jobs : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error('Unable to find job')
+        }
+    }
+    async addExperience(experienceData: experienceData, id: string): Promise<boolean> {
+        try {
+            let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData } })
+            return experience.acknowledged
+
+        } catch (error) {
+            console.error(error);
+            throw new Error('Unable to save user experience')
+        }
+    }
+    async applyJob(job_id: string, user_id: string): Promise<boolean> {
+        try {
+            let job = await jobModel.updateOne({_id:job_id},{$addToSet:{applicants_id:user_id}})
+            return job.acknowledged
+        } catch (error) {
+            console.error(error);
+            throw new Error('Unable to apply user for job')
+        }
+    }
+    async getsubscriptionplan(): Promise<subscriptions[] | null> {
+        try {
+            let plans = await subscriptionModel.find({unlist:false})
+            return plans ? plans : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to get subscriptiondetails")
         }
     }
 }
