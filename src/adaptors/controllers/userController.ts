@@ -5,6 +5,7 @@ import Cloudinary from "../../infrastructure/utils/cloudinary";
 import mongoose from "mongoose";
 import { savedPost } from "../../entities/savedPost";
 import { comment } from "../../entities/comment";
+import subscriptedUser from "../../entities/subscribedUser";
 class userController {
     private userUsecases :userUsecase
     private Cloudinary:Cloudinary
@@ -345,8 +346,9 @@ class userController {
         async applyJob(req:Request,res:Response){
             try {
                 const {id} =req
-                const {job_id} =req.body
-                // console.log(job_id);
+                const {job_id} =req.query
+                console.log("job_id:",job_id,"userid:",id);
+                
                 
                 const applyJob = await this.userUsecases.jobApplication(job_id,id as string)
                 if(applyJob.success){
@@ -373,6 +375,62 @@ class userController {
             } catch (error) {
                 console.error(error);
                 res.status(500).json({success:false,message:"Internal server error"})
+            }
+        }
+        async paysubscriptionplan(req:Request,res:Response){
+        try {
+            const {price} =req.body
+            const {id}=req
+            console.log(price);
+            const subscriptionData={user_id:id,session_id:'',plan_id:price}
+        
+            const payment =await this.userUsecases.subscriptionPayment(price,subscriptionData as subscriptedUser)
+            if(payment.success){
+                const {payment_id}=payment
+                res.status(200).json({success:true,payment_id})
+            }else{
+                res.status(400).json({success:false})
+            }
+            
+        } catch (error) {
+            console.error(error);
+                res.status(500).json({success:false,message:"Internal server error"})
+        }
+        }
+
+        async webhook(req:Request,res:Response){
+            try {
+               const data =req.body
+
+               const webhook = await this.userUsecases.updateSubscribedUsers(data as any)
+                if(webhook?.success){
+                    res.status(200).json({success:true,message:webhook.message})
+                }else{
+                    res.status(400).json({success:false,message:webhook?.message})
+
+                }
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({success:false,message:"Internal server error"})
+ 
+            }
+        }
+        async findSubscribedUser(req:Request,res:Response){
+            try {
+                const {id} =req
+                
+                const findSubscribedUser = await this.userUsecases.subscribedUserdetails(id as string)
+                
+                if(findSubscribedUser.success){
+                    const {subscribedUser} =findSubscribedUser
+                    res.status(200).json({success:true,message:findSubscribedUser.messsage,subscribedUser})
+                }else{
+                    res.status(400).json({success:false,message:findSubscribedUser.messsage})
+                }
+            } catch (error) {
+                console.log(error);
+                res.status(500).json({success:false,message:"Internal server error"})
+   
             }
         }
     }

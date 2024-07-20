@@ -3,6 +3,7 @@ import jobs from "../../entities/jobs";
 import otp from "../../entities/otp";
 import { Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
+import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData } from "../../entities/user";
 import IUserInterface from '../../useCases/interfaces/IUserInterface'
@@ -11,6 +12,7 @@ import jobModel from "../database/jobModel";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
 import postSavedModel from "../database/savedPostModel";
+import subscribedModel from "../database/subscribedUsersModel";
 import subscriptionModel from "../database/subscription";
 import userModel from "../database/userModel";
 class userRepository implements IUserInterface {
@@ -250,7 +252,7 @@ class userRepository implements IUserInterface {
     }
     async applyJob(job_id: string, user_id: string): Promise<boolean> {
         try {
-            let job = await jobModel.updateOne({_id:job_id},{$addToSet:{applicants_id:user_id}})
+            let job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: user_id } })
             return job.acknowledged
         } catch (error) {
             console.error(error);
@@ -259,12 +261,58 @@ class userRepository implements IUserInterface {
     }
     async getsubscriptionplan(): Promise<subscriptions[] | null> {
         try {
-            let plans = await subscriptionModel.find({unlist:false})
+            let plans = await subscriptionModel.find({ unlist: false })
             return plans ? plans : null
 
         } catch (error) {
             console.error(error);
             throw new Error("Unable to get subscriptiondetails")
+        }
+    }
+    async findPlanbyId(id: string): Promise<subscriptions | null> {
+        try {
+            let subscriptionData = await subscriptionModel.findOne({ _id: id })
+            return subscriptionData ? subscriptionData : null
+
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to get subscriptiondetails")
+        }
+    }
+    async savesubscribedUsers(subscribedData: subscriptedUser): Promise<boolean> {
+        try {
+            let saved = new subscribedModel(subscribedData)
+            await saved.save()
+            return true
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to save subscribed users")
+        }
+    }
+    async updatesubscribedUsers(id: string, status: string): Promise<boolean> {
+        try {
+            if (status == 'success') {
+                let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: true } })
+                return updated.acknowledged
+            } else {
+                let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: false } })
+                return updated.acknowledged
+            }
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to update subscribed users")
+        }
+    }
+    async findSubscribedUserById(id: string): Promise<subscriptedUser | null> {
+        try {
+            let user = await subscribedModel.findOne({ user_id: id }).populate('user_id').populate('plan_id')
+           
+            return user ? user : null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find subscribed user")
         }
     }
 }

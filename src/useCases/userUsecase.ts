@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import { comment } from "../entities/comment";
 import { savedPost } from "../entities/savedPost";
 import user, { experienceData } from "../entities/user";
@@ -8,6 +9,8 @@ import Jwt from "../infrastructure/utils/jwtToken";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
 import Otpgenerator from "../infrastructure/utils/otpGenerator";
 import jwt from 'jsonwebtoken';
+import StripePayment from "../infrastructure/utils/stripe";
+import subscriptedUser from "../entities/subscribedUser";
 class userUsecase {
     private userRepo: userRepository;
     private hashPassword: HashPassword
@@ -15,13 +18,15 @@ class userUsecase {
     private nodeMailer: NodeMailer
     private jwttoken: Jwt
     private cloundinary: Cloudinary
-    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer, jwttoken: Jwt, cloudinary: Cloudinary) {
+    private stripe:StripePayment
+    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer, jwttoken: Jwt, cloudinary: Cloudinary,stripe:StripePayment) {
         this.userRepo = userRepo
         this.hashPassword = hashPassword
         this.otpGenerator = otpGenerator
         this.nodeMailer = nodeMailer
         this.jwttoken = jwttoken
         this.cloundinary = cloudinary
+        this.stripe =stripe
     }
 
     async findUser(userData: user) {
@@ -383,6 +388,73 @@ class userUsecase {
             throw error
         }
     }
+    async subscriptionPayment(price:string,subscribedData:subscriptedUser){
+        try {
+            console.log(price);
+            
+            let payment_id = await this.stripe.createCheckoutSession(price)
+            if(payment_id){
+                subscribedData.session_id =payment_id
+                let save = await this.userRepo.savesubscribedUsers(subscribedData)
+                if(save){
+                    return {success:true,message:"Payment id sent successfully",payment_id}
+
+                }else{
+                    return {success:false,message:"Failed to sent payment id"}
+ 
+                }
+        }else{
+            return {success:false,message:'Failed to complete transaction'}
+           }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async updateSubscribedUsers(datas: any) {
+        try {
+          switch (datas.type) {
+            case 'checkout.session.completed':
+              const session = datas.data.object;
+              const id = session.id;
+              const message = "success";
+              const update = await this.userRepo.updatesubscribedUsers(id, message);
+              if (update) {
+                return { success: true, message: 'Updated successfully' };
+              } else {
+                return { success: false, message: "Failed to update" };
+              }
+      
+            case 'checkout.session.async_payment_failed':
+              console.log("Payment Failed");
+              return { success: false, message: "Payment failed" }; // Provide a response for this case
+      
+            default:
+              console.log(`Unhandled event type: ${datas.type}`);
+              return { success: false, message: `Unhandled event type: ${datas.type}` }; // Provide a response for unhandled event types
+          }
+        } catch (error) {
+          console.error(error);
+          throw new Error("Error updating subscribed users"); // Provide a clearer error message
+        }
+      }
+      async subscribedUserdetails(id:string){
+        try {
+            let subscribedUser= await this.userRepo.findSubscribedUserById(id)
+            if(subscribedUser){
+                return {success:true,messsage:'Subscribed User details sent successfully',subscribedUser}
+
+            }else{
+                return {success:false,messsage:'Subscribed User details sent failed'}
+
+            }
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+      }
+      
 }
 
 export default userUsecase

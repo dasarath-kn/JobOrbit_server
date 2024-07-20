@@ -2,10 +2,11 @@ import { comment } from "../../entities/comment";
 import jobs from "../../entities/jobs";
 import { Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
+import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData } from "../../entities/user";
 interface IUserInterface {
-    findUserById(id:string):Promise<user|null>
+    findUserById(id: string): Promise<user | null>
     findUserByEmail(email: string): Promise<user | null>
     saveUser(user: user): Promise<user | null>
     verifyUser(email: string): Promise<boolean>
@@ -24,10 +25,13 @@ interface IUserInterface {
     postcomment(commentData: comment): Promise<boolean>
     getcomment(id: string): Promise<comment[] | null>
     findJobdetails(id: string): Promise<jobs | null>
-    addExperience(experienceData:experienceData,id:string): Promise<boolean >
-    applyJob(job_id:string,user_id:string): Promise<boolean >
+    addExperience(experienceData: experienceData, id: string): Promise<boolean>
+    applyJob(job_id: string, user_id: string): Promise<boolean>
     getsubscriptionplan(): Promise<subscriptions[] | null>
-
+    findPlanbyId(id: string): Promise<subscriptions | null>
+    savesubscribedUsers(subscribedData:subscriptedUser):Promise<boolean>
+    updatesubscribedUsers(id:string,status:string):Promise<boolean>
+    findSubscribedUserById(id:string):Promise<subscriptedUser|null>
 }
 
 
