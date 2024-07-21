@@ -219,6 +219,19 @@ class userUsecase {
 
         }
     }
+    async manageSkill(skill:[],id:string,percentage:number){
+        try {
+            let updateSkill =await this.userRepo.updateSkill(skill,id,percentage)
+            if(updateSkill){
+                return {success:true,message:"Skill added successfully"}
+            }else{
+                return {success:false,message:"Failed to add skill"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
     async jobs() {
         try {
             let jobs = await this.userRepo.viewjobs()

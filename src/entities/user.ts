@@ -16,6 +16,7 @@ interface user{
     github_url:string,
     portfolio_url:string,
     isGoogle:boolean,
+    percentage:number
     resume_url:string,
     skills:[string],
     qualification:string,

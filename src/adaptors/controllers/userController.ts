@@ -193,6 +193,23 @@ class userController {
             
         }
     }
+    async addSkills(req:Request,res:Response){
+        try {
+            const {skill,percentage} =req.body
+            const {id} =req
+            let addskills = await this.userUsecases.manageSkill(skill,id as string,percentage as number)
+            if(addskills.success){
+                res.status(200).json({success:true,message:addskills.message})
+            }else{
+                res.status(400).json({success:false,message:addskills.message})
+            }
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"}) 
+        }
+    }
+
 
     async getjobs(req:Request,res:Response){
         try {

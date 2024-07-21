@@ -16,6 +16,7 @@ interface IUserInterface {
     saveUserdata(user: user): Promise<user | null>
     resetPassword(user: user): Promise<boolean | null>
     updateProfile(id: string, user: user): Promise<boolean | null>
+    updateSkill(skill:[],id:string,percentage:number):Promise<boolean>
     viewjobs(): Promise<jobs[] | null>
     getPosts(): Promise<Post[] | null>
     likePost(post_id: string, user_id: string): Promise<boolean | null>

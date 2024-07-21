@@ -315,6 +315,27 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to find subscribed user")
         }
     }
+    async updateSkill(skill: string[], id: string, percentage: number): Promise<boolean> {
+        try {
+            let updateResult;
+            if (percentage === 15) {
+                updateResult = await userModel.updateOne(
+                    { _id: id },
+                    { $addToSet: { skills: { $each: skill } }, $inc: { percentage: percentage } }
+                );
+            } else {
+                updateResult = await userModel.updateOne(
+                    { _id: id },
+                    { $addToSet: { skills: { $each: skill } }, $set: { percentage: percentage } }
+                );
+            }
+            return updateResult.acknowledged;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to update user skill");
+        }
+    }
+    
 }
 
 

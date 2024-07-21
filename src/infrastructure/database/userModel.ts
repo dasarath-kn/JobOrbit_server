@@ -74,6 +74,11 @@ const userSchema:Schema<user> =new Schema({
       skills: {
         type: [String]
       },
+      percentage:{
+        type:Number,
+        default:25
+
+      },
       qualification: {
         type: String
       },
