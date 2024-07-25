@@ -7,7 +7,8 @@ interface jobs{
     requirements: string;
     qualification: string;
     type:string,
-    location:string
+    location:string,
+    skills:string,
     company_id:mongoose.Types.ObjectId;
     applicants_id:mongoose.Types.ObjectId[];
     time: Date;

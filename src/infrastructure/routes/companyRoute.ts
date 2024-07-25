@@ -34,6 +34,12 @@ companyRoute.delete('/deletejob',(req,res)=>companyController.deleteJob(req,res)
 companyRoute.post('/addpost',companyAuth,upload.any(),(req,res)=>companyController.addPost(req,res))
 companyRoute.get('/posts',companyAuth,upload.any(),(req,res)=>companyController.getPosts(req,res))
 companyRoute.post('/editprofile',companyAuth,upload.single("image"),(req,res)=>companyController.editProfile(req,res))
+companyRoute.patch('/uploaddocument',companyAuth,upload.single("image"),(req,res)=>companyController.uploadDocument(req,res))
+companyRoute.delete('/deletepost',companyAuth,(req,res)=>companyController.deletePost(req,res))
+companyRoute.get('/applicants',companyAuth,(req,res)=>companyController.jobApplications(req,res))
+companyRoute.route('/schedulejob')
+.post(companyAuth,(req,res)=>companyController.saveScheduledJobs(req,res))
+.get(companyAuth,(req,res)=>companyController.getScheduledJobs(req,res))
 
 
 export default companyRoute

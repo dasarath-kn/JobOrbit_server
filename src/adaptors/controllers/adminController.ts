@@ -150,5 +150,35 @@ class adminController {
             res.status(500).json({success:false,message:"Internal server error"})  
         }
     }
+    async getDashboard(req:Request,res:Response){
+        try {
+            let data = await this.adminUsecases.dashboard()
+            if(data.success){
+                const {dashboardData} =data
+                res.status(200).json({success:true,message:data.message,dashboardData})
+            }else{
+                res.status(400).json({success:false,message:data.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})  
+        
+        }
+
+    }
+    async getPostreportdata(req:Request,res:Response){
+        try {
+            const reportdata = await this.adminUsecases.postreport()
+            if(reportdata.message){
+                const {postReportData} =reportdata
+                res.status(200).json({success:true,message:reportdata.message,postReportData})
+            }else{
+                res.status(400).json({success:false,message:reportdata.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})  
+        }
+    }
 }
 export default adminController

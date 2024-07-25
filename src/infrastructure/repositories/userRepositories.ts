@@ -1,6 +1,7 @@
 import { comment } from "../../entities/comment";
 import jobs from "../../entities/jobs";
 import otp from "../../entities/otp";
+import postreport from "../../entities/postreport";
 import { Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
 import subscriptedUser from "../../entities/subscribedUser";
@@ -11,14 +12,19 @@ import commentModel from "../database/commentModel";
 import jobModel from "../database/jobModel";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
+import postReportModel from "../database/postReportModel";
 import postSavedModel from "../database/savedPostModel";
 import subscribedModel from "../database/subscribedUsersModel";
 import subscriptionModel from "../database/subscription";
 import userModel from "../database/userModel";
 class userRepository implements IUserInterface {
+        
+    
+    
+    
     async findUserById(id: string): Promise<user | null> {
         try {
-            let userData = await userModel.findOne({ _id: id })
+            let userData = await userModel.findOne({ _id: id }).populate('plan_id')
             return userData ? userData : null
 
         } catch (error) {
@@ -141,10 +147,18 @@ class userRepository implements IUserInterface {
 
         }
     }
-    async updateProfile(id: string, user: user): Promise<boolean> {
+    async updateProfile(id: string, user: user,percentage:number): Promise<boolean> {
         try {
+            if(percentage==15){
             let updated = await userModel.updateOne({ _id: id }, user, { new: true })
-            return updated.acknowledged
+            let percentageupdate =await userModel.updateOne({ _id: id },{$inc:{percentage:percentage}})
+            return updated.acknowledged}
+            else{
+                let updated = await userModel.updateOne({ _id: id }, user, { new: true })
+                let percentageupdate =await userModel.updateOne({ _id: id },{$set:{percentage:percentage}})
+
+                return updated.acknowledged
+            }
 
         } catch (error) {
             console.error(error);
@@ -240,19 +254,40 @@ class userRepository implements IUserInterface {
             throw new Error('Unable to find job')
         }
     }
-    async addExperience(experienceData: experienceData, id: string): Promise<boolean> {
+    async addExperience(experienceData: experienceData,percentage:number,id: string): Promise<boolean> {
         try {
-            let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData } })
-            return experience.acknowledged
+            if(percentage ===   15){
+                let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData },$inc:{percentage:percentage} })
+                return experience.acknowledged
+            }else{
+                let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData },$set:{percentage:percentage} })
+                return experience.acknowledged
+            }
 
         } catch (error) {
             console.error(error);
             throw new Error('Unable to save user experience')
         }
     }
+    async updateResume(id: string, resume_url: string, percentage: number): Promise<boolean> {
+        try {
+            if(percentage ===15){
+                let update = await userModel.updateOne({_id:id},{$set:{resume_url:resume_url},$inc:{percentage:percentage}})
+                return update.acknowledged
+            }else{
+                let update = await userModel.updateOne({_id:id},{$set:{resume_url:resume_url,percentage:percentage}})
+                return update.acknowledged
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw new Error('Unable to update user resume')
+        }
+    }
     async applyJob(job_id: string, user_id: string): Promise<boolean> {
         try {
             let job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: user_id } })
+            let jobCount = await userModel.updateOne({_id:user_id},{$inc:{jobapplied_Count:1}})
             return job.acknowledged
         } catch (error) {
             console.error(error);
@@ -294,6 +329,9 @@ class userRepository implements IUserInterface {
         try {
             if (status == 'success') {
                 let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: true } })
+                let plan = await subscribedModel.findOne({session_id:id})
+                const subscriptionPlan = await subscriptionModel.findOne({_id:plan?.plan_id})
+                const userUpdate = await userModel.updateOne({_id:plan?.user_id},{$set:{plan_id:subscriptionPlan?._id}})
                 return updated.acknowledged
             } else {
                 let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: false } })
@@ -333,6 +371,16 @@ class userRepository implements IUserInterface {
         } catch (error) {
             console.error(error);
             throw new Error("Unable to update user skill");
+        }
+    }
+  async  savePostReport(postreportData: postreport): Promise<Boolean> {
+        try {
+            let saved = new postReportModel(postreportData)
+            await saved.save()
+            return true
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to save postreport");
         }
     }
     

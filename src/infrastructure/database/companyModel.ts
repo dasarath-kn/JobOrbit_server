@@ -50,6 +50,13 @@ const company:Schema<company> =new Schema({
         admin_verified:{
             type:Boolean,
             default:false
+        },
+        document_url:{
+            type:String
+        },
+        percentage:{
+            type:Number,
+            default:25
         }
 }) 
 

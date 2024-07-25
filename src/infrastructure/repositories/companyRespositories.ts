@@ -1,9 +1,11 @@
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
+import jobShedule from "../../entities/jobScheduled";
 import { Post } from "../../entities/posts";
 import ICompanyInterface from "../../useCases/interfaces/ICompanyInterface";
 import companyModel from "../database/companyModel";
 import jobModel from "../database/jobModel";
+import JobScheduledModel from "../database/jobSheduled";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
 
@@ -168,7 +170,54 @@ class CompanyRepositories implements ICompanyInterface {
           throw new Error("Unable to update companydata")
       }
   }
+  async uploadDocument(id: string, document_url: string): Promise<boolean> {
+     try {
+      let upload = await companyModel.updateOne({_id:id},{$set:{document_url:document_url}})
+      return upload.acknowledged
+     } catch (error) {
+      console.error(error);
+      throw new Error("Unable to upload document")
+     }
+  }
+ async deletePost(post_id: string): Promise<boolean> {
+     try {
+      let remove = await postModel.deleteOne({_id:post_id})
+      return remove.acknowledged
+     } catch (error) {
+      console.error(error);
+      throw new Error("Unable to delete post")
+     }
+  }
+ async jobApplications(id: string): Promise<jobs[] | null> {
+     try {
+         let job = await jobModel.find({_id:id}).populate('applicants_id')
+         return job ?job :null
+     } catch (error) {
+      console.error(error);
+      throw new Error("Unable to get jobapplications")
+     }
+  }
 
+ async saveScheduledJobs(jobScheduleddata: jobShedule): Promise<boolean> {
+     try {
+       let scheduled = new JobScheduledModel(jobScheduleddata)
+       await scheduled.save()
+       return true
+     } catch (error) {
+      console.error(error);
+      throw new Error("Unable to save Schedule jobs")
+     }
+  }
+ async getScheduledJobs(job_id: string): Promise<jobShedule[] | null> {
+     try {
+      const scheduled = await JobScheduledModel.find({job_id:job_id})
+      return scheduled ?scheduled : null
+      
+     } catch (error) {
+      console.error(error);
+      throw new Error("Unable to get Schedule jobs")
+     }
+  }
 }
 
 export default CompanyRepositories

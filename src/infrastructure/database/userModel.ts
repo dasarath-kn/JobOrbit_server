@@ -1,7 +1,7 @@
 
-import {Schema,model} from "mongoose";
+import mongoose, {Schema,model} from "mongoose";
 import user from "../../entities/user";
-
+import cron from 'node-cron';
 const ExperienceSchema = new Schema({
     experiencefield: {
       type: String,
@@ -85,12 +85,40 @@ const userSchema:Schema<user> =new Schema({
       experience: {
         type: [ExperienceSchema],
         default: []
+      },
+      jobapplied_Count: {
+        type: Number,
+        default: 0
+      },
+      jobapplied_LastReset: {
+        type: Date,
+        default: Date.now
+      },
+      plan_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'subscription'
       }
     
 
 
 })
-
-
 const userModel = model<user>('user',userSchema)
 export default userModel
+
+cron.schedule('0 0 * * *', async () => { 
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  try {
+    const users = await userModel.find({ jobapplied_LastReset: { $lte: oneDayAgo } });
+
+    for (const user of users) {
+      user.jobapplied_Count = 0;
+      user.jobapplied_LastReset = new Date();
+      await user.save();
+    }
+
+    console.log(`Reset jobapplied_Count for ${users.length} users.`);
+  } catch (error) {
+    console.error('Error resetting jobapplied_Count:', error);
+  }
+});

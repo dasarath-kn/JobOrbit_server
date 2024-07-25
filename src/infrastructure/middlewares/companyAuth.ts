@@ -15,8 +15,7 @@ declare global {
 const companyAuth = async(req:Request,res:Response,next:NextFunction)=>{
     try {  
               
-        const authHeader = req.headers['authorization'] 
-        
+        const authHeader = req.headers['authorization']         
         if(!authHeader){
             return res.status(400).json({success:false,message:"Unauthorised Access "})
         }

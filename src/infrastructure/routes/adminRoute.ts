@@ -22,4 +22,7 @@ route('/getsubscriptionplan')
 .get((req,res)=>AdminController.getSubscriptionPlans(req,res))
 .delete((req,res)=>AdminController.deletePlan(req,res))
 .patch((req,res)=>AdminController.listUnlistPlan(req,res))
+adminRoute.get('/dashboarddata',(req,res)=>AdminController.getDashboard(req,res))
+adminRoute.get('/getpostdata',(req,res)=>AdminController.getPostreportdata(req,res))
+
 export default adminRoute

@@ -26,6 +26,23 @@ class Cloudinary implements ICloudinary{
             
         }
     }
+    async uploaddocuments(documents: any,folderName:string): Promise<string> {
+        try {            
+            const uploadResult = await cloudinary.uploader
+            .upload(
+                documents,{
+                folder: `${folderName}`,
+                resource_type:'raw'
+                }
+            )
+            return uploadResult.secure_url
+            
+        } catch (error) {
+            console.error("Error uploading document to cloudinary",error);
+            throw error
+            
+        }
+    }
 
     async uploadMultipleimages(images:[],folderName:string){
         try {

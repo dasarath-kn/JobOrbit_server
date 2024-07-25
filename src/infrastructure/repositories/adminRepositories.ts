@@ -1,9 +1,13 @@
 import admin from "../../entities/admin";
 import company from "../../entities/company";
+import dashboardData from "../../entities/dashboard";
+import postreport from "../../entities/postreport";
 import subscriptions from "../../entities/subscriptions";
 import user from "../../entities/user";
 import IAdminInterface, { CompanyDataResult, UserDataResult } from "../../useCases/interfaces/IAdminInterface";
 import companyModel from "../database/companyModel";
+import postReportModel from "../database/postReportModel";
+import subscribedModel from "../database/subscribedUsersModel";
 import subscriptionModel from "../database/subscription";
 import userModel from "../database/userModel";
 
@@ -21,15 +25,16 @@ class AdminRespositories implements IAdminInterface {
     }
     async getUserdatas(page: string): Promise<UserDataResult | null> {
         try {
+            
             let skipCount = Number(page) * 3
-            let Count: number = await companyModel.find().countDocuments()
-
+            let Count: number = await userModel.find().countDocuments()
+            
             let userData: user[] = await userModel.find({}).skip(skipCount).limit(3)
             if (userData.length === 0) {
                 return null;
             }
             return {
-                count: Math.round(Count / 3),
+                count: Math.ceil(Count / 3),
                 userDatas: userData
             }
         } catch (error) {
@@ -42,13 +47,15 @@ class AdminRespositories implements IAdminInterface {
         try {
             let skipCount = Number(page) * 3
             let Count: number = await companyModel.find().countDocuments()
-
+            console.log(Count);
+            
             let companyData: company[] = await companyModel.find().skip(skipCount).limit(3)
             if (companyData.length === 0) {
                 return null;
             }
+            
             return {
-                count: Math.round(Count / 3),
+                count: Math.ceil(Count / 3),
                 companyDatas: companyData
             }
         } catch (error) {
@@ -141,6 +148,28 @@ class AdminRespositories implements IAdminInterface {
         } catch (error) {
             console.error(error);
             throw new Error(`Unable to ${message} subscriptionplan`)
+        }
+    }
+    async getDashboard(): Promise<dashboardData> {
+        try {
+            const userCount =await userModel.find().countDocuments()
+            const companyCount =await companyModel.find().countDocuments()
+            const subscribedUsersCount =await subscribedModel.find().countDocuments()
+            const dashboardData ={userCount,companyCount,subscribedUsersCount}
+            return dashboardData
+            
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to get dashboard data")            
+        }
+    }
+  async  getPostreportdata(): Promise<postreport[] | null> {
+        try {
+            let postReportdata = await postReportModel.find().populate('user_id').populate('post_id')
+            return postReportdata ? postReportdata : null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to get reportedpostdata data")  
         }
     }
 }

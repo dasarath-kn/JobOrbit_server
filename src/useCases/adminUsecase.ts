@@ -156,7 +156,33 @@ class AdminUsecase {
             throw error
         }
     }
-    
+    async dashboard(){
+        try {
+            let dashboardData = await this.adminRepo.getDashboard()
+            if(dashboardData){
+                return {success:true,message:'Dashboard data sent successfully',dashboardData}
+            }else{
+                return {success:false,message:'Failed to sent dashboard data'}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
+    async postreport(){
+        try {
+            let postReportData = await this.adminRepo.getPostreportdata()
+            if(postReportData){
+                return {success:true,message:"Post report data sent successfully",postReportData}
+            }else{
+                return {success:false,message:"Failed to sent post report data"}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 }
 
 export default AdminUsecase

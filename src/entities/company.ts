@@ -14,7 +14,9 @@ interface company {
     is_blocked:boolean,
     website_url:string,
     is_verified:boolean,
-    admin_verified:boolean
+    admin_verified:boolean,
+    document_url:string,
+    percentage:number
  
 }
 

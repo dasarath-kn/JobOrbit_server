@@ -11,6 +11,7 @@ import Otpgenerator from "../infrastructure/utils/otpGenerator";
 import jwt from 'jsonwebtoken';
 import StripePayment from "../infrastructure/utils/stripe";
 import subscriptedUser from "../entities/subscribedUser";
+import postreport from "../entities/postreport";
 class userUsecase {
     private userRepo: userRepository;
     private hashPassword: HashPassword
@@ -197,7 +198,7 @@ class userUsecase {
             throw error
         }
     }
-    async updateProfile(id: string, user: user, file: string) {
+    async updateProfile(id: string, user: user, file: string,percentage:number) {
         try {
             if (file) {
                 let cloudinary = await this.cloundinary.uploadImage(file, "User Profile")
@@ -205,7 +206,7 @@ class userUsecase {
             }
 
 
-            let updatedData = await this.userRepo.updateProfile(id, user)
+            let updatedData = await this.userRepo.updateProfile(id, user,percentage)
             if (updatedData) {
                 let userData = await this.userRepo.getUserdata(id)
                 return { success: true, message: "User profile updated successfully", userData }
@@ -346,11 +347,17 @@ class userUsecase {
             throw error
         }
     }
-    async jobDetails(job_id:string){
+    async jobDetails(job_id:string,id:string){
         try {
             let jobDetails = await this.userRepo.findJobdetails(job_id)
             if(jobDetails){
-                return {success:true,message:"Jobdetails sent successfully",jobDetails}
+                let userData = await this.userRepo.findUserById(id)
+                if(userData){
+                    const {plan_id}=userData                    
+                return {success:true,message:"Jobdetails sent successfully",jobDetails,plan_id}
+                }else{
+                    return {success:false}
+                }
             }else{
                 return {success:false,message:"Failed to send jobdetails"}
             }
@@ -359,15 +366,34 @@ class userUsecase {
             throw error
         }
     }
-    async experience(experienceData:experienceData,id:string){
+    async experience(experienceData:experienceData,percentage:number,id:string){
         try {
             
-            let experience = await this.userRepo.addExperience(experienceData as experienceData,id as string)
+            let experience = await this.userRepo.addExperience(experienceData as experienceData,percentage as number,id as string)
             if(experience){
                 return {success:true,message:'User experience added successfully'}
             }else{
                 return {success:false,message:'Failed to add user experience'}
             }
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
+    async resume(id:string,file:string,percentage:number){
+        try {
+            let resume_url =''
+            if(file){
+                let cloudinary = await this.cloundinary.uploaddocuments(file,"Resume")
+                resume_url=cloudinary
+            }
+            let upload = await this.userRepo.updateResume(id,resume_url,percentage)
+            if(upload){
+                return {success:true,message:"Resume uploaded successfully"}
+            }else{
+                return {success:false,message:"Failed to upload resume"}
+            }
+            
         } catch (error) {
             console.error(error);
             throw error  
@@ -465,6 +491,21 @@ class userUsecase {
         } catch (error) {
             console.error(error);
             throw error  
+        }
+      }
+
+      async postReportsave(postreportData:postreport){
+        try {
+            let reportPost = await this.userRepo.savePostReport(postreportData)
+            if(reportPost){
+                return {success:true,message:"Post reported successfully"}
+
+            }else{
+                return {success:false,message:"Failed to report post"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error 
         }
       }
       

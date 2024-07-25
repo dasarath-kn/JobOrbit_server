@@ -1,5 +1,7 @@
 import admin from "../../entities/admin";
 import company from "../../entities/company";
+import dashboardData from "../../entities/dashboard";
+import postreport from "../../entities/postreport";
 import subscriptions from "../../entities/subscriptions";
 import user from "../../entities/user";
 export interface CompanyDataResult {
@@ -19,6 +21,8 @@ interface IAdminInterface {
     getsubscriptionplan(): Promise<subscriptions[] | null>
     deletePlan(id:string):Promise<boolean>
     listUnlistPlans(id:string,message:string):Promise<boolean>
+    getDashboard():Promise<dashboardData>
+    getPostreportdata():Promise<postreport[] |null>
 }
 
 export default IAdminInterface

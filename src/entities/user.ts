@@ -1,3 +1,5 @@
+import mongoose from "mongoose"
+
 interface user{
     _id:string,
     firstname?:string,
@@ -24,7 +26,10 @@ interface user{
         experiencefield:string,
         duration:number,
         responisibilites:string
-    }]
+    }],
+    jobapplied_Count:number,
+    plan_id:mongoose.Schema.Types.ObjectId,
+    jobapplied_LastReset:Date
 
 
 }

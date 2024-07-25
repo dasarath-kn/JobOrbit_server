@@ -32,8 +32,9 @@ router.patch('/resetpassword',(req,res)=>UserController.resetPassword(req,res))
 router.post('/editprofile',Auth,upload.single("image"),(req,res)=>UserController.editProfile(req,res))
 router.patch('/addskills',Auth,(req,res)=>UserController.addSkills(req,res))
 router.post('/addexperience',Auth,(req,res)=>UserController.addexperience(req,res))
+router.patch('/uploadresume',Auth,upload.single("image"),(req,res)=>UserController.uploadResume(req,res))
 router.get('/jobs',(req,res)=>UserController.getjobs(req,res))
-router.get('/viewjobdetails',(req,res)=>UserController.viewJobdetails(req,res))
+router.get('/viewjobdetails',Auth,(req,res)=>UserController.viewJobdetails(req,res))
 router.get('/posts',(req,res)=>UserController.getPosts(req,res))
 router.patch('/likeunlike',Auth,(req,res)=>UserController.likeUnlike(req,res))
 router.post('/savepost',Auth,(req,res)=>UserController.savePost(req,res))
@@ -45,6 +46,7 @@ router.get('/getsubscriptionplan',Auth,(req,res)=>UserController.getSubscription
 router.post('/paysubscriptionplan',Auth,(req,res)=>UserController.paysubscriptionplan(req,res))
 router.post('/webhook',(req,res)=>UserController.webhook(req,res))
 router.get('/subscribeduserdetails',Auth,(req,res)=>UserController.findSubscribedUser(req,res))
+router.post('/reportpost',Auth,(req,res)=>UserController.reportPost(req,res))
 
 
 

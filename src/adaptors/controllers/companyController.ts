@@ -3,6 +3,7 @@ import company from "../../entities/company"
 import CompanyUsecase from "../../useCases/companyUsecase"
 import { Response, Request } from "express"
 import jobs from "../../entities/jobs"
+import jobShedule from "../../entities/jobScheduled"
 class CompanyController {
     private companyusecase: CompanyUsecase
     constructor(companyusecase: CompanyUsecase) {
@@ -149,8 +150,8 @@ class CompanyController {
         try {
             const { id } = req
             const company_id = id
-            let { jobtitle, description, responsibilities, requirements, qualification, location, type } = req.body
-            const jobData = { description, responsibilities, requirements, qualification, jobtitle, location, type, company_id: new mongoose.Types.ObjectId(company_id) }
+            let { jobtitle, description, responsibilities, requirements, qualification, location, type,skills } = req.body
+            const jobData = { description, responsibilities, requirements,skills, qualification, jobtitle, location, type, company_id: new mongoose.Types.ObjectId(company_id) }
             let jobs = await this.companyusecase.savingJobs(jobData as jobs)
             if (jobs.success) {
                 res.status(200).json({ success: true, message: jobs.message })
@@ -249,6 +250,93 @@ class CompanyController {
                 
             }
         }
+        async uploadDocument(req:Request,res:Response){
+            try {
+                const {id}=req
+                const file = req.file?.path
+                const upload = await this.companyusecase.documentUpload(id as string,file as string)
+                if(upload.success){
+                    res.status(200).json({success:true,message:upload.message})
+                }else{
+                    res.status(400).json({success:false,message:upload.message})
+                }
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({success:false,message:"Internal server error"})  
+            }
+        }
+
+        async deletePost(req:Request,res:Response){
+            try {
+                let {id} =req.query
+                console.log(id);
+                
+                let removepost = await this.companyusecase.removePost(id as string)
+                if(removepost?.success){
+                    res.status(200).json({success:true,message:removepost.message})
+                }else{
+                    res.status(400).json({success:false,message:removepost?.message})
+                }
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({success:false,message:"Internal server error"})  
+            }
+        }
+
+        async jobApplications(req:Request,res:Response){
+            try {
+                const {job_id} =req.query
+                let appllications = await this.companyusecase.userAppliedJobs(job_id as string)
+                if(appllications.success){
+                    const {appliedUsers} =appllications
+                    res.status(200).json({success:true,message:appllications.message,appliedUsers})
+                }else{
+                    res.status(400).json({success:false,message:appllications.message})
+                }
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({success:false,message:"Internal server error"})  
+            } 
+            }
+
+            async saveScheduledJobs(req:Request,res:Response){
+                try {
+                    const {time,date,message,user_id,job_id} =req.body
+                    const {id} =req
+                    console.log(req.body);
+                    
+                    const jobScheduleddata ={time,date,message,user_id,job_id,company_id:id,scheduled_time:Date.now()}
+                    console.log(jobScheduleddata,"sdf");
+                    
+                    let saveData = await this.companyusecase.scheduledJobs(jobScheduleddata)
+                    if(saveData.success){
+                        res.status(200).json({success:true,message:saveData.message})
+                    }else{
+                        res.status(400).json({success:false,message:saveData.message})
+                    }
+                    
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({success:false,message:"Internal server error"})  
+                }
+            }
+
+            async getScheduledJobs(req:Request,res:Response){
+                try {
+                    const {job_id} =req.query
+                    let scheduledjob = await this.companyusecase.scheduled(job_id as string)
+                    if(scheduledjob.success){
+                        const {scheduledJobdata} =scheduledjob
+                        res.status(200).json({success:true,message:scheduledjob.message,scheduledJobdata})
+                    }else{
+                        res.status(400).json({success:false,message:scheduledjob.message})
+                    }
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({success:false,message:"Internal server error"})     
+                }
+            }
+        
        
 }
 

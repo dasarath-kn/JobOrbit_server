@@ -1,5 +1,7 @@
+import { schedule } from "node-cron";
 import company from "../entities/company";
 import jobs from "../entities/jobs";
+import jobShedule from "../entities/jobScheduled";
 import { Post } from "../entities/posts";
 import CompanyRepositories from "../infrastructure/repositories/companyRespositories";
 import userRepository from "../infrastructure/repositories/userRepositories";
@@ -279,6 +281,77 @@ class CompanyUsecase {
 
         }
     }
+    async documentUpload(id:string,file:string){
+        try {
+            let cloudinary=''
+            if(file){
+                cloudinary = await this.cloudinary.uploaddocuments(file,"Documents")
+            }
+            let upload = await this.companyRepo.uploadDocument(id,cloudinary)
+            if(upload){
+                return {success:true,message:"Document uploaded successfully"}
+            }else{
+                return {success:false,message:"Failed to upload documents"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async removePost(id:string){
+        try {
+            let remove = await this.companyRepo.deletePost(id)
+            if(remove){
+                return {success:true,message:"Post deleted successfully"}
+            }else{
+                return {success:false,message:"Unable to delete post "}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 
+    async userAppliedJobs(job_id:string){
+        try {
+            let appliedUsers = await this.companyRepo.jobApplications(job_id)
+            if(appliedUsers){
+                return {success:true,message:"Applied Users sent successfully",appliedUsers}
+            }else{
+                return {success:false,message:"Failed to sent userapplications"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error 
+        }
+    }
+    async scheduledJobs(jobScheduleddata:jobShedule){
+        try {
+            let scheduled = await this.companyRepo.saveScheduledJobs(jobScheduleddata)
+            if(scheduled){
+                return {success:true,message:"Schedule job sent successfully"}
+            }else{
+                return {success:false,message:"Failed to save scheduled job"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error 
+        }
+
+    }
+    async scheduled(job_id:String){
+        try {
+            let scheduledJobdata = await this.companyRepo.getScheduledJobs(job_id as string)
+            if(scheduledJobdata){
+                return {success:true,message:"Scheduled job data sent successfully",scheduledJobdata}
+            }else{
+                return {success:false,message:"Failed to sent scheduled data"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
 }
 export default CompanyUsecase
