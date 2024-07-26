@@ -22,6 +22,7 @@ interface ICompanyInterface {
     jobApplications(id: string): Promise<jobs[] | null>
     saveScheduledJobs(jobScheduleddata: jobShedule): Promise<boolean>
     getScheduledJobs(job_id: string): Promise<jobShedule[] | null>
+    findScheduledJobs(): Promise<jobShedule[] | null>
 }
 
 export default ICompanyInterface

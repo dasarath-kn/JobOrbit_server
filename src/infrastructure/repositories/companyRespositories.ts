@@ -218,6 +218,15 @@ class CompanyRepositories implements ICompanyInterface {
       throw new Error("Unable to get Schedule jobs")
      }
   }
+  async findScheduledJobs(): Promise<jobShedule[] | null> {
+     try {
+      let scheduled = await JobScheduledModel.find()
+      return scheduled ?scheduled :null
+     } catch (error) {
+      console.error(error);
+      throw new Error("Unable to find Schedule jobs")
+     }
+  }
 }
 
 export default CompanyRepositories

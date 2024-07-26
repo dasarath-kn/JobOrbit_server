@@ -498,7 +498,28 @@ class userController {
 
         }
     }
-}
+
+    async appliedJobs(req:Request,res:Response){
+        try {
+            const {id} =req
+            
+            let applied = await this.userUsecases.findAppliedJobsByUserid(id as string)
+            if(applied.success){
+                const {appliedJobs} =applied
+                res.status(200).json({success:true,message:applied.message,appliedJobs})
+            }else{
+                res.status(400).json({success:false,message:applied.message})
+            }
+            
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+
+        }
+    }
+
+    }
+
 
 
 export default userController

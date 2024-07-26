@@ -36,6 +36,7 @@ interface IUserInterface {
     updatesubscribedUsers(id:string,status:string):Promise<boolean>
     findSubscribedUserById(id:string):Promise<subscriptedUser|null>
     savePostReport(postreportData:postreport):Promise<Boolean>
+    findAppliedJobs(user_id:string):Promise<jobs[] |null>
 }
 
 

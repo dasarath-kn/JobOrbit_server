@@ -383,6 +383,18 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to save postreport");
         }
     }
+
+   async findAppliedJobs(user_id: string): Promise<jobs[] | null> {
+      try {
+        
+        let data = await jobModel.find({applicants_id:{$in:user_id}}).populate("company_id")
+        
+        return data ?data:null
+    } catch (error) {
+        console.error(error);
+        throw new Error("Unable to find applied jobs");
+      }  
+    }
     
 }
 

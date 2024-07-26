@@ -336,6 +336,21 @@ class CompanyController {
                     res.status(500).json({success:false,message:"Internal server error"})     
                 }
             }
+
+            async ScheduledJobs(req:Request,res:Response){
+                try {
+                    let scheduled = await this.companyusecase.getScheduledJobs()
+                    if(scheduled.success){
+                        const {scheduledJobs} =scheduled
+                        console.log(scheduled,"d");
+                        
+                        res.status(200).json({success:true,message:scheduled.message,scheduledJobs})
+                    }
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({success:false,message:"Internal server error"})     
+                }
+            }
         
        
 }

@@ -47,6 +47,7 @@ router.post('/paysubscriptionplan',Auth,(req,res)=>UserController.paysubscriptio
 router.post('/webhook',(req,res)=>UserController.webhook(req,res))
 router.get('/subscribeduserdetails',Auth,(req,res)=>UserController.findSubscribedUser(req,res))
 router.post('/reportpost',Auth,(req,res)=>UserController.reportPost(req,res))
+router.get('/appliedjobs',Auth,(req,res)=>UserController.appliedJobs(req,res))
 
 
 

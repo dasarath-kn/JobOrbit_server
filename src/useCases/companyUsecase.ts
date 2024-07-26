@@ -353,5 +353,19 @@ class CompanyUsecase {
             throw error  
         }
     }
+    async getScheduledJobs(){
+        try {
+            let scheduledJobs = await this.companyRepo.findScheduledJobs()
+            if(scheduledJobs){
+                return {success:true,message:"Scheduled jobs sent successfully",scheduledJobs}
+            }else{
+                return {success:false,message:"Failed to sent scheduled jobs"}
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
 }
 export default CompanyUsecase

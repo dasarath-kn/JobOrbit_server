@@ -40,6 +40,7 @@ companyRoute.get('/applicants',companyAuth,(req,res)=>companyController.jobAppli
 companyRoute.route('/schedulejob')
 .post(companyAuth,(req,res)=>companyController.saveScheduledJobs(req,res))
 .get(companyAuth,(req,res)=>companyController.getScheduledJobs(req,res))
+companyRoute.get('/findschedulejob',companyAuth,(req,res)=>companyController.ScheduledJobs(req,res))
 
 
 export default companyRoute

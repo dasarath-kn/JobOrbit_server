@@ -30,7 +30,7 @@ class Jwt {
             console.error(error);
 
         }
-    }
+    }   
     verifyJwttoken(token:string){
         try {
             const verify = jwt.verify(token,this.jwtsecretkey) as JwtPayload
@@ -49,24 +49,24 @@ class Jwt {
             } 
         }
     }
-    verifyRefreshToken(token: string): JwtPayload | null {
-        try {
-            const verify = jwt.verify(token, this.jwtsecretkey) as JwtPayload;
-            console.log('Decoded refresh token payload:', JSON.stringify(verify)); 
-            return verify;
-        } catch (error) {
-            if (error instanceof jwt.TokenExpiredError) {
-                console.error('Refresh token has expired:', error);
-                throw new Error('Refresh token has expired');
-            } else if (error instanceof jwt.JsonWebTokenError) {
-                console.error('Invalid refresh token:', error);
-                throw new Error('Invalid refresh token');
-            } else {
-                console.error('Error while verifying refresh token:', error);
-                throw new Error('Failed to verify refresh token');
-            }
-        }
-    }
+    // verifyRefreshToken(token: string): JwtPayload | null {
+    //     try {
+    //         const verify = jwt.verify(token, this.jwtsecretkey) as JwtPayload;
+    //         console.log('Decoded refresh token payload:', JSON.stringify(verify)); 
+    //         return verify;
+    //     } catch (error) {
+    //         if (error instanceof jwt.TokenExpiredError) {
+    //             console.error('Refresh token has expired:', error);
+    //             throw new Error('Refresh token has expired');
+    //         } else if (error instanceof jwt.JsonWebTokenError) {
+    //             console.error('Invalid refresh token:', error);
+    //             throw new Error('Invalid refresh token');
+    //         } else {
+    //             console.error('Error while verifying refresh token:', error);
+    //             throw new Error('Failed to verify refresh token');
+    //         }
+    //     }
+    // }
 }
 
 export default Jwt

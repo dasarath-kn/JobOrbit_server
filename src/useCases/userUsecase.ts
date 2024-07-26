@@ -508,6 +508,20 @@ class userUsecase {
             throw error 
         }
       }
+
+      async findAppliedJobsByUserid(user_id:string){
+        try {
+            const appliedJobs = await this.userRepo.findAppliedJobs(user_id)
+            if(appliedJobs){
+                return {success:true,message:"User Applied jobs sent successfully",appliedJobs}
+            }else{
+                return {success:false,message:"Failed to sent user applied jobs"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error 
+        }
+      }
       
 }
 
