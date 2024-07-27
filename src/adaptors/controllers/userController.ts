@@ -505,7 +505,7 @@ class userController {
             
             let applied = await this.userUsecases.findAppliedJobsByUserid(id as string)
             if(applied.success){
-                const {appliedJobs} =applied
+                        const {appliedJobs} =applied
                 res.status(200).json({success:true,message:applied.message,appliedJobs})
             }else{
                 res.status(400).json({success:false,message:applied.message})
@@ -517,7 +517,55 @@ class userController {
 
         }
     }
+    async getUsers(req:Request,res:Response){
+        try {
+            let userDetails= await this.userUsecases.findUsers()
+            if(userDetails.success){
+               let {userDatas} =userDetails;
+                
+                res.status(200).json({success:true,message:userDetails.message,userDatas})
+            }else{
+                res.status(400).json({success:false,message:userDetails?.message})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
+    async getComapnies(req:Request,res:Response){
+        try {
+            let companyDetails = await this.userUsecases.findCompanies()
+            if(companyDetails.success){
+                const {companyDatas} =companyDetails
+                res.status(200).json({success:true,messsage:companyDetails.message,companyDatas})
+            }else{
+                res.status(400).json({success:true,message:companyDetails.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
 
+    async getCompany(req:Request,res:Response){
+        try {
+            const {id}=req.query
+            let company = await this.userUsecases.viewCompany(id as string)
+            if(company.success){
+                const {companyData}=company
+                res.status(200).json({success:true,message:company.message,companyData})
+            }else{
+                res.status(400).json({success:true,message:company.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
     }
 
 

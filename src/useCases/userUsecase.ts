@@ -522,6 +522,48 @@ class userUsecase {
             throw error 
         }
       }
+      async findUsers() {
+        try {
+            let userDatas = await this.userRepo.getUserdatas()
+            if (userDatas) {
+                
+                return { success: true, message: "Userdatas sent suceessfully", userDatas }
+            } else {
+                return { success: false, message: "Failed to send userdata" }
+            }
+
+        } catch (error) {
+            console.error(error);
+            throw error
+
+        }
+    }
+    async findCompanies() {
+        try {
+            let companyDatas = await this.userRepo.getCompanydatas()
+            if (companyDatas) {
+               return { success: true, message: "Companydatas sent successfully",companyDatas }
+            } else {
+                return { success: false, message: "Failed to sent companydata" }
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async viewCompany(id:string){
+        try {
+            const companyData = await this.userRepo.findCompanyById(id)
+            if(companyData){
+                return{success:true,message:"Companydata sent successfully",companyData}
+            }else{
+                return{success:false,message:"Unable to sent companydata"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
       
 }
 

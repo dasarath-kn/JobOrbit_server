@@ -1,4 +1,5 @@
 import { comment } from "../../entities/comment";
+import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import postreport from "../../entities/postreport";
 import { Post } from "../../entities/posts";
@@ -37,6 +38,10 @@ interface IUserInterface {
     findSubscribedUserById(id:string):Promise<subscriptedUser|null>
     savePostReport(postreportData:postreport):Promise<Boolean>
     findAppliedJobs(user_id:string):Promise<jobs[] |null>
+    getUserdatas(): Promise<user[] | null>
+    getCompanydatas(): Promise<company[] | null>
+    findCompanyById(id:string):Promise<company|null>
+
 }
 
 

@@ -1,4 +1,5 @@
 import { comment } from "../../entities/comment";
+import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import otp from "../../entities/otp";
 import postreport from "../../entities/postreport";
@@ -7,8 +8,10 @@ import { savedPost } from "../../entities/savedPost";
 import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData } from "../../entities/user";
+import { UserDataResult } from "../../useCases/interfaces/IAdminInterface";
 import IUserInterface from '../../useCases/interfaces/IUserInterface'
 import commentModel from "../database/commentModel";
+import companyModel from "../database/companyModel";
 import jobModel from "../database/jobModel";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
@@ -18,10 +21,10 @@ import subscribedModel from "../database/subscribedUsersModel";
 import subscriptionModel from "../database/subscription";
 import userModel from "../database/userModel";
 class userRepository implements IUserInterface {
-        
-    
-    
-    
+
+
+
+
     async findUserById(id: string): Promise<user | null> {
         try {
             let userData = await userModel.findOne({ _id: id }).populate('plan_id')
@@ -147,15 +150,16 @@ class userRepository implements IUserInterface {
 
         }
     }
-    async updateProfile(id: string, user: user,percentage:number): Promise<boolean> {
+    async updateProfile(id: string, user: user, percentage: number): Promise<boolean> {
         try {
-            if(percentage==15){
-            let updated = await userModel.updateOne({ _id: id }, user, { new: true })
-            let percentageupdate =await userModel.updateOne({ _id: id },{$inc:{percentage:percentage}})
-            return updated.acknowledged}
-            else{
+            if (percentage == 15) {
                 let updated = await userModel.updateOne({ _id: id }, user, { new: true })
-                let percentageupdate =await userModel.updateOne({ _id: id },{$set:{percentage:percentage}})
+                let percentageupdate = await userModel.updateOne({ _id: id }, { $inc: { percentage: percentage } })
+                return updated.acknowledged
+            }
+            else {
+                let updated = await userModel.updateOne({ _id: id }, user, { new: true })
+                let percentageupdate = await userModel.updateOne({ _id: id }, { $set: { percentage: percentage } })
 
                 return updated.acknowledged
             }
@@ -254,13 +258,13 @@ class userRepository implements IUserInterface {
             throw new Error('Unable to find job')
         }
     }
-    async addExperience(experienceData: experienceData,percentage:number,id: string): Promise<boolean> {
+    async addExperience(experienceData: experienceData, percentage: number, id: string): Promise<boolean> {
         try {
-            if(percentage ===   15){
-                let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData },$inc:{percentage:percentage} })
+            if (percentage === 15) {
+                let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $inc: { percentage: percentage } })
                 return experience.acknowledged
-            }else{
-                let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData },$set:{percentage:percentage} })
+            } else {
+                let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $set: { percentage: percentage } })
                 return experience.acknowledged
             }
 
@@ -271,14 +275,14 @@ class userRepository implements IUserInterface {
     }
     async updateResume(id: string, resume_url: string, percentage: number): Promise<boolean> {
         try {
-            if(percentage ===15){
-                let update = await userModel.updateOne({_id:id},{$set:{resume_url:resume_url},$inc:{percentage:percentage}})
+            if (percentage === 15) {
+                let update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url }, $inc: { percentage: percentage } })
                 return update.acknowledged
-            }else{
-                let update = await userModel.updateOne({_id:id},{$set:{resume_url:resume_url,percentage:percentage}})
+            } else {
+                let update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } })
                 return update.acknowledged
             }
-            
+
         } catch (error) {
             console.error(error);
             throw new Error('Unable to update user resume')
@@ -287,7 +291,7 @@ class userRepository implements IUserInterface {
     async applyJob(job_id: string, user_id: string): Promise<boolean> {
         try {
             let job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: user_id } })
-            let jobCount = await userModel.updateOne({_id:user_id},{$inc:{jobapplied_Count:1}})
+            let jobCount = await userModel.updateOne({ _id: user_id }, { $inc: { jobapplied_Count: 1 } })
             return job.acknowledged
         } catch (error) {
             console.error(error);
@@ -329,9 +333,9 @@ class userRepository implements IUserInterface {
         try {
             if (status == 'success') {
                 let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: true } })
-                let plan = await subscribedModel.findOne({session_id:id})
-                const subscriptionPlan = await subscriptionModel.findOne({_id:plan?.plan_id})
-                const userUpdate = await userModel.updateOne({_id:plan?.user_id},{$set:{plan_id:subscriptionPlan?._id}})
+                let plan = await subscribedModel.findOne({ session_id: id })
+                const subscriptionPlan = await subscriptionModel.findOne({ _id: plan?.plan_id })
+                const userUpdate = await userModel.updateOne({ _id: plan?.user_id }, { $set: { plan_id: subscriptionPlan?._id } })
                 return updated.acknowledged
             } else {
                 let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: false } })
@@ -346,7 +350,7 @@ class userRepository implements IUserInterface {
     async findSubscribedUserById(id: string): Promise<subscriptedUser | null> {
         try {
             let user = await subscribedModel.findOne({ user_id: id }).populate('user_id').populate('plan_id')
-           
+
             return user ? user : null
         } catch (error) {
             console.error(error);
@@ -373,7 +377,7 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to update user skill");
         }
     }
-  async  savePostReport(postreportData: postreport): Promise<Boolean> {
+    async savePostReport(postreportData: postreport): Promise<Boolean> {
         try {
             let saved = new postReportModel(postreportData)
             await saved.save()
@@ -384,18 +388,59 @@ class userRepository implements IUserInterface {
         }
     }
 
-   async findAppliedJobs(user_id: string): Promise<jobs[] | null> {
-      try {
-        
-        let data = await jobModel.find({applicants_id:{$in:user_id}}).populate("company_id")
-        
-        return data ?data:null
-    } catch (error) {
-        console.error(error);
-        throw new Error("Unable to find applied jobs");
-      }  
+    async findAppliedJobs(user_id: string): Promise<jobs[] | null> {
+        try {
+
+            let data = await jobModel.find({ applicants_id: { $in: user_id } }).populate("company_id")
+
+            return data ? data : null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find applied jobs");
+        }
     }
-    
+    async getUserdatas(): Promise<user[] | null> {
+        try {
+
+
+
+            let userData: user[] = await userModel.find({
+                is_blocked: false, is_verified: true, is_admin: false
+            })
+            return userData ? userData : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find userdatas")
+
+        }
+    }
+    async getCompanydatas(): Promise<company[]| null> {
+        try {
+       
+            let companyData = await companyModel.find({
+                is_verified:true,admin_verified:true,is_blocked:false})
+
+           return companyData ?companyData:null
+           
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find companydatas")
+
+        }
+        
+    }
+   async findCompanyById(id: string): Promise<company | null> {
+        try {
+            let company = await companyModel.findOne({_id:id})
+            return company?company:null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find companydatas")
+
+        }   
+    }
+
 }
 
 

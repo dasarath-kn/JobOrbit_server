@@ -63,7 +63,7 @@ class AdminRespositories implements IAdminInterface {
             throw new Error("Unable to find companydatas")
 
         }
-    }
+      }
     async blockUnblockUsers(user_id: string, status: string): Promise<string> {
         try {
             if (status == "block") {

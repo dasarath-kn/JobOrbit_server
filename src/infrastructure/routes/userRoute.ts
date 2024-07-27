@@ -48,6 +48,10 @@ router.post('/webhook',(req,res)=>UserController.webhook(req,res))
 router.get('/subscribeduserdetails',Auth,(req,res)=>UserController.findSubscribedUser(req,res))
 router.post('/reportpost',Auth,(req,res)=>UserController.reportPost(req,res))
 router.get('/appliedjobs',Auth,(req,res)=>UserController.appliedJobs(req,res))
+router.get('/getusers',Auth,(req,res)=>UserController.getUsers(req,res))
+router.get('/getcompanies',(req,res)=>UserController.getComapnies(req,res))
+router.get('/getcompany',Auth,(req,res)=>UserController.getCompany(req,res))
+
 
 
 
