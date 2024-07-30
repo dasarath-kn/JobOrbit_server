@@ -37,6 +37,15 @@ interface user{
 export default user
 export interface experienceData{
     experiencefield:string,
-        duration:string,
+        mode:string,
+        start_date:Date,
+        end_date:Date,
         responisibilites:string
 }
+ export interface reviews {
+    rating_count:Number,
+    review:String,
+    user_id:mongoose.Schema.Types.ObjectId,
+    company_id:mongoose.Schema.Types.ObjectId,
+    time:Date
+ }

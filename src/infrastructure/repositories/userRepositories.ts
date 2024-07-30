@@ -7,7 +7,7 @@ import { Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
 import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
-import user, { experienceData } from "../../entities/user";
+import user, { experienceData, reviews } from "../../entities/user";
 import { UserDataResult } from "../../useCases/interfaces/IAdminInterface";
 import IUserInterface from '../../useCases/interfaces/IUserInterface'
 import commentModel from "../database/commentModel";
@@ -16,10 +16,12 @@ import jobModel from "../database/jobModel";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
 import postReportModel from "../database/postReportModel";
+import reviewandRatingModel from "../database/reviewRatingModel";
 import postSavedModel from "../database/savedPostModel";
 import subscribedModel from "../database/subscribedUsersModel";
 import subscriptionModel from "../database/subscription";
 import userModel from "../database/userModel";
+import { ObjectId } from 'mongodb';
 class userRepository implements IUserInterface {
 
 
@@ -415,30 +417,71 @@ class userRepository implements IUserInterface {
 
         }
     }
-    async getCompanydatas(): Promise<company[]| null> {
+    async getCompanydatas(): Promise<company[] | null> {
         try {
-       
-            let companyData = await companyModel.find({
-                is_verified:true,admin_verified:true,is_blocked:false})
 
-           return companyData ?companyData:null
-           
+            let companyData = await companyModel.find({
+                is_verified: true, admin_verified: true, is_blocked: false
+            })
+
+            return companyData ? companyData : null
+
         } catch (error) {
             console.error(error);
             throw new Error("Unable to find companydatas")
 
         }
-        
+
     }
-   async findCompanyById(id: string): Promise<company | null> {
+    async findCompanyById(id: string): Promise<company | null> {
         try {
-            let company = await companyModel.findOne({_id:id})
-            return company?company:null
+            let company = await companyModel.findOne({ _id: id })
+            return company ? company : null
         } catch (error) {
             console.error(error);
             throw new Error("Unable to find companydatas")
 
-        }   
+        }
+    }
+    async saveReviews(reviewData: reviews): Promise<boolean> {
+        try {
+            let reviewdata = new reviewandRatingModel(reviewData)
+            await reviewdata.save()
+            return true
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to save Reviews")
+
+        }
+    }
+    async getReviews(id:string): Promise<data | null> {
+        try {
+            const objectId = new ObjectId(id);
+            const reviewdata = await reviewandRatingModel.find({company_id:id}).populate('user_id')  
+            const count =[]   
+            for(let i=5;i>=1;i--){
+            const averageStar = await reviewandRatingModel.aggregate([{$match:{company_id:objectId,rating_count:i}},{$group:{_id:null,average:{$avg:"$rating_count"}}}])
+            
+            if(averageStar.length==0){
+                count.push(0)
+
+            }else{
+                count.push(averageStar[0].average)
+
+            }   
+        }
+            const data ={
+                review:reviewdata,counts:count
+            }
+            
+            return data ? data : null
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to get Reviews")
+
+        }
+
     }
 
 }

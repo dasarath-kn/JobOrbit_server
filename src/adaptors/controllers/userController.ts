@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import user from '../../entities/user'
+import user, { reviews } from '../../entities/user'
 import userUsecase from "../../useCases/userUsecase";
 import Cloudinary from "../../infrastructure/utils/cloudinary";
 import mongoose from "mongoose";
@@ -351,8 +351,8 @@ class userController {
         try {
             const { id } = req
 
-            const { experiencefield, duration, responsibilities, percentage } = req.body
-            const experienceData = { experiencefield, duration, responsibilities }
+            const { experiencefield,  mode,start_date,end_date, responsibilities, percentage } = req.body
+            const experienceData = { experiencefield, mode,start_date,end_date, responsibilities }
             const percentages = Number(percentage)
             let addexperience = await this.userUsecases.experience(experienceData as any, percentages, id as string)
             if (addexperience.success) {
@@ -559,6 +559,59 @@ class userController {
                 res.status(200).json({success:true,message:company.message,companyData})
             }else{
                 res.status(400).json({success:true,message:company.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
+
+    async findUser(req:Request,res:Response){
+        try {
+            const {id}=req.query
+            let user = await this.userUsecases.findUserdetails(id as string)
+            if(user?.success){
+                const {userData} =user
+                res.status(200).json({success:true,message:user.message,userData})
+            }else{
+                res.status(400).json({success:false,message:user?.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+            
+        }
+    }
+    async postReview(req:Request,res:Response){
+        try {
+            const {rating_count,review,company_id} =req.body
+            const {id} =req
+            const reviewData={rating_count,review,user_id:id,date:Date.now(),company_id}
+            const reviews = await this.userUsecases.addreviews(reviewData as reviews)
+            if(reviews.success){
+                res.status(200).json({success:true,message:reviews.message})
+            }else{
+                res.status(400).json({success:false,message:reviews.message})
+            }
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+              
+        }
+    }
+
+    async getReviews(req:Request,res:Response){
+        try {
+            const {id} =req.query
+            const reviewDatas = await this.userUsecases.reviews(id as string)
+            if(reviewDatas.success){
+                const {reviews} =reviewDatas
+                
+                res.status(200).json({success:true,message:reviewDatas.message,reviews})
+            }else{
+                res.status(400).json({success:false,messagwe:reviewDatas.message})
             }
         } catch (error) {
             console.error(error);

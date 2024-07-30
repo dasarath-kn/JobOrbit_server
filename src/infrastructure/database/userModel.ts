@@ -7,9 +7,17 @@ const ExperienceSchema = new Schema({
       type: String,
       required: true
     },
-    duration: {
+    mode: {
       type: String,
       required: true
+    },
+    start_date:{
+      type:Date,
+      required:true
+    },
+    end_date:{
+      type:Date
+
     },
     responsibilities: {
       type: String,

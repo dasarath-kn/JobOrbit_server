@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { comment } from "../entities/comment";
 import { savedPost } from "../entities/savedPost";
-import user, { experienceData } from "../entities/user";
+import user, { experienceData, reviews } from "../entities/user";
 import userRepository from "../infrastructure/repositories/userRepositories";
 import Cloudinary from "../infrastructure/utils/cloudinary";
 import HashPassword from "../infrastructure/utils/hashedPassword";
@@ -564,7 +564,50 @@ class userUsecase {
             throw error
         }
     }
-      
+
+    async findUserdetails(id:string){
+        try {
+            let userData = await this.userRepo.findUserById(id)
+            if(userData){
+                return{success:true,message:"Userdata sent successfully",userData}
+            }else{
+                return{success:false,message:"Failed to sent userdata"}
+            }
+            
+        } catch (error) {
+            
+        }
+    }
+    async addreviews(reviewData:reviews){
+        try {
+            const saveReview = await this.userRepo.saveReviews(reviewData)
+            if(saveReview){
+                return {success:true,message:"Review added successfully",}
+            }else{
+                return {success:false,message:"Failed to save review"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
+    async reviews(id :string){
+        try {
+            const reviews = await this.userRepo.getReviews(id as string)
+            
+            if(reviews){
+                console.log(reviews,"rrrrr ");
+                
+                return {success:true,message:"Reviews sent successfully",reviews}
+            }else{
+                return {success:false,message:"Failed to sent reviews"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error 
+        }
+    }
+    
 }
 
 export default userUsecase

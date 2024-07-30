@@ -51,7 +51,9 @@ router.get('/appliedjobs',Auth,(req,res)=>UserController.appliedJobs(req,res))
 router.get('/getusers',Auth,(req,res)=>UserController.getUsers(req,res))
 router.get('/getcompanies',(req,res)=>UserController.getComapnies(req,res))
 router.get('/getcompany',Auth,(req,res)=>UserController.getCompany(req,res))
-
+router.get('/getuser',Auth,(req,res)=>UserController.findUser(req,res))
+router.get('/getreviews',Auth,(req,res)=>UserController.getReviews(req,res))
+router.post('/savereviews',Auth,(req,res)=>UserController.postReview(req,res))
 
 
 
