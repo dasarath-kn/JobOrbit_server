@@ -494,9 +494,9 @@ class userUsecase {
         }
       }
 
-      async postReportsave(postreportData:postreport){
+      async postReportsave(post_id:string,postreportData:postreport){
         try {
-            let reportPost = await this.userRepo.savePostReport(postreportData)
+            let reportPost = await this.userRepo.savePostReport(post_id,postreportData)
             if(reportPost){
                 return {success:true,message:"Post reported successfully"}
 

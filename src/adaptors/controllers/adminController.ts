@@ -180,5 +180,21 @@ class adminController {
             res.status(500).json({success:false,message:"Internal server error"})  
         }
     }
+    async removePost(req:Request,res:Response){
+        try {
+            const {id}=req.query
+            console.log(id);
+            
+            const remove = await this.adminUsecases.deletePost(id as string)
+            if(remove.success){
+                res.status(200).json({success:true,message:remove.message})
+            }else{
+                res.status(400).json({success:false,message:remove.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})  
+        }
+    }
 }
 export default adminController

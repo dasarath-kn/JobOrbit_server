@@ -23,6 +23,8 @@ interface IAdminInterface {
     listUnlistPlans(id:string,message:string):Promise<boolean>
     getDashboard():Promise<dashboardData>
     getPostreportdata():Promise<postreport[] |null>
+    removePost(post_id:string):Promise<boolean>
+    deleteReportPost(post_id:string):Promise<boolean>
 }
 
 export default IAdminInterface

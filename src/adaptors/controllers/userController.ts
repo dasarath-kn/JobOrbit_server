@@ -481,11 +481,11 @@ class userController {
             const {id} =req
             const {post_id,report_message} =req.body
             const date =Date.now()
-            const postreportData ={post_id,user_id:id,report_message,date}
+            const postreportData ={user_id:id,report_message,date}
            
            console.log(postreportData,"ddlj");
            
-            let report = await this.userUsecases.postReportsave(postreportData as postreport)
+            let report = await this.userUsecases.postReportsave(post_id as string,postreportData as postreport)
             if(report.success){
                 res.status(200).json({success:true,message:report.message})
             }else{

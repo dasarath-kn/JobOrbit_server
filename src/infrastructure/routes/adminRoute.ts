@@ -24,5 +24,6 @@ route('/getsubscriptionplan')
 .patch((req,res)=>AdminController.listUnlistPlan(req,res))
 adminRoute.get('/dashboarddata',(req,res)=>AdminController.getDashboard(req,res))
 adminRoute.get('/getpostdata',(req,res)=>AdminController.getPostreportdata(req,res))
+adminRoute.delete('/removepost',(req,res)=>AdminController.removePost(req,res))
 
 export default adminRoute

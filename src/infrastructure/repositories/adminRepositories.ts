@@ -6,6 +6,7 @@ import subscriptions from "../../entities/subscriptions";
 import user from "../../entities/user";
 import IAdminInterface, { CompanyDataResult, UserDataResult } from "../../useCases/interfaces/IAdminInterface";
 import companyModel from "../database/companyModel";
+import postModel from "../database/postModel";
 import postReportModel from "../database/postReportModel";
 import subscribedModel from "../database/subscribedUsersModel";
 import subscriptionModel from "../database/subscription";
@@ -165,11 +166,29 @@ class AdminRespositories implements IAdminInterface {
     }
   async  getPostreportdata(): Promise<postreport[] | null> {
         try {
-            let postReportdata = await postReportModel.find().populate('user_id').populate('post_id')
+            let postReportdata = await postReportModel.find().populate('post_id').populate('user_datas.user_id')
             return postReportdata ? postReportdata : null
         } catch (error) {
             console.error(error);
             throw new Error("Unable to get reportedpostdata data")  
+        }
+    }
+    async removePost(post_id: string): Promise<boolean> {
+        try {
+            const remove = await postModel.deleteOne({_id:post_id})
+            return remove.acknowledged
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to  delete post")
+        }
+    }
+    async deleteReportPost(post_id: string): Promise<boolean> {
+        try {
+            const remove = await postReportModel.deleteOne({post_id:post_id})
+            return remove.acknowledged
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to delete reportpostdata")
         }
     }
 }

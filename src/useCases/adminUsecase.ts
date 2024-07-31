@@ -183,6 +183,26 @@ class AdminUsecase {
             throw error
         }
     }
+    async deletePost(post_id:string){
+        try {
+            const remove = await this.adminRepo.removePost(post_id)
+            if(remove){
+                const removeReportPost = await this.adminRepo.deleteReportPost(post_id)
+                if(removeReportPost){
+                    return {success:true,message:"Post deleted successfully"}
+
+                }else{
+                    return{success:false,message:"Failed to delete post"}
+    
+                }
+            }else{
+                return{success:false,message:"Failed to delete post"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error  
+        }
+    }
 }
 
 export default AdminUsecase

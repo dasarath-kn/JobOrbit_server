@@ -7,6 +7,10 @@ import { savedPost } from "../../entities/savedPost";
 import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData, reviews } from "../../entities/user";
+export interface data {
+    review:reviews
+    counts:[]
+}
 interface IUserInterface {
     findUserById(id: string): Promise<user | null>
     findUserByEmail(email: string): Promise<user | null>
@@ -36,13 +40,13 @@ interface IUserInterface {
     savesubscribedUsers(subscribedData: subscriptedUser): Promise<boolean>
     updatesubscribedUsers(id: string, status: string): Promise<boolean>
     findSubscribedUserById(id: string): Promise<subscriptedUser | null>
-    savePostReport(postreportData: postreport): Promise<Boolean>
+    savePostReport(post_id:string,postreportData: postreport): Promise<Boolean>
     findAppliedJobs(user_id: string): Promise<jobs[] | null>
     getUserdatas(): Promise<user[] | null>
     getCompanydatas(): Promise<company[] | null>
     findCompanyById(id: string): Promise<company | null>
     saveReviews(reviewData: reviews): Promise<boolean>
-    getReviews(id:string):Promise<reviews[] |null>
+    getReviews(id:string):Promise<data |null>
 
 }
 

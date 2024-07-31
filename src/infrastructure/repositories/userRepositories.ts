@@ -9,7 +9,7 @@ import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData, reviews } from "../../entities/user";
 import { UserDataResult } from "../../useCases/interfaces/IAdminInterface";
-import IUserInterface from '../../useCases/interfaces/IUserInterface'
+import IUserInterface, { data } from '../../useCases/interfaces/IUserInterface'
 import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
 import jobModel from "../database/jobModel";
@@ -22,6 +22,7 @@ import subscribedModel from "../database/subscribedUsersModel";
 import subscriptionModel from "../database/subscription";
 import userModel from "../database/userModel";
 import { ObjectId } from 'mongodb';
+
 class userRepository implements IUserInterface {
 
 
@@ -379,11 +380,19 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to update user skill");
         }
     }
-    async savePostReport(postreportData: postreport): Promise<Boolean> {
+    async savePostReport(post_id:string,postreportData: postreport): Promise<Boolean> {
         try {
-            let saved = new postReportModel(postreportData)
-            await saved.save()
-            return true
+            const report= await postReportModel.findOne({post_id:post_id})
+            if(!report){
+                const data ={post_id:post_id,user_datas:postreportData}
+                let saved = new postReportModel(data)
+                await saved.save()
+                return true
+
+            }else{
+               const update = await postReportModel.updateOne({post_id:post_id},{$addToSet:{user_datas:postreportData}}) 
+                return update.acknowledged
+            }
         } catch (error) {
             console.error(error);
             throw new Error("Unable to save postreport");
