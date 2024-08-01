@@ -619,6 +619,17 @@ class userController {
             
         }
     }
+    async connectUser(req:Request,res:Response){
+        try {
+
+            
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"})
+               
+        }
+    }
     }
 
 
