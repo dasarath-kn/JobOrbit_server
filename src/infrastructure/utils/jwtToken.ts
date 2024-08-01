@@ -13,7 +13,7 @@ class Jwt {
     generateToken(id:string,role:string){        
         try {
             const payload ={id,role}
-            const token = jwt.sign(payload,this.jwtsecretkey as string,{expiresIn:"1d"})            
+            const token = jwt.sign(payload,this.jwtsecretkey as string,{expiresIn:"1m"})            
             return token
         } catch (error) {
             console.error(error);
@@ -33,12 +33,14 @@ class Jwt {
     }   
     verifyJwttoken(token:string){
         try {
+
             const verify = jwt.verify(token,this.jwtsecretkey) as JwtPayload
+           
             return verify
             
-        } catch (error) {
+        } catch (error) {            
             if (error instanceof jwt.TokenExpiredError) {
-                console.error('Token has expired:', error);
+                  console.error('Token has expired:', error);
                 throw new Error('Token has expired');
             } else if (error instanceof jwt.JsonWebTokenError) {
                 console.error('Invalid token:', error);

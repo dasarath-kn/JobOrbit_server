@@ -14,15 +14,15 @@ declare global {
 
 const Auth = async(req:Request,res:Response,next:NextFunction)=>{
     try {  
-              
+                
         const authHeader = req.headers['authorization'] 
         
-        if(!authHeader){
+        if(!authHeader){            
             return res.status(400).json({success:false,message:"Unauthorised Access "})
         }
         const verify = jwt.verifyJwttoken(authHeader)   
         if(!verify || verify.role!=='user'){
-            console.log("sdfd");
+            console.log("sgddddddddddddddd");
             
             return res.status(401).json({success:false,message:"Unauthorised Access -Invalid token",blocked:true})
         }
@@ -34,19 +34,26 @@ const Auth = async(req:Request,res:Response,next:NextFunction)=>{
         
         return next();
     } catch (error:any) {
-        const refreshtoken =req.headers['refresh-token'];
-        if(refreshtoken){
-            const refreshtokenPayload =jwt.verifyRefreshToken(refreshtoken as string)
-            const newaccesstoken =jwt.generateToken(refreshtokenPayload?.id,'user')
-            const newRefreshtoken =jwt.generateRefreshtoken(refreshtokenPayload?.id,'user')
-            return res.status(200).json({success:true,newaccesstoken,newRefreshtoken})
+        if(error.message ==="Token has expired") {
+       return res.status(401).json({ success: false, message: "Token has expired" });
 
-        }
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ success: false, message: "Session has expired, please log in again." });
-        }
+        }       
         
-        return res.status(401).json({ success: false, message: "Unauthorized Access - Invalid token",blocked:true });
+        // const refreshtoken =req.headers['refresh-token'];
+        // if(refreshtoken){
+        //     const refreshtokenPayload =jwt.verifyRefreshToken(refreshtoken as string)
+        //     const newaccesstoken =jwt.generateToken(refreshtokenPayload?.id,'user')
+        //     const newRefreshtoken =jwt.generateRefreshtoken(refreshtokenPayload?.id,'user')
+        //     return res.status(200).json({success:true,newaccesstoken,newRefreshtoken})
+
+        // }
+        // if (error.name === 'TokenExpiredError') {
+        //     console.log("slfsldfjljfl");
+            
+        //     return res.status(401).json({ success: false, message: "Session has expired, please log in again." });
+        // }
+        
+        // return res.status(401).json({ success: false, message: "Unauthorized Access - Invalid token",blocked:true });
     
         
     }
