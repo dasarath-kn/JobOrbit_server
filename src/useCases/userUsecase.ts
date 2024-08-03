@@ -607,6 +607,21 @@ class userUsecase {
             throw error 
         }
     }
+
+    async addConnection(user_id:string,connection_id:string){
+        try {
+            const connection = await this.userRepo.connectUser(user_id,connection_id)
+            if(connection){
+                return {success:true,message:"Connection request sent successfully"}
+            }else{
+                return {success:false,message:"Failed to sent  connection"}
+            }
+        } catch (error) {
+            console.log(error);
+            throw error
+            
+        }
+    }
     
 }
 

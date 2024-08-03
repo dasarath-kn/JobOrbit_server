@@ -7,10 +7,15 @@ import adminRoute from './infrastructure/routes/adminRoute';
 import companyRoute from './infrastructure/routes/companyRoute';
 import cors from 'cors'
 import path from 'path';
+import http from 'http'
+import { initializeSocket } from './infrastructure/utils/socket';
 dotenv.config()
 const app = express();
 const port =process.env.PORT
 mongodb()
+const server =http.createServer(app)
+ initializeSocket(server)
+
 const corsOptions = {
   origin: 'http://localhost:5173', 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -27,6 +32,6 @@ app.use('/admin',adminRoute)
 app.use('/company',companyRoute)
 
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });

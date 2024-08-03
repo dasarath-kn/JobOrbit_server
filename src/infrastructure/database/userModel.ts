@@ -1,5 +1,5 @@
 
-import mongoose, {Schema,model} from "mongoose";
+import mongoose, {Mongoose, Schema,model} from "mongoose";
 import user from "../../entities/user";
 import cron from 'node-cron';
 const ExperienceSchema = new Schema({
@@ -105,7 +105,17 @@ const userSchema:Schema<user> =new Schema({
       plan_id:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'subscription'
-      }
+      },
+      connections:[{
+            connection_id:{
+              type:mongoose.Schema.Types.ObjectId,
+              ref:'user'
+            },
+            status:{
+              type:Boolean,
+              default:false
+            }
+      }]
     
 
 

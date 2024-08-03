@@ -29,7 +29,11 @@ interface user {
     }],
     jobapplied_Count: number,
     plan_id: mongoose.Schema.Types.ObjectId,
-    jobapplied_LastReset: Date
+    jobapplied_LastReset: Date,
+    connections:[{
+        user_id:mongoose.Schema.Types.ObjectId,
+        status:boolean
+    }]
 }
 
 export default user

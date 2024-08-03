@@ -630,6 +630,24 @@ class userController {
                
         }
     }
+
+    async newConnection(req:Request,res:Response){
+        try {
+            const {id}=req            
+            const {connection_id}=req.body
+           
+            
+            const connection = await this.userUsecases.addConnection(id as string,connection_id)
+            if(connection.success){
+                res.status(200).json({success:true,message:connection.message})
+            }else{
+            res.status(400).json({success:false,message:connection.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"}) 
+        }
+    }
     }
 
 

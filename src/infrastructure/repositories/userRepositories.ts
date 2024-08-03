@@ -105,7 +105,7 @@ class userRepository implements IUserInterface {
 
     async getUserdata(user_id: string): Promise<user | null> {
         try {
-            let userdata = await userModel.findOne({ _id: user_id })
+            let userdata = await userModel.findOne({ _id: user_id }).populate("connections.connection_id")            
             return userdata ? userdata : null
 
         } catch (error) {
@@ -380,17 +380,17 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to update user skill");
         }
     }
-    async savePostReport(post_id:string,postreportData: postreport): Promise<Boolean> {
+    async savePostReport(post_id: string, postreportData: postreport): Promise<Boolean> {
         try {
-            const report= await postReportModel.findOne({post_id:post_id})
-            if(!report){
-                const data ={post_id:post_id,user_datas:postreportData}
+            const report = await postReportModel.findOne({ post_id: post_id })
+            if (!report) {
+                const data = { post_id: post_id, user_datas: postreportData }
                 let saved = new postReportModel(data)
                 await saved.save()
                 return true
 
-            }else{
-               const update = await postReportModel.updateOne({post_id:post_id},{$addToSet:{user_datas:postreportData}}) 
+            } else {
+                const update = await postReportModel.updateOne({ post_id: post_id }, { $addToSet: { user_datas: postreportData } })
                 return update.acknowledged
             }
         } catch (error) {
@@ -463,26 +463,26 @@ class userRepository implements IUserInterface {
 
         }
     }
-    async getReviews(id:string): Promise<data | null> {
+    async getReviews(id: string): Promise<data | null> {
         try {
             const objectId = new ObjectId(id);
-            const reviewdata = await reviewandRatingModel.find({company_id:id}).populate('user_id')  
-            const count =[]   
-            for(let i=5;i>=1;i--){
-            const averageStar = await reviewandRatingModel.aggregate([{$match:{company_id:objectId,rating_count:i}},{$group:{_id:null,average:{$avg:"$rating_count"}}}])
-            
-            if(averageStar.length==0){
-                count.push(0)
+            const reviewdata = await reviewandRatingModel.find({ company_id: id }).populate('user_id')
+            const count = []
+            for (let i = 5; i >= 1; i--) {
+                const averageStar = await reviewandRatingModel.aggregate([{ $match: { company_id: objectId, rating_count: i } }, { $group: { _id: null, average: { $avg: "$rating_count" } } }])
 
-            }else{
-                count.push(averageStar[0].average)
+                if (averageStar.length == 0) {
+                    count.push(0)
 
-            }   
-        }
-            const data ={
-                review:reviewdata,counts:count
+                } else {
+                    count.push(averageStar[0].average)
+
+                }
             }
-            
+            const data = {
+                review: reviewdata, counts: count
+            }
+
             return data ? data : null
 
         } catch (error) {
@@ -492,6 +492,26 @@ class userRepository implements IUserInterface {
         }
 
     }
+    async connectUser(id: string,connection_id:string): Promise<boolean> {
+        try {
+            console.log("id",id);
+            console.log("connection",connection_id);
+            const connect ={connection_id}
+            const user = {id}
+            const updaterUser = await userModel.updateOne({_id:id},{$addToSet:{connections:connect}})            
+            const updateConnection = await userModel.updateOne({_id:connection_id},{$addToSet:{connections:user}})
+            if(updaterUser && updateConnection){
+                return true
+            }else{
+                return false
+            }
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to connect user")
+
+        }
+    }
+   
 
 }
 

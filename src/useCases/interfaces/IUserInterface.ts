@@ -47,6 +47,7 @@ interface IUserInterface {
     findCompanyById(id: string): Promise<company | null>
     saveReviews(reviewData: reviews): Promise<boolean>
     getReviews(id:string):Promise<data |null>
+    connectUser(id:string,connection_id:string):Promise<boolean>
 
 }
 
