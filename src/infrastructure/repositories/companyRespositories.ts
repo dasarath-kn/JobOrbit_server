@@ -8,6 +8,8 @@ import jobModel from "../database/jobModel";
 import JobScheduledModel from "../database/jobSheduled";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
+import reviewandRatingModel from "../database/reviewRatingModel";
+import { ObjectId } from 'mongodb';
 
 class CompanyRepositories implements ICompanyInterface {
 
@@ -82,7 +84,7 @@ class CompanyRepositories implements ICompanyInterface {
 
    async getCompanydata(id: string): Promise<company | null> {
       try {
-         let companData = await companyModel.findOne({ _id: id })
+         let companData = await companyModel.findOne({ _id: id }).populate("users.user_id")
          return companData ? companData : null
 
       } catch (error) {
@@ -227,6 +229,36 @@ class CompanyRepositories implements ICompanyInterface {
       throw new Error("Unable to find Schedule jobs")
      }
   }
+  async getReviews(id: string): Promise<data | null> {
+   try {
+       const objectId = new ObjectId(id);
+       const reviewdata = await reviewandRatingModel.find({ company_id: id }).populate('user_id')
+       const count = []
+       for (let i = 5; i >= 1; i--) {
+           const averageStar = await reviewandRatingModel.aggregate([{ $match: { company_id: objectId, rating_count: i } }, { $group: { _id: null, average: { $avg: "$rating_count" } } }])
+
+           if (averageStar.length == 0) {
+               count.push(0)
+
+           } else {
+               count.push(averageStar[0].average)
+
+           }
+       }
+       const data = {
+           review: reviewdata, counts: count
+       }
+
+       return data ? data : null
+
+   } catch (error) {
+       console.error(error);
+       throw new Error("Unable to get Reviews")
+
+   }
+
+}
+ 
 }
 
 export default CompanyRepositories

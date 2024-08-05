@@ -648,6 +648,47 @@ class userController {
             res.status(500).json({success:false,message:"Internal server error"}) 
         }
     }
+
+    async getMessages(req:Request,res:Response){
+        try {
+            const {_id} = req.query
+            const {id} =req
+            console.log();
+            const reciever_id =_id
+            const sender_id =id
+            
+            const messageData = await this.userUsecases.message(reciever_id as string,sender_id as string)
+            if(messageData.success){
+                const {messages}=messageData
+                res.status(200).json({success:true,message:messageData.message,messages})
+            }else{
+                res.status(400).json({success:false,message:messageData.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"}) 
+        }
+    }
+
+    async newCompanyConnection(req:Request,res:Response){
+        try {
+            const {id}=req            
+            const {company_id}=req.body
+            console.log(req.body);
+            
+           
+            
+            const connection = await this.userUsecases.addCompanyConnection(id as string,company_id)
+            if(connection.success){
+                res.status(200).json({success:true,message:connection.message})
+            }else{
+            res.status(400).json({success:false,message:connection.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"}) 
+        }
+    }
     }
 
 

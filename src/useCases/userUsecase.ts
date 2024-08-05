@@ -12,6 +12,7 @@ import jwt from 'jsonwebtoken';
 import StripePayment from "../infrastructure/utils/stripe";
 import subscriptedUser from "../entities/subscribedUser";
 import postreport from "../entities/postreport";
+import message from "../entities/message";
 class userUsecase {
     private userRepo: userRepository;
     private hashPassword: HashPassword
@@ -611,6 +612,34 @@ class userUsecase {
     async addConnection(user_id:string,connection_id:string){
         try {
             const connection = await this.userRepo.connectUser(user_id,connection_id)
+            if(connection){
+                return {success:true,message:"Connection request sent successfully"}
+            }else{
+                return {success:false,message:"Failed to sent  connection"}
+            }
+        } catch (error) {
+            console.log(error);
+            throw error
+            
+        }
+    }
+    async message(reciever_id:string,sender_id:string){
+        try {
+            const messages = await this.userRepo.getMessages(reciever_id,sender_id)
+            if(messages){
+                return {success:true,message:"Messages sent successfully",messages}
+            }else{
+                return {success:false,message:"Failed to sent message"}
+            }
+        } catch (error) {
+            console.log(error);
+            throw error
+            
+        }
+    }
+    async addCompanyConnection(user_id:string,company_id:string){
+        try {
+            const connection = await this.userRepo.connectCompany(user_id,company_id)
             if(connection){
                 return {success:true,message:"Connection request sent successfully"}
             }else{

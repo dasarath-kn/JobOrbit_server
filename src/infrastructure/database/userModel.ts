@@ -115,6 +115,11 @@ const userSchema:Schema<user> =new Schema({
               type:Boolean,
               default:false
             }
+      }],
+      companies:[{
+        company_id:{
+          type:mongoose.Schema.Types.ObjectId,
+        ref:'company'}
       }]
     
 

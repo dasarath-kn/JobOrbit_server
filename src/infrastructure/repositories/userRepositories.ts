@@ -1,6 +1,7 @@
 import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
+import message from "../../entities/message";
 import otp from "../../entities/otp";
 import postreport from "../../entities/postreport";
 import { Post } from "../../entities/posts";
@@ -9,10 +10,11 @@ import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData, reviews } from "../../entities/user";
 import { UserDataResult } from "../../useCases/interfaces/IAdminInterface";
-import IUserInterface, { data } from '../../useCases/interfaces/IUserInterface'
+import IUserInterface, { data, messages } from '../../useCases/interfaces/IUserInterface'
 import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
 import jobModel from "../database/jobModel";
+import messageModel from "../database/messageModel";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
 import postReportModel from "../database/postReportModel";
@@ -105,7 +107,7 @@ class userRepository implements IUserInterface {
 
     async getUserdata(user_id: string): Promise<user | null> {
         try {
-            let userdata = await userModel.findOne({ _id: user_id }).populate("connections.connection_id")            
+            let userdata = await userModel.findOne({ _id: user_id }).populate("connections.connection_id").populate("companies.company_id")            
             return userdata ? userdata : null
 
         } catch (error) {
@@ -497,7 +499,7 @@ class userRepository implements IUserInterface {
             console.log("id",id);
             console.log("connection",connection_id);
             const connect ={connection_id}
-            const user = {id}
+            const user = {connection_id:id}
             const updaterUser = await userModel.updateOne({_id:id},{$addToSet:{connections:connect}})            
             const updateConnection = await userModel.updateOne({_id:connection_id},{$addToSet:{connections:user}})
             if(updaterUser && updateConnection){
@@ -511,7 +513,52 @@ class userRepository implements IUserInterface {
 
         }
     }
-   
+
+    async saveMessages(messageData: message): Promise<boolean> {
+        try {
+            const saveMessages = new messageModel(messageData)
+            await saveMessages.save()
+            return true
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to save message") 
+        }
+    }
+   async getMessages(reciever_id: string,sender_id:string): Promise<messages | null> {
+       try {
+        const sender = await messageModel.find({reciever_id:reciever_id,sender_id:sender_id})
+        const reciever = await messageModel.find({reciever_id:sender_id,sender_id:reciever_id})
+        const messages ={
+            sender:sender,
+            reciever:reciever
+        }
+       
+        return messages ? messages : null
+       } catch (error) {
+        console.error(error);
+        throw new Error("Unable to get message") 
+       }
+   }
+
+   async connectCompany(user_id: string, company_id: string): Promise<boolean> {
+    try {
+        console.log("id",user_id);
+        console.log("connection",company_id);
+        const connect ={company_id}
+        const user = {user_id:user_id}
+        const updaterUser = await userModel.updateOne({_id:user_id},{$addToSet:{companies:connect}})            
+        const updateConnection = await companyModel.updateOne({_id:company_id},{$addToSet:{users:user}})
+        if(updaterUser && updateConnection){
+            return true
+        }else{
+            return false
+        }
+    } catch (error) {
+        console.error(error);
+        throw new Error("Unable to connect company")
+
+    }
+   }
 
 }
 

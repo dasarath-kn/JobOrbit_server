@@ -22,7 +22,6 @@ const Auth = async(req:Request,res:Response,next:NextFunction)=>{
         }
         const verify = jwt.verifyJwttoken(authHeader)   
         if(!verify || verify.role!=='user'){
-            console.log("sgddddddddddddddd");
             
             return res.status(401).json({success:false,message:"Unauthorised Access -Invalid token",blocked:true})
         }

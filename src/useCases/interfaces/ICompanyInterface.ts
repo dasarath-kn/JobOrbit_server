@@ -2,7 +2,11 @@ import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import jobShedule from "../../entities/jobScheduled";
 import { Post } from "../../entities/posts";
-
+import { reviews } from "../../entities/user";
+export interface data {
+    review:reviews
+    counts:[]
+}
 interface ICompanyInterface {
     findCompanyByEmail(email: string): Promise<company | null>
     saveCompany(companyData: company): Promise<company | null>
@@ -23,6 +27,8 @@ interface ICompanyInterface {
     saveScheduledJobs(jobScheduleddata: jobShedule): Promise<boolean>
     getScheduledJobs(job_id: string): Promise<jobShedule[] | null>
     findScheduledJobs(): Promise<jobShedule[] | null>
+    getReviews(id:string):Promise<data |null>
+
 }
 
 export default ICompanyInterface

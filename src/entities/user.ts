@@ -34,6 +34,9 @@ interface user {
         user_id:mongoose.Schema.Types.ObjectId,
         status:boolean
     }]
+    companies:[{
+        company_id:mongoose.Schema.Types.ObjectId,
+    }]
 }
 
 export default user

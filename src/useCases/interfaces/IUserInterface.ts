@@ -1,6 +1,7 @@
 import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
+import message from "../../entities/message";
 import postreport from "../../entities/postreport";
 import { Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
@@ -10,6 +11,10 @@ import user, { experienceData, reviews } from "../../entities/user";
 export interface data {
     review:reviews
     counts:[]
+}
+export interface messages {
+    sender:message,
+    reciever:message
 }
 interface IUserInterface {
     findUserById(id: string): Promise<user | null>
@@ -48,7 +53,9 @@ interface IUserInterface {
     saveReviews(reviewData: reviews): Promise<boolean>
     getReviews(id:string):Promise<data |null>
     connectUser(id:string,connection_id:string):Promise<boolean>
-
+    connectCompany(user_id:string,company_id:string):Promise<boolean>
+    saveMessages(messageData:message):Promise<boolean>
+    getMessages(reciever_id:string,sender_id:string):Promise<messages | null>
 }
 
 

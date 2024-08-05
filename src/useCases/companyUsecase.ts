@@ -367,5 +367,22 @@ class CompanyUsecase {
             throw error  
         }
     }
+
+    async reviews(id :string){
+        try {
+            const reviews = await this.companyRepo.getReviews(id as string)
+            
+            if(reviews){
+                console.log(reviews,"rrrrr ");
+                
+                return {success:true,message:"Reviews sent successfully",reviews}
+            }else{
+                return {success:false,message:"Failed to sent reviews"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error 
+        }
+    }
 }
 export default CompanyUsecase

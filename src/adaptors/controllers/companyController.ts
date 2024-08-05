@@ -351,6 +351,24 @@ class CompanyController {
                     res.status(500).json({success:false,message:"Internal server error"})     
                 }
             }
+
+            async getReviews(req:Request,res:Response){
+                try {
+                    const {id} =req
+                    const reviewDatas = await this.companyusecase.reviews(id as string)
+                    if(reviewDatas.success){
+                        const {reviews} =reviewDatas
+                        
+                        res.status(200).json({success:true,message:reviewDatas.message,reviews})
+                    }else{
+                        res.status(400).json({success:false,messagwe:reviewDatas.message})
+                    }
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({success:false,message:"Internal server error"})
+                    
+                }
+            }
         
        
 }

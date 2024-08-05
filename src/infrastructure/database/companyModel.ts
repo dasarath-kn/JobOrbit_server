@@ -1,4 +1,4 @@
-import { Schema,model } from "mongoose";
+import mongoose, { Schema,model } from "mongoose";
 import company from "../../entities/company";
 const company:Schema<company> =new Schema({
         companyname:{
@@ -57,7 +57,13 @@ const company:Schema<company> =new Schema({
         percentage:{
             type:Number,
             default:25
-        }
+        },
+        users:[{
+            user_id:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"user"
+            }
+        }]
 }) 
 
 const companyModel = model<company>('company',company)
