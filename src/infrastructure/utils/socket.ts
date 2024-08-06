@@ -16,14 +16,19 @@ export const initializeSocket = (server: HTTPServer) => {
     io.on('connection', (socket: Socket) => {
         socket.on("user_login",(user_id)=>{
            users[user_id]=socket.id
-            console.log(users);
+           console.log(users);
+           
             
         }) 
 
         socket.on("private_message",async({sender_id,reciever_id,message})=>{
+           console.log(reciever_id);
+           
             const recipient = users[reciever_id]
             if(recipient){
                 const data ={sender_id,reciever_id,message}
+                console.log(data);
+                
                 const save = await repo.saveMessages(data as message)
                 io.to(recipient).emit("private_message",{message,sender_id,reciever_id})
             }
@@ -36,7 +41,6 @@ export const initializeSocket = (server: HTTPServer) => {
         })
 
         
-        // Listen for disconnection
         socket.on('disconnect', (reason) => {
             console.log(`A user disconnected: ${socket.id}, reason: ${reason}`);
             for (const userId in users) {

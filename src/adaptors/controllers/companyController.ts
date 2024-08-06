@@ -369,7 +369,44 @@ class CompanyController {
                     
                 }
             }
+            async getMessages(req:Request,res:Response){
+                try {
+                    
+                    const {_id} = req.query
+                    const {id} =req
+                    const reciever_id =_id
+                    const sender_id =id
+                    
+                    const messageData = await this.companyusecase.message(reciever_id as string,sender_id as string)
+                    if(messageData.success){
+                        const {messages}=messageData
+                        res.status(200).json({success:true,message:messageData.message,messages})
+                    }else{
+                        res.status(400).json({success:false,message:messageData.message})
+                    }
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({success:false,message:"Internal server error"}) 
+                }
+            }
+            async getcomments(req: Request, res: Response) {
+                try {
+                    
+                    const { post_id } = req.query
+                    
+                    const comment = await this.companyusecase.comments(post_id as string)
+                    if (comment.message) {
+                        const { comments } = comment
+                        res.status(200).json({ success: true, message: comment.message, comments })
+                    } else {
+                        res.status(400).json({ success: false, message: comment.message })
+                    }
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ success: false, message: "Internal server error" })
+                }
         
+            }
        
 }
 

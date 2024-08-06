@@ -33,6 +33,7 @@ companyRoute.get('/getjobdata',companyAuth,(req,res)=>companyController.getJobs(
 companyRoute.delete('/deletejob',(req,res)=>companyController.deleteJob(req,res))
 companyRoute.post('/addpost',companyAuth,upload.any(),(req,res)=>companyController.addPost(req,res))
 companyRoute.get('/posts',companyAuth,upload.any(),(req,res)=>companyController.getPosts(req,res))
+companyRoute.get('/getcomment',companyAuth,(req,res)=>companyController.getcomments(req,res))
 companyRoute.post('/editprofile',companyAuth,upload.single("image"),(req,res)=>companyController.editProfile(req,res))
 companyRoute.patch('/uploaddocument',companyAuth,upload.single("image"),(req,res)=>companyController.uploadDocument(req,res))
 companyRoute.delete('/deletepost',companyAuth,(req,res)=>companyController.deletePost(req,res))
@@ -42,6 +43,7 @@ companyRoute.route('/schedulejob')
 .get(companyAuth,(req,res)=>companyController.getScheduledJobs(req,res))
 companyRoute.get('/findschedulejob',companyAuth,(req,res)=>companyController.ScheduledJobs(req,res))
 companyRoute.get('/getreviews',companyAuth,(req,res)=>companyController.getReviews(req,res))
+companyRoute.get('/messages',companyAuth,(req,res)=>companyController.getMessages(req,res))
 
 
 export default companyRoute

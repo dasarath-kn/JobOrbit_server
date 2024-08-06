@@ -1,11 +1,15 @@
+import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import jobShedule from "../../entities/jobScheduled";
+import message from "../../entities/message";
 import { Post } from "../../entities/posts";
 import ICompanyInterface from "../../useCases/interfaces/ICompanyInterface";
+import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
 import jobModel from "../database/jobModel";
 import JobScheduledModel from "../database/jobSheduled";
+import messageModel from "../database/messageModel";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
 import reviewandRatingModel from "../database/reviewRatingModel";
@@ -258,7 +262,41 @@ class CompanyRepositories implements ICompanyInterface {
    }
 
 }
+async saveMessages(messageData: message): Promise<boolean> {
+   try {
+       const saveMessages = new messageModel(messageData)
+       await saveMessages.save()
+       return true
+   } catch (error) {
+       console.error(error);
+       throw new Error("Unable to save message") 
+   }
+}
+async getMessages(reciever_id: string,sender_id:string): Promise<messages | null> {
+   try {
+    const sender = await messageModel.find({reciever_id:reciever_id,sender_id:sender_id})
+    const reciever = await messageModel.find({reciever_id:sender_id,sender_id:reciever_id})
+    const messages ={
+        sender:sender,
+        reciever:reciever
+    }
+    
+    return messages ? messages : null
+   } catch (error) {
+    console.error(error);
+    throw new Error("Unable to get message") 
+   }
+}
  
+async getcomment(id: string): Promise<comment[] | null> {
+   try {
+       const comments = await commentModel.find({ post_id: id }).populate('user_id')
+       return comments ? comments : null
+   } catch (error) {
+       console.error(error);
+       throw new Error(`Unable to find comments`)
+   }
+}
 }
 
 export default CompanyRepositories

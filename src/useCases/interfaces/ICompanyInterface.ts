@@ -1,8 +1,11 @@
+import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import jobShedule from "../../entities/jobScheduled";
+import message from "../../entities/message";
 import { Post } from "../../entities/posts";
 import { reviews } from "../../entities/user";
+import { messages } from "./IUserInterface";
 export interface data {
     review:reviews
     counts:[]
@@ -28,6 +31,9 @@ interface ICompanyInterface {
     getScheduledJobs(job_id: string): Promise<jobShedule[] | null>
     findScheduledJobs(): Promise<jobShedule[] | null>
     getReviews(id:string):Promise<data |null>
+    saveMessages(messageData:message):Promise<boolean>
+    getMessages(reciever_id:string,sender_id:string):Promise<messages | null>
+    getcomment(id: string): Promise<comment[] | null>
 
 }
 

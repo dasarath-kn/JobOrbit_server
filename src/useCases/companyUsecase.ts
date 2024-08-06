@@ -384,5 +384,33 @@ class CompanyUsecase {
             throw error 
         }
     }
+    async message(reciever_id:string,sender_id:string){
+        try {
+            const messages = await this.companyRepo.getMessages(reciever_id,sender_id)
+            if(messages){
+                return {success:true,message:"Messages sent successfully",messages}
+            }else{
+                return {success:false,message:"Failed to sent message"}
+            }
+        } catch (error) {
+            console.log(error);
+            throw error
+            
+        }
+    }
+    async comments(post_id:string){
+        try {
+            const comments =await this.companyRepo.getcomment(post_id)
+            if(comments){
+                return {success:true,message:"Comments sent successfully",comments}
+            }
+            else{
+                return {success:false,message:"Failed to sent comments"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 }
 export default CompanyUsecase
