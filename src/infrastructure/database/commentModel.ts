@@ -7,6 +7,11 @@ const commentSchema:Schema<comment> = new Schema({
         ref:'post',
         required:true
     },
+    company_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'company',
+        required:true
+    },
     user_id:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'user'
@@ -22,6 +27,10 @@ const commentSchema:Schema<comment> = new Schema({
     like:{
         type:Number,
         default:0
+    },
+    replied:{
+        type:Boolean,
+        default:false
     }
 })
 

@@ -301,8 +301,8 @@ class userController {
     async postComment(req: Request, res: Response) {
         try {
             const { id } = req
-            const { post_id, message } = req.body
-            const commentData = { user_id: id, post_id, message }
+            const { post_id, message,company_id } = req.body
+            const commentData = { user_id: id, post_id,company_id,message }            
             let comments = await this.userUsecases.shareComment(commentData as comment)
             if (comments.success) {
                 res.status(200).json({ success: true, message: comments.message })
@@ -683,6 +683,38 @@ class userController {
                 res.status(200).json({success:true,message:connection.message})
             }else{
             res.status(400).json({success:false,message:connection.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"}) 
+        }
+    }
+
+    async connectRequests(req:Request,res:Response){
+        try {
+            const {id} =req
+            const connection = await this.userUsecases.connections(id as string)
+            if(connection.success){
+                const{connectRequests} =connection
+                res.status(200).json({success:true,message:connection.message,connectRequests})
+            }else{
+                res.status(400).json({success:false,message:connection.message})
+
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({success:false,message:"Internal server error"}) 
+        }
+    }
+    async manageConnection(req:Request,res:Response){
+        try {
+            const {id}=req
+            const {connection_id,notification_id,message} =req.body
+            const manage = await this.userUsecases.connectionManage(id as string,connection_id,notification_id,message)
+            if(manage.success){
+                res.status(200).json({success:true,message:manage.message})
+            }else{
+                res.status(400).json({success:false,message:manage.message})
             }
         } catch (error) {
             console.error(error);

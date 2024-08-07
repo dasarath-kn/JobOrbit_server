@@ -407,6 +407,22 @@ class CompanyController {
                 }
         
             }
+            async replyComment(req:Request,res:Response){
+                try {
+                    const {comment_id,reply}=req.body
+                    
+                    const commentReply = await this.companyusecase.commentReply(comment_id,reply)
+                    if(commentReply.success){
+                        res.status(200).json({success:true,message:commentReply.message})
+                    }else{
+                        res.status(400).json({success:false,message:commentReply.message})
+                    }
+                    
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ success: false, message: "Internal server error" })
+                }
+            }
        
 }
 

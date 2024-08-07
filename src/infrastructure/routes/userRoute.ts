@@ -57,6 +57,8 @@ router.post('/savereviews',Auth,(req,res)=>UserController.postReview(req,res))
 router.patch('/connectuser',Auth,(req,res)=>UserController.newConnection(req,res))
 router.patch('/connectcompany',Auth,(req,res)=>UserController.newCompanyConnection(req,res))
 router.get('/messages',Auth,(req,res)=>UserController.getMessages(req,res))
+router.get('/connection',Auth,(req,res)=>UserController.connectRequests(req,res))
+router.patch('/manageconnection',Auth,(req,res)=>UserController.manageConnection(req,res))
 
 
 

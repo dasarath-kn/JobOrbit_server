@@ -290,13 +290,24 @@ async getMessages(reciever_id: string,sender_id:string): Promise<messages | null
  
 async getcomment(id: string): Promise<comment[] | null> {
    try {
-       const comments = await commentModel.find({ post_id: id }).populate('user_id')
+       const comments = await commentModel.find({ post_id: id }).populate('user_id').populate('company_id')
        return comments ? comments : null
    } catch (error) {
        console.error(error);
        throw new Error(`Unable to find comments`)
    }
 }
+
+async replycomment(comment_id: string, reply: string): Promise<boolean> {
+   try {
+      const commmentReply = await commentModel.updateOne({_id:comment_id},{$set:{reply:reply,replied:true}})
+      return commmentReply.acknowledged
+   } catch (error) {
+      console.error(error);
+      throw new Error(`Unable to reply comments`)
+  }
+   }
 }
+
 
 export default CompanyRepositories

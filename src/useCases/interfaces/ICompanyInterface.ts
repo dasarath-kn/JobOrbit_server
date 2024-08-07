@@ -34,6 +34,7 @@ interface ICompanyInterface {
     saveMessages(messageData:message):Promise<boolean>
     getMessages(reciever_id:string,sender_id:string):Promise<messages | null>
     getcomment(id: string): Promise<comment[] | null>
+    replycomment(comment_id:string,reply:string):Promise<boolean>
 
 }
 

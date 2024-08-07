@@ -13,6 +13,7 @@ export const initializeSocket = (server: HTTPServer) => {
         },
     }); 
     const users ={}
+
     io.on('connection', (socket: Socket) => {
         socket.on("user_login",(user_id)=>{
            users[user_id]=socket.id
@@ -35,8 +36,16 @@ export const initializeSocket = (server: HTTPServer) => {
         })
         
         
-        socket.on("notify",(mes)=>{
-            io.emit("notification",mes)
+        socket.on("notify",async({user_id,connection_id,message})=>{
+            console.log(user_id,connection_id);
+          
+            const addConnection = await repo.connectUser(user_id,connection_id)
+            const addnotification = await repo.saveNotification(user_id,connection_id,message)
+            if(addConnection && addnotification){
+            const data = await repo.findNotification(user_id,connection_id)
+            
+            io.emit("notification",{message,data})
+           }
         
         })
 

@@ -2,6 +2,7 @@ import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import message from "../../entities/message";
+import Notification from "../../entities/notification";
 import postreport from "../../entities/postreport";
 import { Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
@@ -56,6 +57,10 @@ interface IUserInterface {
     connectCompany(user_id:string,company_id:string):Promise<boolean>
     saveMessages(messageData:message):Promise<boolean>
     getMessages(reciever_id:string,sender_id:string):Promise<messages | null>
+    saveNotification(sender_id:string,reciever_id:string,message:string):Promise<boolean>
+    findNotification(sender_id:string,reciever_id:string):Promise<Notification[]|null>
+    findConnectionRequest(reciever_id:string):Promise<Notification[]|null>
+    manageConnection(user_id:string,connection_id:string,notification_id:string,message:string):Promise<boolean>
 }
 
 

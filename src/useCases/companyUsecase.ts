@@ -412,5 +412,19 @@ class CompanyUsecase {
             throw error
         }
     }
+
+    async commentReply(comment_id:string,reply:string){
+        try {
+            const comment = await this.companyRepo.replycomment(comment_id,reply)
+            if(comment){
+                return {success:true,message:"Comment replied successfully"}
+            }else{
+                return {success:false,message:"Failed to reply comment"}
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
 }
 export default CompanyUsecase

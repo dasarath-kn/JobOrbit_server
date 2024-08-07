@@ -651,7 +651,35 @@ class userUsecase {
             
         }
     }
-    
+    async connections(reciever_id:string){
+        try {
+
+            const connectRequests = await this.userRepo.findConnectionRequest(reciever_id)
+            if(connectRequests){
+                return {success:true,message:"Connect Request data sent successfully",connectRequests}
+            }else{
+                return {success:false,message:"Failed to sent connect request data"}
+            }
+        } catch (error) {
+            console.log(error);
+            throw error
+             
+        }
+    }
+
+    async connectionManage(user_id: string,connection_id:string, notification_id: string, message: string){
+        try {
+           const connect = await this.userRepo.manageConnection(user_id,connection_id,notification_id,message)
+           if(connect){
+            return {success:true,message:"Connection updated"}
+           }else{
+            return {success:false,message:"Failed to update  connection"}
+           } 
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
 }
 
 export default userUsecase

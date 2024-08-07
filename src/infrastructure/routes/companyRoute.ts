@@ -44,6 +44,7 @@ companyRoute.route('/schedulejob')
 companyRoute.get('/findschedulejob',companyAuth,(req,res)=>companyController.ScheduledJobs(req,res))
 companyRoute.get('/getreviews',companyAuth,(req,res)=>companyController.getReviews(req,res))
 companyRoute.get('/messages',companyAuth,(req,res)=>companyController.getMessages(req,res))
+companyRoute.patch('/replycomment',companyAuth,(req,res)=>companyController.replyComment(req,res))
 
 
 export default companyRoute

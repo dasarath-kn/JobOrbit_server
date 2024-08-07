@@ -2,6 +2,7 @@ import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import message from "../../entities/message";
+import Notification from "../../entities/notification";
 import otp from "../../entities/otp";
 import postreport from "../../entities/postreport";
 import { Post } from "../../entities/posts";
@@ -15,6 +16,7 @@ import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
 import jobModel from "../database/jobModel";
 import messageModel from "../database/messageModel";
+import notificationModel from "../database/notification";
 import otpModel from "../database/otpModel";
 import postModel from "../database/postModel";
 import postReportModel from "../database/postReportModel";
@@ -107,7 +109,7 @@ class userRepository implements IUserInterface {
 
     async getUserdata(user_id: string): Promise<user | null> {
         try {
-            let userdata = await userModel.findOne({ _id: user_id }).populate("connections.connection_id").populate("companies.company_id")            
+            let userdata = await userModel.findOne({ _id: user_id }).populate("connections.connection_id").populate("companies.company_id")
             return userdata ? userdata : null
 
         } catch (error) {
@@ -246,7 +248,7 @@ class userRepository implements IUserInterface {
     }
     async getcomment(id: string): Promise<comment[] | null> {
         try {
-            const comments = await commentModel.find({ post_id: id }).populate('user_id')
+            const comments = await commentModel.find({ post_id: id }).populate('user_id').populate('company_id')
             return comments ? comments : null
         } catch (error) {
             console.error(error);
@@ -494,17 +496,17 @@ class userRepository implements IUserInterface {
         }
 
     }
-    async connectUser(id: string,connection_id:string): Promise<boolean> {
+    async connectUser(id: string, connection_id: string): Promise<boolean> {
         try {
-            console.log("id",id);
-            console.log("connection",connection_id);
-            const connect ={connection_id}
-            const user = {connection_id:id}
-            const updaterUser = await userModel.updateOne({_id:id},{$addToSet:{connections:connect}})            
-            const updateConnection = await userModel.updateOne({_id:connection_id},{$addToSet:{connections:user}})
-            if(updaterUser && updateConnection){
+            console.log("id", id);
+            console.log("connection", connection_id);
+            const connect = { connection_id }
+            const user = { connection_id: id }
+            const updaterUser = await userModel.updateOne({ _id: id }, { $addToSet: { connections: connect } })
+            const updateConnection = await userModel.updateOne({ _id: connection_id }, { $addToSet: { connections: user } })
+            if (updaterUser && updateConnection) {
                 return true
-            }else{
+            } else {
                 return false
             }
         } catch (error) {
@@ -521,45 +523,102 @@ class userRepository implements IUserInterface {
             return true
         } catch (error) {
             console.error(error);
-            throw new Error("Unable to save message") 
+            throw new Error("Unable to save message")
         }
     }
-   async getMessages(reciever_id: string,sender_id:string): Promise<messages | null> {
-       try {
-        const sender = await messageModel.find({reciever_id:reciever_id,sender_id:sender_id})
-        const reciever = await messageModel.find({reciever_id:sender_id,sender_id:reciever_id})
-        const messages ={
-            sender:sender,
-            reciever:reciever
-        }
-       
-        return messages ? messages : null
-       } catch (error) {
-        console.error(error);
-        throw new Error("Unable to get message") 
-       }
-   }
+    async getMessages(reciever_id: string, sender_id: string): Promise<messages | null> {
+        try {
+            const sender = await messageModel.find({ reciever_id: reciever_id, sender_id: sender_id })
+            const reciever = await messageModel.find({ reciever_id: sender_id, sender_id: reciever_id })
+            const messages = {
+                sender: sender,
+                reciever: reciever
+            }
 
-   async connectCompany(user_id: string, company_id: string): Promise<boolean> {
-    try {
-        console.log("id",user_id);
-        console.log("connection",company_id);
-        const connect ={company_id}
-        const user = {user_id:user_id}
-        const updaterUser = await userModel.updateOne({_id:user_id},{$addToSet:{companies:connect}})            
-        const updateConnection = await companyModel.updateOne({_id:company_id},{$addToSet:{users:user}})
-        if(updaterUser && updateConnection){
+            return messages ? messages : null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to get message")
+        }
+    }
+
+    async connectCompany(user_id: string, company_id: string): Promise<boolean> {
+        try {
+            console.log("id", user_id);
+            console.log("connection", company_id);
+            const connect = { company_id }
+            const user = { user_id: user_id }
+            const updaterUser = await userModel.updateOne({ _id: user_id }, { $addToSet: { companies: connect } })
+            const updateConnection = await companyModel.updateOne({ _id: company_id }, { $addToSet: { users: user } })
+            if (updaterUser && updateConnection) {
+                return true
+            } else {
+                return false
+            }
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to connect company")
+
+        }
+    }
+
+    async saveNotification(sender_id: string, reciever_id: string, message: string): Promise<boolean> {
+        try {
+            const data = { sender_id, reciever_id, message }
+            const notification = new notificationModel(data)
+            await notification.save()
             return true
-        }else{
-            return false
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to save notification")
+
         }
-    } catch (error) {
-        console.error(error);
-        throw new Error("Unable to connect company")
-
     }
-   }
-
+    async findNotification(sender_id: string, reciever_id: string): Promise<Notification[] | null> {
+        try {
+            const notification = await notificationModel.find({ sender_id: sender_id, reciever_id: reciever_id }).populate('sender_id')
+            return notification ? notification : null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find notification")
+        }
+    }
+    async findConnectionRequest(reciever_id: string): Promise<Notification[] | null> {
+        try {
+            const connections = await notificationModel.find({ reciever_id: reciever_id }).sort({ date: -1 }).populate("sender_id")
+            return connections ? connections : null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find connection")
+        }
+    }
+    async manageConnection(user_id: string,connection_id:string, notification_id: string, message: string): Promise<boolean> {
+        try {
+            if(message =="accept"){
+            const users =await userModel.updateOne(   { _id: user_id, 'connections.connection_id': connection_id },
+                { $set: { 'connections.$.status': true } })
+            const connection = await userModel.updateOne(   { _id: connection_id, 'connections.connection_id': user_id },
+                { $set: { 'connections.$.status': true } })  
+                const notification = await notificationModel.deleteOne({_id:notification_id})  
+            return true
+            }else{
+                const users =await userModel.updateOne(
+                    { _id: user_id },
+                    { $pull: { connections: { connection_id: connection_id } } }
+                  );
+                const connection = await userModel.updateOne(
+                    { _id: connection_id },
+                    { $pull: { connections: { connection_id: user_id } } }
+                  );  
+                    const notification = await notificationModel.deleteOne({_id:notification_id})  
+                return true
+            }
+            } catch (error) {
+            console.error(error);
+            throw new Error("Unable to update connection")
+        }
+    }
 }
 
 
