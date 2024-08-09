@@ -266,10 +266,10 @@ class userController {
     async savePost(req: Request, res: Response) {
         try {
             let { id } = req
-            let { post_id } = req.body
-            let postData = { user_id: id, post_id }
+            let { post_id,message,company_id } = req.body
+            let postData = { user_id: id, post_id,company_id }
 
-            let savedPost = await this.userUsecases.postSave(postData as savedPost)
+            let savedPost = await this.userUsecases.postSave(postData as savedPost,message)
             if (savedPost.success) {
                 res.status(200).json({ success: true, message: savedPost.message })
             } else {

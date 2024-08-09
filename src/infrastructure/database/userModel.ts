@@ -84,7 +84,8 @@ const userSchema:Schema<user> =new Schema({
       },
       percentage:{
         type:Number,
-        default:25
+        default:25,
+        max:100
 
       },
       qualification: {

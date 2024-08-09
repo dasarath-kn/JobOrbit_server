@@ -34,7 +34,7 @@ interface IUserInterface {
     getPosts(): Promise<Post[] | null>
     likePost(post_id: string, user_id: string): Promise<boolean | null>
     unlikePost(post_id: string, user_id: string): Promise<boolean | null>
-    savePost(postData: savedPost): Promise<boolean>
+    savePost(postData: savedPost,message:string): Promise<boolean>
     getSavedpost(id: string): Promise<savedPost[] | null>
     postcomment(commentData: comment): Promise<boolean>
     getcomment(id: string): Promise<comment[] | null>

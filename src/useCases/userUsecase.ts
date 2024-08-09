@@ -292,11 +292,11 @@ class userUsecase {
         }
     }
 
-    async postSave(postData:savedPost){
+    async postSave(postData:savedPost,message:string){
         try {
-            let savePost =await this.userRepo.savePost(postData)
+            let savePost =await this.userRepo.savePost(postData,message)
             if(savePost){
-                return {success:true,message:"Post saved to your collection"}
+                return {success:true,message:`Post ${message}`}
             }else{
                 return {success:false,message:"Failed to save post"}
             }

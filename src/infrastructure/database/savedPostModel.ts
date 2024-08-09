@@ -11,7 +11,13 @@ const savedPostModel:Schema<savedPost> =new Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'post',
         required:true
-    }
+    },
+    company_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'company',
+        required:true
+    },
+    
 })
 
 const postSavedModel = model<savedPost>('savedpost',savedPostModel)

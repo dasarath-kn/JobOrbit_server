@@ -189,7 +189,7 @@ class userRepository implements IUserInterface {
 
     async getPosts(): Promise<Post[] | null> {
         try {
-            let posts = await postModel.find({}).sort({ time: -1 }).populate('company_id')
+            let posts = await postModel.find({}).sort({ time: -1 }).populate('company_id').populate('like')
             return posts ? posts : null
         } catch (error) {
             console.error(error);
@@ -215,11 +215,18 @@ class userRepository implements IUserInterface {
             throw new Error(`Unable to unlike post`)
         }
     }
-    async savePost(postData: savedPost): Promise<boolean> {
+    async savePost(postData: savedPost,message:string): Promise<boolean> {
         try {
-            let saved = new postSavedModel(postData)
-            await saved.save()
-            return true
+            if(message =="saved"){
+                let saved = new postSavedModel(postData)
+                await saved.save()
+                return true
+
+            }else{
+                const {post_id}=postData
+                const remove = await postSavedModel.deleteOne({post_id:post_id})
+                return remove.acknowledged
+            }
         } catch (error) {
             console.error(error);
             throw new Error(`Unable to save post`)
@@ -227,7 +234,7 @@ class userRepository implements IUserInterface {
     }
     async getSavedpost(id: string): Promise<savedPost[] | null> {
         try {
-            let savedPost = await postSavedModel.find({ user_id: id })
+            let savedPost = await postSavedModel.find({ user_id: id }).populate('post_id').populate('company_id')
             return savedPost ? savedPost : null
 
         } catch (error) {
