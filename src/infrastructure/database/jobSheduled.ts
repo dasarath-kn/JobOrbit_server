@@ -12,6 +12,10 @@ const scheduledSchema:Schema<jobShedule> = new Schema({
         ref:'job',
         required:true
     },
+    company_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
+    },
     date:{
         type:Date,
         required:true

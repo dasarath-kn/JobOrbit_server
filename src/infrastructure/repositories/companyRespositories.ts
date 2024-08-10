@@ -224,9 +224,9 @@ class CompanyRepositories implements ICompanyInterface {
       throw new Error("Unable to get Schedule jobs")
      }
   }
-  async findScheduledJobs(): Promise<jobShedule[] | null> {
+  async findScheduledJobs(id:string): Promise<jobShedule[] | null> {
      try {
-      let scheduled = await JobScheduledModel.find()
+      let scheduled = await JobScheduledModel.find({job_id:id}).populate('user_id')
       return scheduled ?scheduled :null
      } catch (error) {
       console.error(error);
@@ -306,7 +306,17 @@ async replycomment(comment_id: string, reply: string): Promise<boolean> {
       console.error(error);
       throw new Error(`Unable to reply comments`)
   }
-   }
+   
+}
+async deleteApplicant(job_id: string, user_id: string): Promise<boolean> {
+   try {
+      const remove = await jobModel.updateOne({_id:job_id},{$pull:{applicants_id:user_id}})
+      return remove.acknowledged
+   } catch (error) {
+      console.error(error);
+      throw new Error(`Unable to delete applicant`)
+  }
+}
 }
 
 

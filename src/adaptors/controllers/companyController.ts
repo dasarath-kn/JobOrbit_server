@@ -305,10 +305,8 @@ class CompanyController {
                     const {id} =req
                     console.log(req.body);
                     
-                    const jobScheduleddata ={time,date,message,user_id,job_id,company_id:id,scheduled_time:Date.now()}
-                    console.log(jobScheduleddata,"sdf");
-                    
-                    let saveData = await this.companyusecase.scheduledJobs(jobScheduleddata)
+                    const jobScheduleddata ={time,date,message,user_id,job_id,company_id:id,scheduled_time:Date.now()}                    
+                    let saveData = await this.companyusecase.scheduledJobs(jobScheduleddata as jobShedule)
                     if(saveData.success){
                         res.status(200).json({success:true,message:saveData.message})
                     }else{
@@ -339,7 +337,8 @@ class CompanyController {
 
             async ScheduledJobs(req:Request,res:Response){
                 try {
-                    let scheduled = await this.companyusecase.getScheduledJobs()
+                    const {id}=req.query
+                    let scheduled = await this.companyusecase.getScheduledJobs(id)
                     if(scheduled.success){
                         const {scheduledJobs} =scheduled
                         console.log(scheduled,"d");
@@ -418,6 +417,21 @@ class CompanyController {
                         res.status(400).json({success:false,message:commentReply.message})
                     }
                     
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ success: false, message: "Internal server error" })
+                }
+            }
+
+            async deleteApplicant(req:Request,res:Response){
+                try {
+                    const {job_id,user_id}=req.body
+                    const remove = await this.companyusecase.removeApplicant(job_id,user_id)
+                    if(remove.success){
+                        res.status(200).json({success:true,message:remove.message})
+                    }else{
+                        res.status(400).json({success:false,message:remove.message})
+                    }
                 } catch (error) {
                     console.error(error);
                     res.status(500).json({ success: false, message: "Internal server error" })

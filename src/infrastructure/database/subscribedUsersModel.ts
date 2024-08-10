@@ -20,8 +20,8 @@ const subscribedSchema:Schema<subscriptedUser> = new Schema({
         
     },
     expiry_date:{
-        type:Date,
-        default:Date.now()
+        type:Date
+        
     },
     payment_status:{
         type:Boolean,

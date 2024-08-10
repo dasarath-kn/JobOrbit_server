@@ -7,6 +7,7 @@ import { savedPost } from "../../entities/savedPost";
 import { comment } from "../../entities/comment";
 import subscriptedUser from "../../entities/subscribedUser";
 import postreport from "../../entities/postreport";
+import getExpiryDate from "../../infrastructure/utils/expiryDate";
 class userController {
     private userUsecases: userUsecase
     private Cloudinary: Cloudinary
@@ -388,11 +389,10 @@ class userController {
     async applyJob(req: Request, res: Response) {
         try {
             const { id } = req
-            const { job_id } = req.query
-            console.log("job_id:", job_id, "userid:", id);
-
-
-            const applyJob = await this.userUsecases.jobApplication(job_id, id as string)
+            const { job_id,company_id } = req.body
+            console.log(req.body);
+            
+            const applyJob = await this.userUsecases.jobApplication(job_id as string, id as string,company_id as string)
             if (applyJob.success) {
                 res.status(200).json({ success: true, message: applyJob.message })
             } else {
@@ -421,12 +421,11 @@ class userController {
     }
     async paysubscriptionplan(req: Request, res: Response) {
         try {
-            const { price } = req.body
+            const { plan_id,expiry_date } = req.body
             const { id } = req
-            console.log(price,"jljsll");
-            const subscriptionData = { user_id: id, session_id: '', plan_id: price }
-
-            const payment = await this.userUsecases.subscriptionPayment(price, subscriptionData as subscriptedUser)
+            const date  = await getExpiryDate(expiry_date)
+            const subscriptionData = { user_id: id, session_id: '', plan_id:plan_id,expiry_date:date }
+            const payment = await this.userUsecases.subscriptionPayment(plan_id, subscriptionData as subscriptedUser)
             if (payment.success) {
                 const { payment_id } = payment
                 res.status(200).json({ success: true, payment_id })

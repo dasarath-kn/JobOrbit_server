@@ -14,6 +14,8 @@ import { UserDataResult } from "../../useCases/interfaces/IAdminInterface";
 import IUserInterface, { data, messages } from '../../useCases/interfaces/IUserInterface'
 import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
+import appliedJobModel from "../database/jobApplied";
+import appliedJobModels from "../database/jobApplied";
 import jobModel from "../database/jobModel";
 import messageModel from "../database/messageModel";
 import notificationModel from "../database/notification";
@@ -302,10 +304,13 @@ class userRepository implements IUserInterface {
             throw new Error('Unable to update user resume')
         }
     }
-    async applyJob(job_id: string, user_id: string): Promise<boolean> {
+    async applyJob(job_id: string, user_id: string,company_id:string): Promise<boolean> {
         try {
+            const data ={job_id:job_id,user_id:user_id,company_id:company_id}
             let job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: user_id } })
             let jobCount = await userModel.updateOne({ _id: user_id }, { $inc: { jobapplied_Count: 1 } })
+            const saveApplied = new appliedJobModel(data)
+            await saveApplied.save()
             return job.acknowledged
         } catch (error) {
             console.error(error);
@@ -413,7 +418,7 @@ class userRepository implements IUserInterface {
     async findAppliedJobs(user_id: string): Promise<jobs[] | null> {
         try {
 
-            let data = await jobModel.find({ applicants_id: { $in: user_id } }).populate("company_id")
+            let data = await appliedJobModel.find({user_id:user_id }).populate("job_id").populate('company_id')
 
             return data ? data : null
         } catch (error) {

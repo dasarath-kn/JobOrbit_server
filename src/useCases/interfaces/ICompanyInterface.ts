@@ -29,13 +29,13 @@ interface ICompanyInterface {
     jobApplications(id: string): Promise<jobs[] | null>
     saveScheduledJobs(jobScheduleddata: jobShedule): Promise<boolean>
     getScheduledJobs(job_id: string): Promise<jobShedule[] | null>
-    findScheduledJobs(): Promise<jobShedule[] | null>
+    findScheduledJobs(id:string): Promise<jobShedule[] | null>
     getReviews(id:string):Promise<data |null>
     saveMessages(messageData:message):Promise<boolean>
     getMessages(reciever_id:string,sender_id:string):Promise<messages | null>
     getcomment(id: string): Promise<comment[] | null>
     replycomment(comment_id:string,reply:string):Promise<boolean>
-
+    deleteApplicant(job_id:string,user_id:string):Promise<boolean>
 }
 
 export default ICompanyInterface

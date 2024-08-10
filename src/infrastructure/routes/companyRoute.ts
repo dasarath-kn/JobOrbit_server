@@ -41,6 +41,7 @@ companyRoute.get('/applicants',companyAuth,(req,res)=>companyController.jobAppli
 companyRoute.route('/schedulejob')
 .post(companyAuth,(req,res)=>companyController.saveScheduledJobs(req,res))
 .get(companyAuth,(req,res)=>companyController.getScheduledJobs(req,res))
+.patch(companyAuth,(req,res)=>companyController.deleteApplicant(req,res))
 companyRoute.get('/findschedulejob',companyAuth,(req,res)=>companyController.ScheduledJobs(req,res))
 companyRoute.get('/getreviews',companyAuth,(req,res)=>companyController.getReviews(req,res))
 companyRoute.get('/messages',companyAuth,(req,res)=>companyController.getMessages(req,res))

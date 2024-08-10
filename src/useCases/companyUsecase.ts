@@ -328,8 +328,12 @@ class CompanyUsecase {
     }
     async scheduledJobs(jobScheduleddata:jobShedule){
         try {
+            const {company_id,user_id}=jobScheduleddata
             let scheduled = await this.companyRepo.saveScheduledJobs(jobScheduleddata)
             if(scheduled){
+                  const companData = await this.companyRepo.getCompanydata(company_id as string )
+                  const userData = await this.userRepo.findUserById(user_id as string)
+                  const sendInterviewEmail = await this.nodeMailer.interviewEmail(jobScheduleddata,companData?.companyname,userData?.firstname,userData?.email)
                 return {success:true,message:"Schedule job sent successfully"}
             }else{
                 return {success:false,message:"Failed to save scheduled job"}
@@ -353,9 +357,9 @@ class CompanyUsecase {
             throw error  
         }
     }
-    async getScheduledJobs(){
+    async getScheduledJobs(id:string){
         try {
-            let scheduledJobs = await this.companyRepo.findScheduledJobs()
+            let scheduledJobs = await this.companyRepo.findScheduledJobs(id)
             if(scheduledJobs){
                 return {success:true,message:"Scheduled jobs sent successfully",scheduledJobs}
             }else{
@@ -424,6 +428,21 @@ class CompanyUsecase {
         } catch (error) {
             console.error(error);
             throw error
+        }
+    }
+
+    async removeApplicant(job_id:string,user_id:string){
+        try {
+            const remove = await this.companyRepo.deleteApplicant(job_id,user_id)
+            if(remove){
+                return{success:true,message:"Applicant removed successfully"}
+            }else{
+                return{success:false,message:"Failed to remove applicant"}
+
+            }
+        } catch (error) {
+            console.error(error);
+            throw error  
         }
     }
 }
