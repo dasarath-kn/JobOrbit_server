@@ -6,5 +6,11 @@ interface message {
     message:string,
     timeStamp:Date
 }
+export interface inbox {
+    sender_id:mongoose.Schema.Types.ObjectId,
+    reciever_id:mongoose.Schema.Types.ObjectId,
+    message:string,
+    time:Date
+}
 
 export default message

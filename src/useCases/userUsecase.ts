@@ -234,11 +234,12 @@ class userUsecase {
             throw error
         }
     }
-    async jobs() {
+    async jobs(page:string,type:string,location:string,date:string) {
         try {
-            let jobs = await this.userRepo.viewjobs()
-            if (jobs) {
-                return { success: true, message: "Jobs sent successfully", jobs }
+            let jobData = await this.userRepo.viewjobs(page,type,location,date)
+            if (jobData) {
+                const {jobs,count}=jobData
+                return { success: true, message: "Jobs sent successfully", jobs,count }
             } else {
                 return { success: false, message: "Failed to sent job" }
             }
@@ -678,6 +679,34 @@ class userUsecase {
         } catch (error) {
             console.log(error);
             throw error
+        }
+    }
+
+    async inbox(sender_id:string,reciever_id:string){
+        try {
+            const saveData = await this.userRepo.saveInbox(sender_id,reciever_id)
+            if(saveData){
+                return {success:true,message:"Inbox saved"}
+            }else{
+                return {success:false,message:"Failed to save"}
+            }
+            
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
+    async conversation(sender_id:string){
+        try {
+            const conversationData = await this.userRepo.findInbox(sender_id)
+            if(conversationData){
+                return {success:true,message:"Conversation list sent successfully",conversationData}
+            }else{
+             return {success:false,messsage:"Failed to sent conversation data"}
+            }
+        } catch (error) {
+            console.log(error);
+            throw error  
         }
     }
 }

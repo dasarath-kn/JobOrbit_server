@@ -1,7 +1,7 @@
 import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
-import message from "../../entities/message";
+import message, { inbox } from "../../entities/message";
 import Notification from "../../entities/notification";
 import otp from "../../entities/otp";
 import postreport from "../../entities/postreport";
@@ -11,9 +11,10 @@ import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData, reviews } from "../../entities/user";
 import { UserDataResult } from "../../useCases/interfaces/IAdminInterface";
-import IUserInterface, { data, messages } from '../../useCases/interfaces/IUserInterface'
+import IUserInterface, { data, jobData, messages } from '../../useCases/interfaces/IUserInterface'
 import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
+import inboxModel from "../database/inboxModel";
 import appliedJobModel from "../database/jobApplied";
 import appliedJobModels from "../database/jobApplied";
 import jobModel from "../database/jobModel";
@@ -178,17 +179,47 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to update userdata")
         }
     }
-    async viewjobs(): Promise<jobs[] | null> {
+    async viewjobs(page: string, type: string, location: string, date: string): Promise<jobData | null> {
         try {
-            let jobs = await jobModel.find({}).populate('company_id')
-            return jobs ? jobs : null
-
+            const pages = Number(page) * 8;
+            const filter: any = {};
+            if (type) {
+                filter.type = type;
+            }
+            if (location) {
+                filter.location = location;
+            }
+            if (date) {
+                
+                const now = new Date();
+                let dateFilter: any;
+                if (date === 'last-week') {
+                    dateFilter = new Date(now.setDate(now.getDate() - 7));
+                } else if (date === 'last-month') {
+                    dateFilter = new Date(now.setMonth(now.getMonth() - 1));
+                }
+    
+                filter.time = { $gte: dateFilter };
+            }
+    
+            const jobCount = await jobModel.find(filter).countDocuments();
+            const jobs = await jobModel.find(filter).sort({ time: -1 }).skip(pages).limit(8).populate('company_id');
+    
+            if (jobs.length === 0) {
+                return null;
+            }
+    
+            return {
+                count: Math.ceil(jobCount / 8),
+                jobs
+            };
+    
         } catch (error) {
             console.error(error);
-            throw new Error("Unable to update userdata")
+            throw new Error("Unable to find jobs");
         }
     }
-
+    
     async getPosts(): Promise<Post[] | null> {
         try {
             let posts = await postModel.find({}).sort({ time: -1 }).populate('company_id').populate('like')
@@ -629,6 +660,45 @@ class userRepository implements IUserInterface {
             } catch (error) {
             console.error(error);
             throw new Error("Unable to update connection")
+        }
+    }
+    async saveInbox(sender_id: string, reciever_id: string): Promise<boolean> {
+        try {
+            const data ={sender_id:sender_id,reciever_id:reciever_id}
+            const exist = await inboxModel.findOne({sender_id:sender_id,reciever_id:reciever_id})
+            if(!exist){
+            const inbox = new inboxModel(data)
+            await inbox.save()
+            return true}else{                
+                return false
+            }
+            
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to save ") 
+        }
+    }
+    async findInbox(sender_id: string): Promise<inbox[] | inbox | null> {
+        try {
+            const inbox = await inboxModel.find({sender_id:sender_id}).sort({time:-1}).populate('reciever_id')
+            return inbox ?inbox :null
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find inboxData ") 
+        }
+    }
+    async updateInbox(sender_id: string, reciever_id: string,message:string): Promise<boolean> {
+        try {
+            const senderUpdate = await inboxModel.updateOne({sender_id:sender_id,reciever_id:reciever_id},{message:message,time:Date.now()})
+            const recieverUpdate = await inboxModel.updateOne({sender_id:reciever_id,reciever_id:sender_id},{message:message,time:Date.now()})
+            if(senderUpdate && recieverUpdate){
+                return true
+            }else{
+                return false
+            }
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to find inboxData ") 
         }
     }
 }

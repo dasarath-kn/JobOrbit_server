@@ -59,6 +59,8 @@ router.patch('/connectcompany',Auth,(req,res)=>UserController.newCompanyConnecti
 router.get('/messages',Auth,(req,res)=>UserController.getMessages(req,res))
 router.get('/connection',Auth,(req,res)=>UserController.connectRequests(req,res))
 router.patch('/manageconnection',Auth,(req,res)=>UserController.manageConnection(req,res))
+router.post('/inbox',Auth,(req,res)=>UserController.saveInbox(req,res))
+router.get('/conversation',Auth,(req,res)=>UserController.conversationData(req,res))
 
 
 

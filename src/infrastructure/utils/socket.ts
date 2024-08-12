@@ -16,29 +16,24 @@ export const initializeSocket = (server: HTTPServer) => {
 
     io.on('connection', (socket: Socket) => {
         socket.on("user_login",(user_id)=>{
-           users[user_id]=socket.id
-           console.log(users);
-           
+           users[user_id]=socket.id           
             
         }) 
 
         socket.on("private_message",async({sender_id,reciever_id,message})=>{
-           console.log(reciever_id);
            
             const recipient = users[reciever_id]
             if(recipient){
                 const data ={sender_id,reciever_id,message}
-                console.log(data);
-                
+                const saveConversation = await repo.saveInbox(reciever_id,sender_id,)
                 const save = await repo.saveMessages(data as message)
+                const updateinbox =await repo.updateInbox(sender_id,reciever_id,message)
                 io.to(recipient).emit("private_message",{message,sender_id,reciever_id})
             }
         })
         
         
-        socket.on("notify",async({user_id,connection_id,message})=>{
-            console.log(user_id,connection_id);
-          
+        socket.on("notify",async({user_id,connection_id,message})=>{          
             const addConnection = await repo.connectUser(user_id,connection_id)
             const addnotification = await repo.saveNotification(user_id,connection_id,message)
             if(addConnection && addnotification){

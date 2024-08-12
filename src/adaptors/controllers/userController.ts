@@ -180,8 +180,8 @@ class userController {
             const { firstname, lastname, field, location, github_url, portfolio_url, about, qualification, img_url, percentage } = req.body
             const percentages = Number(percentage)
             const userData = { firstname, lastname, field, location, github_url, portfolio_url, about, qualification, img_url }
-           console.log(req.body);
-           
+            console.log(req.body);
+
             const file = req.file?.path
             let editProfile = await this.userUsecases.updateProfile(id as string, userData as user, file as string, percentages as number)
             if (editProfile.success) {
@@ -218,10 +218,13 @@ class userController {
 
     async getjobs(req: Request, res: Response) {
         try {
-            let findJobs = await this.userUsecases.jobs()
+            const { page,type,location,date } = req.query
+            console.log(req.query);
+            
+            let findJobs = await this.userUsecases.jobs(page as string,type,location,date)
             if (findJobs.success) {
-                const { jobs } = findJobs
-                res.status(200).json({ success: true, message: findJobs.message, jobs })
+                const { jobs, count } = findJobs
+                res.status(200).json({ success: true, message: findJobs.message, jobs, count })
             } else {
                 res.status(400).json({ success: false, message: findJobs.message })
             }
@@ -267,10 +270,10 @@ class userController {
     async savePost(req: Request, res: Response) {
         try {
             let { id } = req
-            let { post_id,message,company_id } = req.body
-            let postData = { user_id: id, post_id,company_id }
+            let { post_id, message, company_id } = req.body
+            let postData = { user_id: id, post_id, company_id }
 
-            let savedPost = await this.userUsecases.postSave(postData as savedPost,message)
+            let savedPost = await this.userUsecases.postSave(postData as savedPost, message)
             if (savedPost.success) {
                 res.status(200).json({ success: true, message: savedPost.message })
             } else {
@@ -302,8 +305,8 @@ class userController {
     async postComment(req: Request, res: Response) {
         try {
             const { id } = req
-            const { post_id, message,company_id } = req.body
-            const commentData = { user_id: id, post_id,company_id,message }            
+            const { post_id, message, company_id } = req.body
+            const commentData = { user_id: id, post_id, company_id, message }
             let comments = await this.userUsecases.shareComment(commentData as comment)
             if (comments.success) {
                 res.status(200).json({ success: true, message: comments.message })
@@ -334,12 +337,12 @@ class userController {
     async viewJobdetails(req: Request, res: Response) {
         try {
             const { job_id } = req.query
-            const {id}=req
-            let details = await this.userUsecases.jobDetails(job_id as string,id as string)
+            const { id } = req
+            let details = await this.userUsecases.jobDetails(job_id as string, id as string)
             if (details.success) {
-                const { jobDetails,plan_id } = details
-                
-                res.status(200).json({ success: true, message: details.message, jobDetails,plan_id })
+                const { jobDetails, plan_id } = details
+
+                res.status(200).json({ success: true, message: details.message, jobDetails, plan_id })
             } else {
                 res.status(400).json({ success: false, message: details.message })
             }
@@ -352,8 +355,8 @@ class userController {
         try {
             const { id } = req
 
-            const { experiencefield,  mode,start_date,end_date, responsibilities, percentage } = req.body
-            const experienceData = { experiencefield, mode,start_date,end_date, responsibilities }
+            const { experiencefield, mode, start_date, end_date, responsibilities, percentage } = req.body
+            const experienceData = { experiencefield, mode, start_date, end_date, responsibilities }
             const percentages = Number(percentage)
             let addexperience = await this.userUsecases.experience(experienceData as any, percentages, id as string)
             if (addexperience.success) {
@@ -389,10 +392,10 @@ class userController {
     async applyJob(req: Request, res: Response) {
         try {
             const { id } = req
-            const { job_id,company_id } = req.body
+            const { job_id, company_id } = req.body
             console.log(req.body);
-            
-            const applyJob = await this.userUsecases.jobApplication(job_id as string, id as string,company_id as string)
+
+            const applyJob = await this.userUsecases.jobApplication(job_id as string, id as string, company_id as string)
             if (applyJob.success) {
                 res.status(200).json({ success: true, message: applyJob.message })
             } else {
@@ -421,10 +424,10 @@ class userController {
     }
     async paysubscriptionplan(req: Request, res: Response) {
         try {
-            const { plan_id,expiry_date } = req.body
+            const { plan_id, expiry_date } = req.body
             const { id } = req
-            const date  = await getExpiryDate(expiry_date)
-            const subscriptionData = { user_id: id, session_id: '', plan_id:plan_id,expiry_date:date }
+            const date = await getExpiryDate(expiry_date)
+            const subscriptionData = { user_id: id, session_id: '', plan_id: plan_id, expiry_date: date }
             const payment = await this.userUsecases.subscriptionPayment(plan_id, subscriptionData as subscriptedUser)
             if (payment.success) {
                 const { payment_id } = payment
@@ -475,22 +478,22 @@ class userController {
         }
     }
 
-    async reportPost(req:Request,res:Response){
+    async reportPost(req: Request, res: Response) {
         try {
-            const {id} =req
-            const {post_id,report_message} =req.body
-            const date =Date.now()
-            const postreportData ={user_id:id,report_message,date}
-           
-           console.log(postreportData,"ddlj");
-           
-            let report = await this.userUsecases.postReportsave(post_id as string,postreportData as postreport)
-            if(report.success){
-                res.status(200).json({success:true,message:report.message})
-            }else{
-                res.status(400).json({success:false,message:report.message})
+            const { id } = req
+            const { post_id, report_message } = req.body
+            const date = Date.now()
+            const postreportData = { user_id: id, report_message, date }
+
+            console.log(postreportData, "ddlj");
+
+            let report = await this.userUsecases.postReportsave(post_id as string, postreportData as postreport)
+            if (report.success) {
+                res.status(200).json({ success: true, message: report.message })
+            } else {
+                res.status(400).json({ success: false, message: report.message })
             }
-            
+
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, message: "Internal server error" })
@@ -498,229 +501,265 @@ class userController {
         }
     }
 
-    async appliedJobs(req:Request,res:Response){
+    async appliedJobs(req: Request, res: Response) {
         try {
-            const {id} =req
-            
+            const { id } = req
+
             let applied = await this.userUsecases.findAppliedJobsByUserid(id as string)
-            if(applied.success){
-                        const {appliedJobs} =applied
-                res.status(200).json({success:true,message:applied.message,appliedJobs})
-            }else{
-                res.status(400).json({success:false,message:applied.message})
+            if (applied.success) {
+                const { appliedJobs } = applied
+                res.status(200).json({ success: true, message: applied.message, appliedJobs })
+            } else {
+                res.status(400).json({ success: false, message: applied.message })
             }
-            
+
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, message: "Internal server error" })
 
         }
     }
-    async getUsers(req:Request,res:Response){
+    async getUsers(req: Request, res: Response) {
         try {
-            let userDetails= await this.userUsecases.findUsers()
-            if(userDetails.success){
-               let {userDatas} =userDetails;
-                
-                res.status(200).json({success:true,message:userDetails.message,userDatas})
-            }else{
-                res.status(400).json({success:false,message:userDetails?.message})
+            let userDetails = await this.userUsecases.findUsers()
+            if (userDetails.success) {
+                let { userDatas } = userDetails;
+
+                res.status(200).json({ success: true, message: userDetails.message, userDatas })
+            } else {
+                res.status(400).json({ success: false, message: userDetails?.message })
             }
-            
+
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-            
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
-    async getComapnies(req:Request,res:Response){
+    async getComapnies(req: Request, res: Response) {
         try {
             let companyDetails = await this.userUsecases.findCompanies()
-            if(companyDetails.success){
-                const {companyDatas} =companyDetails
-                res.status(200).json({success:true,messsage:companyDetails.message,companyDatas})
-            }else{
-                res.status(400).json({success:true,message:companyDetails.message})
+            if (companyDetails.success) {
+                const { companyDatas } = companyDetails
+                res.status(200).json({ success: true, messsage: companyDetails.message, companyDatas })
+            } else {
+                res.status(400).json({ success: true, message: companyDetails.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-            
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
 
-    async getCompany(req:Request,res:Response){
+    async getCompany(req: Request, res: Response) {
         try {
-            const {id}=req.query
+            const { id } = req.query
             let company = await this.userUsecases.viewCompany(id as string)
-            if(company.success){
-                const {companyData}=company
-                res.status(200).json({success:true,message:company.message,companyData})
-            }else{
-                res.status(400).json({success:true,message:company.message})
+            if (company.success) {
+                const { companyData } = company
+                res.status(200).json({ success: true, message: company.message, companyData })
+            } else {
+                res.status(400).json({ success: true, message: company.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-            
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
 
-    async findUser(req:Request,res:Response){
+    async findUser(req: Request, res: Response) {
         try {
-            const {id}=req.query
+            const { id } = req.query
             let user = await this.userUsecases.findUserdetails(id as string)
-            if(user?.success){
-                const {userData} =user
-                res.status(200).json({success:true,message:user.message,userData})
-            }else{
-                res.status(400).json({success:false,message:user?.message})
+            if (user?.success) {
+                const { userData } = user
+                res.status(200).json({ success: true, message: user.message, userData })
+            } else {
+                res.status(400).json({ success: false, message: user?.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-            
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
-    async postReview(req:Request,res:Response){
+    async postReview(req: Request, res: Response) {
         try {
-            const {rating_count,review,company_id} =req.body
-            const {id} =req
-            const reviewData={rating_count,review,user_id:id,date:Date.now(),company_id}
+            const { rating_count, review, company_id } = req.body
+            const { id } = req
+            const reviewData = { rating_count, review, user_id: id, date: Date.now(), company_id }
             const reviews = await this.userUsecases.addreviews(reviewData as reviews)
-            if(reviews.success){
-                res.status(200).json({success:true,message:reviews.message})
-            }else{
-                res.status(400).json({success:false,message:reviews.message})
+            if (reviews.success) {
+                res.status(200).json({ success: true, message: reviews.message })
+            } else {
+                res.status(400).json({ success: false, message: reviews.message })
             }
-            
+
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-              
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
 
-    async getReviews(req:Request,res:Response){
+    async getReviews(req: Request, res: Response) {
         try {
-            const {id} =req.query
+            const { id } = req.query
             const reviewDatas = await this.userUsecases.reviews(id as string)
-            if(reviewDatas.success){
-                const {reviews} =reviewDatas
-                
-                res.status(200).json({success:true,message:reviewDatas.message,reviews})
-            }else{
-                res.status(400).json({success:false,messagwe:reviewDatas.message})
+            if (reviewDatas.success) {
+                const { reviews } = reviewDatas
+
+                res.status(200).json({ success: true, message: reviewDatas.message, reviews })
+            } else {
+                res.status(400).json({ success: false, messagwe: reviewDatas.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-            
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
-    async connectUser(req:Request,res:Response){
+    async connectUser(req: Request, res: Response) {
         try {
 
-            
-            
+
+
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"})
-               
+            res.status(500).json({ success: false, message: "Internal server error" })
+
         }
     }
 
-    async newConnection(req:Request,res:Response){
+    async newConnection(req: Request, res: Response) {
         try {
-            const {id}=req            
-            const {connection_id}=req.body
-           
-            
-            const connection = await this.userUsecases.addConnection(id as string,connection_id)
-            if(connection.success){
-                res.status(200).json({success:true,message:connection.message})
-            }else{
-            res.status(400).json({success:false,message:connection.message})
+            const { id } = req
+            const { connection_id } = req.body
+
+
+            const connection = await this.userUsecases.addConnection(id as string, connection_id)
+            if (connection.success) {
+                res.status(200).json({ success: true, message: connection.message })
+            } else {
+                res.status(400).json({ success: false, message: connection.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"}) 
+            res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
 
-    async getMessages(req:Request,res:Response){
+    async getMessages(req: Request, res: Response) {
         try {
-            const {_id} = req.query
-            const {id} =req
+            const { _id } = req.query
+            const { id } = req
             console.log();
-            const reciever_id =_id
-            const sender_id =id
-            
-            const messageData = await this.userUsecases.message(reciever_id as string,sender_id as string)
-            if(messageData.success){
-                const {messages}=messageData
-                res.status(200).json({success:true,message:messageData.message,messages})
-            }else{
-                res.status(400).json({success:false,message:messageData.message})
+            const reciever_id = _id
+            const sender_id = id
+
+            const messageData = await this.userUsecases.message(reciever_id as string, sender_id as string)
+            if (messageData.success) {
+                const { messages } = messageData
+                res.status(200).json({ success: true, message: messageData.message, messages })
+            } else {
+                res.status(400).json({ success: false, message: messageData.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"}) 
+            res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
 
-    async newCompanyConnection(req:Request,res:Response){
+    async newCompanyConnection(req: Request, res: Response) {
         try {
-            const {id}=req            
-            const {company_id}=req.body
+            const { id } = req
+            const { company_id } = req.body
             console.log(req.body);
-            
-           
-            
-            const connection = await this.userUsecases.addCompanyConnection(id as string,company_id)
-            if(connection.success){
-                res.status(200).json({success:true,message:connection.message})
-            }else{
-            res.status(400).json({success:false,message:connection.message})
+
+
+
+            const connection = await this.userUsecases.addCompanyConnection(id as string, company_id)
+            if (connection.success) {
+                res.status(200).json({ success: true, message: connection.message })
+            } else {
+                res.status(400).json({ success: false, message: connection.message })
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"}) 
+            res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
 
-    async connectRequests(req:Request,res:Response){
+    async connectRequests(req: Request, res: Response) {
+        try {
+            const { id } = req
+            const connection = await this.userUsecases.connections(id as string)
+            if (connection.success) {
+                const { connectRequests } = connection
+                res.status(200).json({ success: true, message: connection.message, connectRequests })
+            } else {
+                res.status(400).json({ success: false, message: connection.message })
+
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async manageConnection(req: Request, res: Response) {
+        try {
+            const { id } = req
+            const { connection_id, notification_id, message } = req.body
+            const manage = await this.userUsecases.connectionManage(id as string, connection_id, notification_id, message)
+            if (manage.success) {
+                res.status(200).json({ success: true, message: manage.message })
+            } else {
+                res.status(400).json({ success: false, message: manage.message })
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async saveInbox(req: Request, res: Response) {
+        try {
+            const { reciever_id } = req.body
+            const { id } = req
+            const sender_id = id
+            console.log(reciever_id, "djh");
+
+            const saveData = await this.userUsecases.inbox(sender_id as string, reciever_id)
+            if (saveData.success) {
+                res.status(200).json({ success: true, message: saveData.message })
+            } else {
+                res.status(400).json({ success: false, message: saveData.message })
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+
+    async conversationData(req:Request,res:Response){
         try {
             const {id} =req
-            const connection = await this.userUsecases.connections(id as string)
-            if(connection.success){
-                const{connectRequests} =connection
-                res.status(200).json({success:true,message:connection.message,connectRequests})
+            const sender_id = id
+            const data = await this.userUsecases.conversation(sender_id as string)
+            if(data.success){
+                const {conversationData} =data
+                res.status(200).json({success:true,message:data.message,conversationData})
             }else{
-                res.status(400).json({success:false,message:connection.message})
+                res.status(400).json({success:false,message:data.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
 
-            }
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"}) 
-        }
-    }
-    async manageConnection(req:Request,res:Response){
-        try {
-            const {id}=req
-            const {connection_id,notification_id,message} =req.body
-            const manage = await this.userUsecases.connectionManage(id as string,connection_id,notification_id,message)
-            if(manage.success){
-                res.status(200).json({success:true,message:manage.message})
-            }else{
-                res.status(400).json({success:false,message:manage.message})
-            }
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({success:false,message:"Internal server error"}) 
-        }
-    }
-    }
+}
 
 
 

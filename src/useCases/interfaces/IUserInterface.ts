@@ -1,7 +1,7 @@
 import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
-import message from "../../entities/message";
+import message, { inbox } from "../../entities/message";
 import Notification from "../../entities/notification";
 import postreport from "../../entities/postreport";
 import { Post } from "../../entities/posts";
@@ -16,6 +16,11 @@ export interface data {
 export interface messages {
     sender:message,
     reciever:message
+
+}
+export interface jobData {
+    count: number;
+    jobs: jobs[];
 }
 interface IUserInterface {
     findUserById(id: string): Promise<user | null>
@@ -30,7 +35,7 @@ interface IUserInterface {
     updateProfile(id: string, user: user, percentage: number): Promise<boolean | null>
     updateSkill(skill: [], id: string, percentage: number): Promise<boolean>
     updateResume(id: string, resume_url: string, percentage: number): Promise<boolean>
-    viewjobs(): Promise<jobs[] | null>
+    viewjobs(page:string,type:string,location:string,date:string): Promise<jobData | null>
     getPosts(): Promise<Post[] | null>
     likePost(post_id: string, user_id: string): Promise<boolean | null>
     unlikePost(post_id: string, user_id: string): Promise<boolean | null>
@@ -61,6 +66,10 @@ interface IUserInterface {
     findNotification(sender_id:string,reciever_id:string):Promise<Notification[]|null>
     findConnectionRequest(reciever_id:string):Promise<Notification[]|null>
     manageConnection(user_id:string,connection_id:string,notification_id:string,message:string):Promise<boolean>
+    saveInbox(sender_id:string,reciever_id:string):Promise<boolean>
+    findInbox(sender_id:string):Promise<inbox[]|inbox|null>
+    updateInbox(sender_id:string,reciever_id:string,message:string):Promise<boolean>
+
 }
 
 
