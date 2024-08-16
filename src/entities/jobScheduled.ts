@@ -7,6 +7,6 @@ interface jobShedule{
    date:Date,
    time:string,
    message:string,
-   scheduled_time:Date
+   scheduled_time:any
 }
 export default jobShedule

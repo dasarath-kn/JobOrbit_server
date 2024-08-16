@@ -200,11 +200,12 @@ class CompanyUsecase {
         }
     }
 
-    async jobs(id:string){
+    async jobs(id:string,page:string){
       try {
-        let jobData = await this.companyRepo.getJobs(id)
+        let jobData = await this.companyRepo.getJobs(id,page)
         if(jobData){
-            return{success:true,message:"Jobs sent successfully",jobData}
+            const {jobs,count}=jobData
+            return{success:true,message:"Jobs sent successfully",jobs,count}
         } else{
             return{success:false,message:"Failed to sent jobs"}
         }
@@ -442,6 +443,19 @@ class CompanyUsecase {
             }
         } catch (error) {
             console.error(error);
+            throw error  
+        }
+    }
+    async conversation(sender_id:string){
+        try {
+            const conversationData = await this.companyRepo.findInbox(sender_id)
+            if(conversationData){
+                return {success:true,message:"Conversation list sent successfully",conversationData}
+            }else{
+             return {success:false,messsage:"Failed to sent conversation data"}
+            }
+        } catch (error) {
+            console.log(error);
             throw error  
         }
     }

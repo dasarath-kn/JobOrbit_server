@@ -1,3 +1,4 @@
+import jobApplied from "../../entities/appliedJobs";
 import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
@@ -10,12 +11,12 @@ import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData, reviews } from "../../entities/user";
 export interface data {
-    review:reviews
-    counts:[]
+    review:reviews[]
+    counts:number[]
 }
 export interface messages {
-    sender:message,
-    reciever:message
+    sender:message[],
+    reciever:message[]
 
 }
 export interface jobData {
@@ -52,7 +53,7 @@ interface IUserInterface {
     updatesubscribedUsers(id: string, status: string): Promise<boolean>
     findSubscribedUserById(id: string): Promise<subscriptedUser | null>
     savePostReport(post_id:string,postreportData: postreport): Promise<Boolean>
-    findAppliedJobs(user_id: string): Promise<jobs[] | null>
+    findAppliedJobs(user_id: string): Promise<jobApplied[] | null>
     getUserdatas(): Promise<user[] | null>
     getCompanydatas(): Promise<company[] | null>
     findCompanyById(id: string): Promise<company | null>
@@ -66,10 +67,10 @@ interface IUserInterface {
     findNotification(sender_id:string,reciever_id:string):Promise<Notification[]|null>
     findConnectionRequest(reciever_id:string):Promise<Notification[]|null>
     manageConnection(user_id:string,connection_id:string,notification_id:string,message:string):Promise<boolean>
-    saveInbox(sender_id:string,reciever_id:string):Promise<boolean>
-    findInbox(sender_id:string):Promise<inbox[]|inbox|null>
+    saveInbox(sender_id:string,reciever_id:string,role:string):Promise<boolean>
+    findInbox(sender_id:string,role:string):Promise<inbox[]|inbox|null>
     updateInbox(sender_id:string,reciever_id:string,message:string):Promise<boolean>
-
+    updateOnlineStatus(user_id:string,status:boolean):Promise<boolean>
 }
 
 

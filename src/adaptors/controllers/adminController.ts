@@ -25,8 +25,12 @@ class adminController {
 
     async userBlockUnblock(req:Request,res:Response){
         try {
-            let {user_id,status} =req.query            
+            let {user_id,status} =req.query 
+            console.log(req.query);
+                       
             let blockUnblockUser=await this.adminUsecases.blockUnblockUsers(user_id as string,status as string)
+            console.log(blockUnblockUser);
+            
             if(blockUnblockUser.success){
                 res.status(200).json({success:true,message:blockUnblockUser.message})
             }else{

@@ -28,9 +28,9 @@ class AdminRespositories implements IAdminInterface {
         try {
             
             let skipCount = Number(page) * 3
-            let Count: number = await userModel.find().countDocuments()
+            let Count: number = await userModel.find({is_admin:false}).countDocuments()
             
-            let userData: user[] = await userModel.find({}).skip(skipCount).limit(3)
+            let userData: user[] = await userModel.find({is_admin:false}).skip(skipCount).limit(3)
             if (userData.length === 0) {
                 return null;
             }

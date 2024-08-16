@@ -8,9 +8,13 @@ const inboxSchema:Schema<inbox> = new Schema({
     },
     reciever_id:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'user'
+        refPath:'role'
     },message:{
         type:String,
+    },
+    role:{
+        type:String,
+        enum: ['user', 'company']
     },
     time:{
         type:Date

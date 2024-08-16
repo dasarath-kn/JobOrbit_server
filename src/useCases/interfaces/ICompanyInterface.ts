@@ -2,13 +2,13 @@ import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import jobShedule from "../../entities/jobScheduled";
-import message from "../../entities/message";
+import message, { inbox } from "../../entities/message";
 import { Post } from "../../entities/posts";
 import { reviews } from "../../entities/user";
-import { messages } from "./IUserInterface";
+import { jobData, messages } from "./IUserInterface";
 export interface data {
-    review:reviews
-    counts:[]
+    review:reviews[]
+    counts:number[]
 }
 interface ICompanyInterface {
     findCompanyByEmail(email: string): Promise<company | null>
@@ -19,7 +19,7 @@ interface ICompanyInterface {
     getCompanydata(id: string): Promise<company | null>
     resetPassword(company: company): Promise<boolean | null>
     saveJobs(jobData: jobs): Promise<boolean | null>
-    getJobs(id: string): Promise<jobs[] | null>
+    getJobs(id: string,page:string): Promise<jobData | null>
     removeJob(id: string): Promise<boolean>
     savePosts(postData: Post): Promise<boolean>
     getPosts(id: string): Promise<Post[] | null>
@@ -36,6 +36,8 @@ interface ICompanyInterface {
     getcomment(id: string): Promise<comment[] | null>
     replycomment(comment_id:string,reply:string):Promise<boolean>
     deleteApplicant(job_id:string,user_id:string):Promise<boolean>
+    findInbox(reciever_id:string):Promise<inbox[]|inbox|null>
+
 }
 
 export default ICompanyInterface

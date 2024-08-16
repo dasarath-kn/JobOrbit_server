@@ -22,6 +22,7 @@ interface user {
     resume_url: string,
     skills: [string],
     qualification: string,
+    online:boolean
     experience: [{
         experiencefield: string,
         duration: number,

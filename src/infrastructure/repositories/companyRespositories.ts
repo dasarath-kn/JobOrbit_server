@@ -2,11 +2,13 @@ import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
 import jobShedule from "../../entities/jobScheduled";
-import message from "../../entities/message";
+import message, { inbox } from "../../entities/message";
 import { Post } from "../../entities/posts";
-import ICompanyInterface from "../../useCases/interfaces/ICompanyInterface";
+import ICompanyInterface, { data } from "../../useCases/interfaces/ICompanyInterface";
+import { jobData, messages } from "../../useCases/interfaces/IUserInterface";
 import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
+import inboxModel from "../database/inboxModel";
 import jobModel from "../database/jobModel";
 import JobScheduledModel from "../database/jobSheduled";
 import messageModel from "../database/messageModel";
@@ -127,10 +129,19 @@ class CompanyRepositories implements ICompanyInterface {
 
       }
    }
-   async getJobs(id: string): Promise<jobs[] | null> {
+   async getJobs(id: string,page:string): Promise<jobData | null> {
       try {
-         let jobs = await jobModel.find({ company_id: id }).sort({ time: -1 }).populate('company_id')
-         return jobs ? jobs : null
+         const pages =Number(page)*6
+         const jobCount = await jobModel.find({company_id:id}).countDocuments()
+         let jobs = await jobModel.find({ company_id: id }).sort({ time: -1 }).skip(pages).limit(6).populate('company_id')
+         if (jobs.length === 0) {
+            return null;
+        }
+
+        return {
+            count: Math.ceil(jobCount / 6),
+            jobs
+        };
       } catch (error) {
          console.error(error);
          throw new Error("Unable to find jobs")
@@ -237,7 +248,7 @@ class CompanyRepositories implements ICompanyInterface {
    try {
        const objectId = new ObjectId(id);
        const reviewdata = await reviewandRatingModel.find({ company_id: id }).populate('user_id')
-       const count = []
+       const count:number[] = []
        for (let i = 5; i >= 1; i--) {
            const averageStar = await reviewandRatingModel.aggregate([{ $match: { company_id: objectId, rating_count: i } }, { $group: { _id: null, average: { $avg: "$rating_count" } } }])
 
@@ -249,7 +260,7 @@ class CompanyRepositories implements ICompanyInterface {
 
            }
        }
-       const data = {
+       const data:data = {
            review: reviewdata, counts: count
        }
 
@@ -316,6 +327,15 @@ async deleteApplicant(job_id: string, user_id: string): Promise<boolean> {
       console.error(error);
       throw new Error(`Unable to delete applicant`)
   }
+}
+async findInbox(reciever_id: string): Promise<inbox[] | inbox | null> {
+   try {
+      const inbox = await inboxModel.find({reciever_id:reciever_id,role:'company'}).sort({time:-1}).populate('sender_id')
+      return inbox ?inbox :null
+  } catch (error) {
+      console.error(error);
+      throw new Error("Unable to find inboxData ") 
+  } 
 }
 }
 

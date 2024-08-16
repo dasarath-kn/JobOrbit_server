@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose, { Date, ObjectId } from "mongoose";
 
 interface jobs{
     jobtitle:string,
@@ -14,3 +14,12 @@ interface jobs{
     time: Date;
 }
 export default jobs
+export interface jobApplied{
+    job_id:mongoose.Types.ObjectId[];
+    applicants_id:mongoose.Types.ObjectId[];
+    company_id:mongoose.Types.ObjectId[];
+    user_id:mongoose.Types.ObjectId[];
+    status:string,
+    applied_date:Date
+    
+}

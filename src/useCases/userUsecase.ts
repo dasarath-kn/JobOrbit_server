@@ -682,9 +682,9 @@ class userUsecase {
         }
     }
 
-    async inbox(sender_id:string,reciever_id:string){
+    async inbox(sender_id:string,reciever_id:string,role:string){
         try {
-            const saveData = await this.userRepo.saveInbox(sender_id,reciever_id)
+            const saveData = await this.userRepo.saveInbox(sender_id,reciever_id,role)
             if(saveData){
                 return {success:true,message:"Inbox saved"}
             }else{
@@ -696,9 +696,9 @@ class userUsecase {
             throw error
         }
     }
-    async conversation(sender_id:string){
+    async conversation(sender_id:string,role:string){
         try {
-            const conversationData = await this.userRepo.findInbox(sender_id)
+            const conversationData = await this.userRepo.findInbox(sender_id,role)
             if(conversationData){
                 return {success:true,message:"Conversation list sent successfully",conversationData}
             }else{

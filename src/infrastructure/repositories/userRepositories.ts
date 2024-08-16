@@ -1,3 +1,4 @@
+import jobApplied from "../../entities/appliedJobs";
 import { comment } from "../../entities/comment";
 import company from "../../entities/company";
 import jobs from "../../entities/jobs";
@@ -446,7 +447,7 @@ class userRepository implements IUserInterface {
         }
     }
 
-    async findAppliedJobs(user_id: string): Promise<jobs[] | null> {
+    async findAppliedJobs(user_id: string): Promise<jobApplied[] | null> {
         try {
 
             let data = await appliedJobModel.find({user_id:user_id }).populate("job_id").populate('company_id')
@@ -514,7 +515,7 @@ class userRepository implements IUserInterface {
         try {
             const objectId = new ObjectId(id);
             const reviewdata = await reviewandRatingModel.find({ company_id: id }).populate('user_id')
-            const count = []
+            const count:number[] = []
             for (let i = 5; i >= 1; i--) {
                 const averageStar = await reviewandRatingModel.aggregate([{ $match: { company_id: objectId, rating_count: i } }, { $group: { _id: null, average: { $avg: "$rating_count" } } }])
 
@@ -526,11 +527,11 @@ class userRepository implements IUserInterface {
 
                 }
             }
-            const data = {
+            const datas:data = {
                 review: reviewdata, counts: count
             }
 
-            return data ? data : null
+            return datas ? datas : null
 
         } catch (error) {
             console.error(error);
@@ -573,7 +574,9 @@ class userRepository implements IUserInterface {
         try {
             const sender = await messageModel.find({ reciever_id: reciever_id, sender_id: sender_id })
             const reciever = await messageModel.find({ reciever_id: sender_id, sender_id: reciever_id })
-            const messages = {
+        ;
+            
+            const messages:messages = {
                 sender: sender,
                 reciever: reciever
             }
@@ -662,13 +665,17 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to update connection")
         }
     }
-    async saveInbox(sender_id: string, reciever_id: string): Promise<boolean> {
+    async saveInbox(sender_id: string, reciever_id: string,role:string): Promise<boolean> {
         try {
-            const data ={sender_id:sender_id,reciever_id:reciever_id}
+            const data1 ={sender_id:sender_id,reciever_id:reciever_id,role:role}
+            const data2 ={sender_id:reciever_id,reciever_id:sender_id,role:role}
+            
             const exist = await inboxModel.findOne({sender_id:sender_id,reciever_id:reciever_id})
             if(!exist){
-            const inbox = new inboxModel(data)
+            const inbox = new inboxModel(data1)
             await inbox.save()
+            const inboxsave =new inboxModel(data2)
+            await inboxsave.save() 
             return true}else{                
                 return false
             }
@@ -678,10 +685,14 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to save ") 
         }
     }
-    async findInbox(sender_id: string): Promise<inbox[] | inbox | null> {
+    async findInbox(sender_id: string,role:string): Promise<inbox[] | inbox | null> {
         try {
-            const inbox = await inboxModel.find({sender_id:sender_id}).sort({time:-1}).populate('reciever_id')
-            return inbox ?inbox :null
+            const inbox = await inboxModel.find({
+                sender_id: sender_id,role:role})
+              
+            .sort({ time: -1 })
+            .populate('reciever_id');           
+             return inbox ?inbox :null
         } catch (error) {
             console.error(error);
             throw new Error("Unable to find inboxData ") 
@@ -699,6 +710,15 @@ class userRepository implements IUserInterface {
         } catch (error) {
             console.error(error);
             throw new Error("Unable to find inboxData ") 
+        }
+    }
+    async updateOnlineStatus(user_id: string,status:boolean): Promise<boolean> {
+        try {
+            const onlineStatus = await userModel.updateOne({_id:user_id},{$set:{online:status}})
+            return onlineStatus.acknowledged
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to update user online status ") 
         }
     }
 }

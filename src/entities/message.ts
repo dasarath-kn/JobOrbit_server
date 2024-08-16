@@ -10,7 +10,8 @@ export interface inbox {
     sender_id:mongoose.Schema.Types.ObjectId,
     reciever_id:mongoose.Schema.Types.ObjectId,
     message:string,
-    time:Date
+    time:Date,
+    role:string
 }
 
 export default message

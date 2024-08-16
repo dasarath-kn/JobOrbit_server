@@ -84,7 +84,7 @@ const userSchema:Schema<user> =new Schema({
       },
       percentage:{
         type:Number,
-        default:25,
+        default:40,
         max:100
 
       },
@@ -106,6 +106,10 @@ const userSchema:Schema<user> =new Schema({
       plan_id:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'subscription'
+      },
+      online:{
+        type:Boolean,
+        default:false
       },
       connections:[{
             connection_id:{

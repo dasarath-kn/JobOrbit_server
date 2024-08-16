@@ -168,12 +168,13 @@ class CompanyController {
     async getJobs(req: Request, res: Response) {
         try {
             let { id } = req
-            let jobs = await this.companyusecase.jobs(id as string)
-            if (jobs.success) {
-                const { jobData } = jobs
-                res.status(200).json({ success: true, message: jobs.message, jobData })
+            const {page}=req.query
+            let jobData = await this.companyusecase.jobs(id as string,page as string)
+            if (jobData.success) {
+                const { jobs,count } = jobData
+                res.status(200).json({ success: true, message: jobData.message, jobs,count })
             } else {
-                res.status(400).json({ success: false, message: jobs.message })
+                res.status(400).json({ success: false, message: jobData.message })
             }
         } catch (error) {
             console.error(error);
@@ -199,10 +200,10 @@ class CompanyController {
         try {
             const { id } = req
             const company_id=id
-            const files = req.files?.map((val) => val.path)
+            const files = Array.isArray(req.files)?req.files.map((val) => val.path):[]
             const { description } = req.body
             const postData = {company_id,description, images: [] }
-            let post = await this.companyusecase.savePost(postData, files)
+            let post = await this.companyusecase.savePost(postData as any, files as any)
             if (post.success) {
                 res.status(200).json({ success: true, message: post.message })
             } else {
@@ -338,7 +339,7 @@ class CompanyController {
             async ScheduledJobs(req:Request,res:Response){
                 try {
                     const {id}=req.query
-                    let scheduled = await this.companyusecase.getScheduledJobs(id)
+                    let scheduled = await this.companyusecase.getScheduledJobs(id as string)
                     if(scheduled.success){
                         const {scheduledJobs} =scheduled
                         console.log(scheduled,"d");
@@ -431,6 +432,23 @@ class CompanyController {
                         res.status(200).json({success:true,message:remove.message})
                     }else{
                         res.status(400).json({success:false,message:remove.message})
+                    }
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ success: false, message: "Internal server error" })
+                }
+            }
+
+            async conversationData(req:Request,res:Response){
+                try {
+                    const {id} =req
+                    const reciever_id = id                    
+                    const data = await this.companyusecase.conversation(reciever_id as string)
+                    if(data.success){
+                        const {conversationData} =data
+                        res.status(200).json({success:true,message:data.message,conversationData})
+                    }else{
+                        res.status(400).json({success:false,message:data.message})
                     }
                 } catch (error) {
                     console.error(error);

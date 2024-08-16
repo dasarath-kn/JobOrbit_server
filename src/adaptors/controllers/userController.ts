@@ -218,10 +218,8 @@ class userController {
 
     async getjobs(req: Request, res: Response) {
         try {
-            const { page,type,location,date } = req.query
-            console.log(req.query);
-            
-            let findJobs = await this.userUsecases.jobs(page as string,type,location,date)
+            const { page,type,location,date } = req.query            
+            let findJobs = await this.userUsecases.jobs(page as string,type as string,location as string,date as string)
             if (findJobs.success) {
                 const { jobs, count } = findJobs
                 res.status(200).json({ success: true, message: findJobs.message, jobs, count })
@@ -487,7 +485,7 @@ class userController {
 
             console.log(postreportData, "ddlj");
 
-            let report = await this.userUsecases.postReportsave(post_id as string, postreportData as postreport)
+            let report = await this.userUsecases.postReportsave(post_id as string, postreportData as any)
             if (report.success) {
                 res.status(200).json({ success: true, message: report.message })
             } else {
@@ -590,7 +588,7 @@ class userController {
             const { rating_count, review, company_id } = req.body
             const { id } = req
             const reviewData = { rating_count, review, user_id: id, date: Date.now(), company_id }
-            const reviews = await this.userUsecases.addreviews(reviewData as reviews)
+            const reviews = await this.userUsecases.addreviews(reviewData as any)
             if (reviews.success) {
                 res.status(200).json({ success: true, message: reviews.message })
             } else {
@@ -653,7 +651,7 @@ class userController {
 
     async getMessages(req: Request, res: Response) {
         try {
-            const { _id } = req.query
+            const { _id } = req.query            
             const { id } = req
             console.log();
             const reciever_id = _id
@@ -725,12 +723,12 @@ class userController {
     }
     async saveInbox(req: Request, res: Response) {
         try {
-            const { reciever_id } = req.body
+            const { reciever_id,role } = req.body
             const { id } = req
             const sender_id = id
-            console.log(reciever_id, "djh");
+          
 
-            const saveData = await this.userUsecases.inbox(sender_id as string, reciever_id)
+            const saveData = await this.userUsecases.inbox(sender_id as string, reciever_id,role)
             if (saveData.success) {
                 res.status(200).json({ success: true, message: saveData.message })
             } else {
@@ -746,7 +744,9 @@ class userController {
         try {
             const {id} =req
             const sender_id = id
-            const data = await this.userUsecases.conversation(sender_id as string)
+            const {role}=req.query
+            
+            const data = await this.userUsecases.conversation(sender_id as string,role as string)
             if(data.success){
                 const {conversationData} =data
                 res.status(200).json({success:true,message:data.message,conversationData})

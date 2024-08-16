@@ -32,11 +32,10 @@ const adminAuth = async(req:Request,res:Response,next:NextFunction)=>{
         
         return next();
     } catch (error:any) {
-        if (error.name === 'Token has expired') {
-            return res.status(401).json({ success: false, message: "Session has expired, please log in again." });
+        if (error.message === 'Token has expired') {            
+            return res.status(401).json({ success: false, message: "Token has expired" });
         }
         
-        return res.status(401).json({ success: false, message: "Unauthorized Access - Invalid token",blocked:true });
         
     }
 }
