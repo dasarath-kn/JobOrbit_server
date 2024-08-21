@@ -69,7 +69,7 @@ class NodeMailer implements NodeMailerIterface {
                 if (error) {
                     console.log('Error sending email',error);
                 } else {
-                    console.log(`Email sent:${id}`);
+                    console.log(`Email sent`);
                 }
             });
 

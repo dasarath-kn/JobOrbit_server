@@ -334,7 +334,7 @@ class CompanyUsecase {
             if(scheduled){
                   const companData = await this.companyRepo.getCompanydata(company_id as string )
                   const userData = await this.userRepo.findUserById(user_id as string)
-                  const sendInterviewEmail = await this.nodeMailer.interviewEmail(jobScheduleddata,companData?.companyname,userData?.firstname,userData?.email)
+                  const sendInterviewEmail = await this.nodeMailer.interviewEmail(jobScheduleddata,companData?.companyname as string,userData?.firstname as string,userData?.email as string)
                 return {success:true,message:"Schedule job sent successfully"}
             }else{
                 return {success:false,message:"Failed to save scheduled job"}

@@ -17,7 +17,7 @@ const server =http.createServer(app)
  initializeSocket(server)
 
 const corsOptions = {
-  origin: 'http://localhost:5173', 
+  origin: 'https://joborbit.vercel.app', 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, 
   optionsSuccessStatus: 204
