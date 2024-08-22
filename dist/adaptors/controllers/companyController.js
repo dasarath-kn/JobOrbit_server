@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const fs_1 = __importDefault(require("fs"));
 class CompanyController {
     constructor(companyusecase) {
         this.companyusecase = companyusecase;
@@ -226,6 +227,16 @@ class CompanyController {
                 const postData = { company_id, description, images: [] };
                 let post = yield this.companyusecase.savePost(postData, files);
                 if (post.success) {
+                    for (const filePath of files) {
+                        fs_1.default.unlink(filePath, (err) => {
+                            if (err) {
+                                console.error(`Error removing file ${filePath}:`, err);
+                            }
+                            else {
+                                console.log(`Successfully removed file ${filePath}`);
+                            }
+                        });
+                    }
                     res.status(200).json({ success: true, message: post.message });
                 }
                 else {

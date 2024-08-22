@@ -4,6 +4,8 @@ import CompanyUsecase from "../../useCases/companyUsecase"
 import { Response, Request } from "express"
 import jobs from "../../entities/jobs"
 import jobShedule from "../../entities/jobScheduled"
+import fs from 'fs';
+
 class CompanyController {
     private companyusecase: CompanyUsecase
     constructor(companyusecase: CompanyUsecase) {
@@ -205,6 +207,15 @@ class CompanyController {
             const postData = {company_id,description, images: [] }
             let post = await this.companyusecase.savePost(postData as any, files as any)
             if (post.success) {
+                for (const filePath of files) {
+                    fs.unlink(filePath, (err) => {
+                      if (err) {
+                        console.error(`Error removing file ${filePath}:`, err);
+                      } else {
+                        console.log(`Successfully removed file ${filePath}`);
+                      }
+                    });
+                  }
                 res.status(200).json({ success: true, message: post.message })
             } else {
                 res.status(400).json({ success: false, message: post.message })
