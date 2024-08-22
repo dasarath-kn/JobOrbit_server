@@ -30,7 +30,7 @@ app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
-app.use('/public', express_1.default.static(path_1.default.join(__dirname, '../../../public')));
+app.use('/public', express_1.default.static(path_1.default.join(__dirname, '../../public')));
 app.use('/', userRoute_1.default);
 app.use('/admin', adminRoute_1.default);
 app.use('/company', companyRoute_1.default);
