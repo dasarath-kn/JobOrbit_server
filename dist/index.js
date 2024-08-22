@@ -21,7 +21,7 @@ const port = process.env.PORT;
 const server = http_1.default.createServer(app);
 (0, socket_1.initializeSocket)(server);
 const corsOptions = {
-    origin: ['http://localhost:5173'],
+    origin: ['https://joborbit.vercel.app', 'http://localhost:5173'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204
