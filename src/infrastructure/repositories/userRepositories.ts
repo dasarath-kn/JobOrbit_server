@@ -382,14 +382,15 @@ class userRepository implements IUserInterface {
     }
     async updatesubscribedUsers(id: string, status: string): Promise<boolean> {
         try {
-            if (status == 'success') {
+            if (status === 'success') {
+                
                 let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: true } })
                 let plan = await subscribedModel.findOne({ session_id: id })
                 const subscriptionPlan = await subscriptionModel.findOne({ _id: plan?.plan_id })
                 const userUpdate = await userModel.updateOne({ _id: plan?.user_id }, { $set: { plan_id: subscriptionPlan?._id } })
                 return updated.acknowledged
             } else {
-                let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: false } })
+                let updated = await subscribedModel.deleteOne({ session_id: id })
                 return updated.acknowledged
             }
 
@@ -400,7 +401,7 @@ class userRepository implements IUserInterface {
     }
     async findSubscribedUserById(id: string): Promise<subscriptedUser | null> {
         try {
-            let user = await subscribedModel.findOne({ user_id: id }).populate('user_id').populate('plan_id')
+            let user = await subscribedModel.findOne({ user_id: id,payment_status:true }).populate('user_id').populate('plan_id')
 
             return user ? user : null
         } catch (error) {

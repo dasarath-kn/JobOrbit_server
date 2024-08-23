@@ -30,12 +30,9 @@ class StripePayment {
           quantity: 1,
         }],
         mode: 'payment',
-        success_url: "http://localhost:5173/paymentsuccess",
-        cancel_url: "http://localhost:5173/viewplan",
+        success_url: "https://joborbit.vercel.app/paymentsuccess",
+        cancel_url: "https://joborbit.vercel.app/viewplan",
       });
-
-      console.log(session.id);
-
       return session.id;
     } catch (error) {
       console.error('Error creating Checkout Session:', error);

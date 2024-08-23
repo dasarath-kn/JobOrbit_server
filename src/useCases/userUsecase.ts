@@ -431,7 +431,6 @@ class userUsecase {
     }
     async subscriptionPayment(price:string,subscribedData:subscriptedUser){
         try {
-            console.log(price);
             
             let payment_id = await this.stripe.createCheckoutSession(price)
             if(payment_id){
@@ -468,7 +467,6 @@ class userUsecase {
               }
       
             case 'checkout.session.async_payment_failed':
-              console.log("Payment Failed");
               return { success: false, message: "Payment failed" }; // Provide a response for this case
       
             default:
