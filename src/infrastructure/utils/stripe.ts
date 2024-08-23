@@ -33,6 +33,7 @@ class StripePayment {
         success_url: "https://joborbit.vercel.app/paymentsuccess",
         cancel_url: "https://joborbit.vercel.app/viewplan",
       });
+
       return session.id;
     } catch (error) {
       console.error('Error creating Checkout Session:', error);
