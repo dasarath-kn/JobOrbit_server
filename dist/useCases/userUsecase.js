@@ -462,7 +462,6 @@ class userUsecase {
     subscriptionPayment(price, subscribedData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(price);
                 let payment_id = yield this.stripe.createCheckoutSession(price);
                 if (payment_id) {
                     subscribedData.session_id = payment_id;
@@ -500,7 +499,6 @@ class userUsecase {
                             return { success: false, message: "Failed to update" };
                         }
                     case 'checkout.session.async_payment_failed':
-                        console.log("Payment Failed");
                         return { success: false, message: "Payment failed" }; // Provide a response for this case
                     default:
                         console.log(`Unhandled event type: ${datas.type}`);

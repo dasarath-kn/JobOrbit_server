@@ -413,7 +413,7 @@ class userRepository {
     updatesubscribedUsers(id, status) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (status == 'success') {
+                if (status === 'success') {
                     let updated = yield subscribedUsersModel_1.default.updateOne({ session_id: id }, { $set: { payment_status: true } });
                     let plan = yield subscribedUsersModel_1.default.findOne({ session_id: id });
                     const subscriptionPlan = yield subscription_1.default.findOne({ _id: plan === null || plan === void 0 ? void 0 : plan.plan_id });
@@ -421,7 +421,7 @@ class userRepository {
                     return updated.acknowledged;
                 }
                 else {
-                    let updated = yield subscribedUsersModel_1.default.updateOne({ session_id: id }, { $set: { payment_status: false } });
+                    let updated = yield subscribedUsersModel_1.default.deleteOne({ session_id: id });
                     return updated.acknowledged;
                 }
             }
@@ -434,7 +434,7 @@ class userRepository {
     findSubscribedUserById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield subscribedUsersModel_1.default.findOne({ user_id: id }).populate('user_id').populate('plan_id');
+                let user = yield subscribedUsersModel_1.default.findOne({ user_id: id, payment_status: true }).populate('user_id').populate('plan_id');
                 return user ? user : null;
             }
             catch (error) {
