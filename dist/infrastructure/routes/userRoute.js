@@ -65,4 +65,6 @@ router.get('/connection', userAuth_1.default, (req, res) => UserController.conne
 router.patch('/manageconnection', userAuth_1.default, (req, res) => UserController.manageConnection(req, res));
 router.post('/inbox', userAuth_1.default, (req, res) => UserController.saveInbox(req, res));
 router.get('/conversation', userAuth_1.default, (req, res) => UserController.conversationData(req, res));
+router.delete('/removeskill', userAuth_1.default, (req, res) => UserController.removeSkill(req, res));
+router.delete('/removeexperience', userAuth_1.default, (req, res) => UserController.removeExperience(req, res));
 exports.default = router;

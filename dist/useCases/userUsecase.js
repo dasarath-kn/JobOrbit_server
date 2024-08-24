@@ -782,5 +782,39 @@ class userUsecase {
             }
         });
     }
+    deleteExperience(field, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const removeExperience = yield this.userRepo.removeExperience(field, id);
+                if (removeExperience) {
+                    return { success: true, message: "Experience deleted" };
+                }
+                else {
+                    return { success: false, message: "Failed to delete experience" };
+                }
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
+    deleteSkills(val, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const remove = yield this.userRepo.removeSkills(val, id);
+                if (remove) {
+                    return { success: true, message: "Skill removed" };
+                }
+                else {
+                    return { success: false, message: "Failed to remove skill" };
+                }
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
 }
 exports.default = userUsecase;

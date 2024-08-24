@@ -825,5 +825,44 @@ class userController {
             }
         });
     }
+    removeSkill(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { skill } = req.query;
+                const { id } = req;
+                const remove = yield this.userUsecases.deleteSkills(skill, id);
+                if (remove.success) {
+                    res.status(200).json({ success: true, message: remove.message });
+                }
+                else {
+                    res.status(400).json({ success: false, message: remove.message });
+                }
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: "Internal server error" });
+            }
+        });
+    }
+    removeExperience(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { field } = req.query;
+                const { id } = req;
+                console.log(field);
+                const remove = yield this.userUsecases.deleteExperience(field, id);
+                if (remove.success) {
+                    res.status(200).json({ success: true, message: remove.message });
+                }
+                else {
+                    res.status(400).json({ success: false, message: remove.message });
+                }
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: "Internal server error" });
+            }
+        });
+    }
 }
 exports.default = userController;

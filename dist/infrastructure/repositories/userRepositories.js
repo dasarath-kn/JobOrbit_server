@@ -776,5 +776,29 @@ class userRepository {
             }
         });
     }
+    removeExperience(field, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const remove = yield userModel_1.default.updateOne({ _id: id }, { $pull: { experience: { experiencefield: field } } });
+                return remove.acknowledged;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error("Unable to delete user experience ");
+            }
+        });
+    }
+    removeSkills(val, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const remove = yield userModel_1.default.updateOne({ _id: id }, { $pull: { skills: val } });
+                return remove.acknowledged;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error("Unable to removeskills ");
+            }
+        });
+    }
 }
 exports.default = userRepository;
