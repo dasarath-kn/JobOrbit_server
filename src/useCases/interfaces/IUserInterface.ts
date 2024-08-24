@@ -71,7 +71,9 @@ interface IUserInterface {
     findInbox(sender_id:string,role:string):Promise<inbox[]|inbox|null>
     updateInbox(sender_id:string,reciever_id:string,message:string):Promise<boolean>
     updateOnlineStatus(user_id:string,status:boolean):Promise<boolean>
-}
+    removeSkills(val:string,id:string):Promise<boolean>
+    removeExperience(field:string,id:string):Promise<boolean>
+}   
 
 
 export default IUserInterface

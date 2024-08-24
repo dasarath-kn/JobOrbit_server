@@ -707,6 +707,33 @@ class userUsecase {
             throw error  
         }
     }
+
+    async deleteExperience(field:string,id:string){
+        try {
+            const removeExperience = await this.userRepo.removeExperience(field,id)
+            if(removeExperience){
+                return {success:true,message:"Experience deleted"}
+            }else{
+                return {success:false,message:"Failed to delete experience"}
+            }
+        } catch (error) {
+            console.log(error);
+            throw error 
+        }
+    }
+    async deleteSkills(val:string,id:string){
+        try {
+            const remove = await this.userRepo.removeSkills(val,id)
+            if(remove){
+                return {success:true,message:"Skill removed"}
+            }else{
+                return {success:false,message:"Failed to remove skill"}
+            }
+        } catch (error) {
+            console.log(error)
+            throw error 
+        }
+    }
 }
 
 export default userUsecase

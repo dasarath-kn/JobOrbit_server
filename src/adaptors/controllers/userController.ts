@@ -758,7 +758,38 @@ class userController {
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
-
+    async removeSkill(req:Request,res:Response){
+        try {
+            const {skill}=req.query
+            const {id} =req            
+            const remove = await this.userUsecases.deleteSkills(skill as string,id as string)
+            if(remove.success){
+                res.status(200).json({success:true,message:remove.message})
+            }else{
+                res.status(400).json({success:false,message:remove.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })  
+        }
+    }
+    async removeExperience(req:Request,res:Response){
+        try {
+            const {field}=req.query
+            const  {id} =req
+            console.log(field);
+            
+            const remove = await this.userUsecases.deleteExperience(field as string,id as string)
+            if(remove.success){
+                res.status(200).json({success:true,message:remove.message})
+            }else{
+                res.status(400).json({success:false,message:remove.message})
+            }
+        }  catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })  
+        }
+    }
 }
 
 

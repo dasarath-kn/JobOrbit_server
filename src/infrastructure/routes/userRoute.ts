@@ -61,6 +61,8 @@ router.get('/connection',Auth,(req,res)=>UserController.connectRequests(req,res)
 router.patch('/manageconnection',Auth,(req,res)=>UserController.manageConnection(req,res))
 router.post('/inbox',Auth,(req,res)=>UserController.saveInbox(req,res))
 router.get('/conversation',Auth,(req,res)=>UserController.conversationData(req,res))
+router.delete('/removeskill',Auth,(req,res)=>UserController.removeSkill(req,res))
+router.delete('/removeexperience',Auth,(req,res)=>UserController.removeExperience(req,res))
 
 
 

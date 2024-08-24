@@ -722,6 +722,24 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to update user online status ") 
         }
     }
+    async removeExperience(field: string,id:string): Promise<boolean> {
+        try {
+            const remove = await userModel.updateOne({_id:id},{$pull:{experience:{experiencefield:field}}})            
+            return remove.acknowledged
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to delete user experience ")  
+        }
+    }
+    async removeSkills(val: string,id:string): Promise<boolean> {
+        try {
+            const remove = await userModel.updateOne({_id:id},{$pull:{skills:val}})
+            return  remove.acknowledged
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to removeskills ")  
+        }
+    }
 }
 
 
