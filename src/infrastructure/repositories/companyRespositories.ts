@@ -21,7 +21,7 @@ class CompanyRepositories implements ICompanyInterface {
 
    async saveCompany(companyData: company): Promise<company | null> {
       try {
-         let newCompany = new companyModel(companyData)
+         const newCompany = new companyModel(companyData)
          await newCompany.save()
          return companyData ? companyData : null
       } catch (error) {
@@ -33,7 +33,7 @@ class CompanyRepositories implements ICompanyInterface {
 
    async findCompanyByEmail(email: string): Promise<company | null> {
       try {
-         let companyData = await companyModel.findOne({ email: email })
+         const companyData = await companyModel.findOne({ email: email })
          return companyData ? companyData : null
 
       } catch (error) {
@@ -44,7 +44,7 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async checkOtp(otp: string): Promise<string | null> {
       try {
-         let checkedOtp = await otpModel.findOne({ otp: otp })
+         const checkedOtp = await otpModel.findOne({ otp: otp })
          return checkedOtp ? checkedOtp.email : null
 
       } catch (error) {
@@ -56,7 +56,7 @@ class CompanyRepositories implements ICompanyInterface {
 
    async verifyCompany(email: string): Promise<boolean> {
       try {
-         let verifyCompany = await companyModel.updateOne({ email: email }, { $set: { is_verified: true } }, { upsert: true })
+         const verifyCompany = await companyModel.updateOne({ email: email }, { $set: { is_verified: true } }, { upsert: true })
          return verifyCompany.acknowledged
 
       } catch (error) {
@@ -68,14 +68,14 @@ class CompanyRepositories implements ICompanyInterface {
 
    async saveCompanydata(companydata: company): Promise<company | null> {
       try {
-         let findCompany = await companyModel.findOne({ email: companydata.email })
+         const findCompany = await companyModel.findOne({ email: companydata.email })
          if (findCompany) {
             return findCompany
          } else {
-            let saveCompany = new companyModel(companydata)
+            const saveCompany = new companyModel(companydata)
             await saveCompany.save()
             if (saveCompany) {
-               let data = await companyModel.findOne({ email: saveCompany.email })
+               const data = await companyModel.findOne({ email: saveCompany.email })
                return data
             } else {
                return null
@@ -90,7 +90,7 @@ class CompanyRepositories implements ICompanyInterface {
 
    async getCompanydata(id: string): Promise<company | null> {
       try {
-         let companData = await companyModel.findOne({ _id: id }).populate("users.user_id")
+         const companData = await companyModel.findOne({ _id: id }).populate("users.user_id")
          return companData ? companData : null
 
       } catch (error) {
@@ -101,8 +101,8 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async resetPassword(company: company): Promise<boolean | null> {
       try {
-         let { email, password } = company
-         let reset = await companyModel.updateOne({ email: email }, { $set: { password: password } })
+         const { email, password } = company
+         const reset = await companyModel.updateOne({ email: email }, { $set: { password: password } })
          if (reset) {
             return reset.acknowledged
          } else {
@@ -133,7 +133,7 @@ class CompanyRepositories implements ICompanyInterface {
       try {
          const pages =Number(page)*6
          const jobCount = await jobModel.find({company_id:id}).countDocuments()
-         let jobs = await jobModel.find({ company_id: id }).sort({ time: -1 }).skip(pages).limit(6).populate('company_id')
+         const jobs = await jobModel.find({ company_id: id }).sort({ time: -1 }).skip(pages).limit(6).populate('company_id')
          if (jobs.length === 0) {
             return null;
         }
@@ -149,7 +149,7 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async removeJob(id: string): Promise<boolean> {
       try {
-         let removed = await jobModel.deleteOne({ _id: id })
+         const removed = await jobModel.deleteOne({ _id: id })
          return removed.acknowledged
       } catch (error) {
          console.error(error);
@@ -159,7 +159,7 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async savePosts(postData: Post): Promise<boolean> {
       try {
-         let savedPost = new postModel(postData)
+         const savedPost = new postModel(postData)
          await savedPost.save()
          return true
 
@@ -170,7 +170,7 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async getPosts(id: string): Promise<Post[] | null> {
      try {
-      let posts = await postModel.find({ company_id:id }).sort({time:-1}).populate('company_id')
+      const posts = await postModel.find({ company_id:id }).sort({time:-1}).populate('company_id')
       return posts ? posts : null
      } catch (error) {
       console.error(error);
@@ -179,7 +179,7 @@ class CompanyRepositories implements ICompanyInterface {
    }
    async updateProfile(id: string, company: company): Promise<boolean> {
       try {
-          let updated = await companyModel.updateOne({ _id: id }, company, { new: true })
+         const updated = await companyModel.updateOne({ _id: id }, company, { new: true })
           return updated.acknowledged
 
       } catch (error) {
@@ -189,7 +189,7 @@ class CompanyRepositories implements ICompanyInterface {
   }
   async uploadDocument(id: string, document_url: string): Promise<boolean> {
      try {
-      let upload = await companyModel.updateOne({_id:id},{$set:{document_url:document_url}})
+      const upload = await companyModel.updateOne({_id:id},{$set:{document_url:document_url}})
       return upload.acknowledged
      } catch (error) {
       console.error(error);
@@ -198,7 +198,7 @@ class CompanyRepositories implements ICompanyInterface {
   }
  async deletePost(post_id: string): Promise<boolean> {
      try {
-      let remove = await postModel.deleteOne({_id:post_id})
+      const remove = await postModel.deleteOne({_id:post_id})
       return remove.acknowledged
      } catch (error) {
       console.error(error);
@@ -207,7 +207,7 @@ class CompanyRepositories implements ICompanyInterface {
   }
  async jobApplications(id: string): Promise<jobs[] | null> {
      try {
-         let job = await jobModel.find({_id:id}).populate('applicants_id')
+      const job = await jobModel.find({_id:id}).populate('applicants_id')
          return job ?job :null
      } catch (error) {
       console.error(error);
@@ -217,7 +217,7 @@ class CompanyRepositories implements ICompanyInterface {
 
  async saveScheduledJobs(jobScheduleddata: jobShedule): Promise<boolean> {
      try {
-       let scheduled = new JobScheduledModel(jobScheduleddata)
+      const scheduled = new JobScheduledModel(jobScheduleddata)
        await scheduled.save()
        return true
      } catch (error) {
@@ -237,7 +237,7 @@ class CompanyRepositories implements ICompanyInterface {
   }
   async findScheduledJobs(id:string): Promise<jobShedule[] | null> {
      try {
-      let scheduled = await JobScheduledModel.find({job_id:id}).populate('user_id')
+      const scheduled = await JobScheduledModel.find({job_id:id}).populate('user_id')
       return scheduled ?scheduled :null
      } catch (error) {
       console.error(error);

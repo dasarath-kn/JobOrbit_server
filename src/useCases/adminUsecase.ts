@@ -14,14 +14,14 @@ class AdminUsecase {
     }
     async login(email: string, password: string) {
         try {
-            let adminExistdata = await this.adminRepo.findAdminbyEmail(email)
+            const adminExistdata = await this.adminRepo.findAdminbyEmail(email)
             if (adminExistdata) {
-                let checkPassword = await this.hashPassword.comparePassword(password, adminExistdata.password)
+                const checkPassword = await this.hashPassword.comparePassword(password, adminExistdata.password)
                 if (checkPassword) {
                     if (adminExistdata.is_admin) {
-                        let id = adminExistdata._id.toString()
+                        const id = adminExistdata._id.toString()
 
-                        let token = await this.jwttoken.generateToken(id, "admin")
+                        const token = await this.jwttoken.generateToken(id, "admin")
 
                         return { success: true, adminExistdata, message: 'Admin logined successfully', token }
                     } else {
@@ -42,7 +42,7 @@ class AdminUsecase {
     }
     async findUsers(page: string) {
         try {
-            let userData = await this.adminRepo.getUserdatas(page)
+            const userData = await this.adminRepo.getUserdatas(page)
             if (userData) {
                 const { count, userDatas } = userData
                 return { success: true, message: "Userdatas sent suceessfully", userDatas, count }
@@ -58,7 +58,7 @@ class AdminUsecase {
     }
     async findCompanies(page: string) {
         try {
-            let companyData = await this.adminRepo.getCompanydatas(page)
+            const companyData = await this.adminRepo.getCompanydatas(page)
             if (companyData) {
                 const { count, companyDatas } = companyData
                 return { success: true, message: "Companydatas sent successfully", count, companyDatas }
@@ -73,7 +73,7 @@ class AdminUsecase {
 
     async blockUnblockUsers(user_id: string, status: string) {
         try {
-            let changeStatus = await this.adminRepo.blockUnblockUsers(user_id, status)
+            const changeStatus = await this.adminRepo.blockUnblockUsers(user_id, status)
             if (changeStatus) {
                 return { success: true, message: changeStatus }
             } else {
@@ -88,7 +88,7 @@ class AdminUsecase {
 
     async blockUnblockCompanies(company_id: string, status: string) {
         try {
-            let changeStatus = await this.adminRepo.blockUnblockCompanies(company_id, status)
+            const changeStatus = await this.adminRepo.blockUnblockCompanies(company_id, status)
 
             if (changeStatus) {
                 return { success: true, message: changeStatus }
@@ -104,7 +104,7 @@ class AdminUsecase {
     }
     async savesubscriptionPlan(subscriptionData: subscriptions) {
         try {
-            let savedSubscription = await this.adminRepo.subscription(subscriptionData)
+            const savedSubscription = await this.adminRepo.subscription(subscriptionData)
             if (savedSubscription) {
                 return { Success: true, message: "Subscription plan saved successfully" }
             } else {
@@ -117,7 +117,7 @@ class AdminUsecase {
     }
     async subscriptionPlans(){
         try {
-            let subscriptionplan = await this.adminRepo.getsubscriptionplan()
+            const subscriptionplan = await this.adminRepo.getsubscriptionplan()
             if(subscriptionplan){
                 return {success:true,message:"Subscription plans sent successfully",subscriptionplan}
             }else{
@@ -128,9 +128,9 @@ class AdminUsecase {
             throw error
         }
     }
-    async removePlan(id:string){
+    async removePlan(plan_id:string){
         try {
-            let remove = await this.adminRepo.deletePlan(id)
+            const remove = await this.adminRepo.deletePlan(plan_id)
             if(remove){
                 return {success:true,message:"Plan removed successfully"}
             }else{
@@ -142,9 +142,9 @@ class AdminUsecase {
             throw error 
         }
     }
-    async managePlans(id:string,message:string){
+    async managePlans(plan_id:string,message:string){
         try {
-            let manage = await this.adminRepo.listUnlistPlans(id,message)
+            const manage = await this.adminRepo.listUnlistPlans(plan_id,message)
             if(manage){
                 return {success:true,message:`Plan ${message} successfully`}
             }else{
@@ -158,7 +158,7 @@ class AdminUsecase {
     }
     async dashboard(){
         try {
-            let dashboardData = await this.adminRepo.getDashboard()
+            const dashboardData = await this.adminRepo.getDashboard()
             if(dashboardData){
                 return {success:true,message:'Dashboard data sent successfully',dashboardData}
             }else{
@@ -171,7 +171,7 @@ class AdminUsecase {
     }
     async postreport(){
         try {
-            let postReportData = await this.adminRepo.getPostreportdata()
+            const postReportData = await this.adminRepo.getPostreportdata()
             if(postReportData){
                 return {success:true,message:"Post report data sent successfully",postReportData}
             }else{

@@ -12,6 +12,7 @@ import { initializeSocket } from './infrastructure/utils/socket';
 dotenv.config()
 const app = express();
 const port =process.env.PORT
+const url =process.env.URL
 mongodb()
 const server =http.createServer(app)
  initializeSocket(server)
@@ -33,5 +34,5 @@ app.use('/company',companyRoute)
 
 
 server.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+  console.log(`Server is running at ${url}:${port}`);
 });

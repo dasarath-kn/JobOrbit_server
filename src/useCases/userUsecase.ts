@@ -33,17 +33,17 @@ class userUsecase {
 
     async findUser(userData: user) {
         try {
-            let userExist = await this.userRepo.findUserByEmail(userData.email);
+            const userExist = await this.userRepo.findUserByEmail(userData.email);
             if (userExist) {
                 return { data: true }
             } else {
-                let hashed = await this.hashPassword.hashPassword(userData.password)
+                const hashed = await this.hashPassword.hashPassword(userData.password)
                 userData.password = hashed as string
-                let userSaved = await this.userRepo.saveUser(userData);
-                let otp = await this.otpGenerator.otpgenerate()
+                const userSaved = await this.userRepo.saveUser(userData);
+                const otp = await this.otpGenerator.otpgenerate()
                 await this.nodeMailer.sendEmail(userData.email, otp)
                 await this.userRepo.saveOtp(userSaved?.email, otp)
-                let token = await this.jwttoken.generateToken(userData._id, "user")
+                const token = await this.jwttoken.generateToken(userData._id, "user")
 
                 return { data: false, userSaved }
             }
@@ -57,21 +57,21 @@ class userUsecase {
 
     async login(email: string, password: string) {
         try {
-            let userExistdata = await this.userRepo.findUserByEmail(email)
+            const userExistdata = await this.userRepo.findUserByEmail(email)
             if (userExistdata) {
-                let checkPassword = await this.hashPassword.comparePassword(password, userExistdata.password)
+                const checkPassword = await this.hashPassword.comparePassword(password, userExistdata.password)
                 if (checkPassword) {
                     if (userExistdata.is_blocked) {
                         return { success: false, message: "You've been blocked admin" }
                     } else if (!userExistdata.is_verified) {
-                        let otp = this.otpGenerator.otpgenerate()
+                        const otp = this.otpGenerator.otpgenerate()
                         await this.nodeMailer.sendEmail(email, otp)
                         await this.userRepo.saveOtp(email, otp)
                         return { success: true, message: "User not verified", userExistdata }
                     }
                     else {
-                        let token = await this.jwttoken.generateToken(userExistdata._id, "user")
-                        let refreshtoken = await this.jwttoken.generateRefreshtoken(userExistdata._id,"user")
+                        const token = await this.jwttoken.generateToken(userExistdata._id, "user")
+                        const refreshtoken = await this.jwttoken.generateRefreshtoken(userExistdata._id,"user")
                         return { success: true, userExistdata, message: "User logined successfully", token,refreshtoken }
                     }
                 }
@@ -90,11 +90,11 @@ class userUsecase {
 
     async verfiyOtp(otp: string) {
         try {
-            let verifiedOtp = await this.userRepo.checkOtp(otp)
+            const verifiedOtp = await this.userRepo.checkOtp(otp)
             if (verifiedOtp) {
                 await this.userRepo.verifyUser(verifiedOtp)
-                let userData = await this.userRepo.findUserByEmail(verifiedOtp)
-                let token = await this.jwttoken.generateToken(userData?._id as string, "user")
+                const userData = await this.userRepo.findUserByEmail(verifiedOtp)
+                const token = await this.jwttoken.generateToken(userData?._id as string, "user")
                 return { success: true, message: 'User verified successfully', token }
             } else {
                 return { success: false, message: 'Incorrect otp' }
@@ -109,7 +109,7 @@ class userUsecase {
 
     async resendOtp(email: string) {
         try {
-            let otp = this.otpGenerator.otpgenerate()
+            const otp = this.otpGenerator.otpgenerate()
             await this.nodeMailer.sendEmail(email, otp)
             await this.userRepo.saveOtp(email, otp)
             return { success: true, message: "Otp send successfully" }
@@ -123,7 +123,7 @@ class userUsecase {
 
     async userData(user_id: string) {
         try {
-            let userData = await this.userRepo.getUserdata(user_id)
+            const userData = await this.userRepo.getUserdata(user_id)
             if (userData) {
                 return { success: true, message: "Userdata sent successfully", userData }
             } else {
@@ -141,13 +141,13 @@ class userUsecase {
     async googleSaveuser(userdata: user) {
         try {
 
-            let saved = await this.userRepo.saveUserdata(userdata)
+            const saved = await this.userRepo.saveUserdata(userdata)
             if (saved) {
                 if (saved.is_blocked) {
                     return { success: false, message: "You've been blocked admin" }
 
                 } else {
-                    let token = this.jwttoken.generateToken(saved._id, "user")
+                    const token = this.jwttoken.generateToken(saved._id, "user")
                     return { success: true, message: " Logined successfully", token }
                 }
             }
@@ -160,11 +160,11 @@ class userUsecase {
     }
     async userExist(email: string) {
         try {
-            let Userdata = await this.userRepo.findUserByEmail(email)
+            const Userdata = await this.userRepo.findUserByEmail(email)
             console.log(Userdata);
 
             if (Userdata) {
-                let otp = this.otpGenerator.otpgenerate()
+                const otp = this.otpGenerator.otpgenerate()
                 await this.nodeMailer.sendEmail(email, otp)
                 await this.userRepo.saveOtp(email, otp)
                 return { success: true, message: "Otp sent sucessfully", Userdata }
@@ -181,13 +181,13 @@ class userUsecase {
 
     async passwordReset(userdata: user) {
         try {
-            let { password } = userdata
-            let hashed = await this.hashPassword.hashPassword(password)
+            const { password } = userdata
+            const hashed = await this.hashPassword.hashPassword(password)
             console.log(hashed);
 
             userdata.password = hashed as string
 
-            let data = await this.userRepo.resetPassword(userdata)
+            const data = await this.userRepo.resetPassword(userdata)
             if (data) {
                 return { success: true, message: "Password reset successfully" }
             } else {
@@ -202,14 +202,14 @@ class userUsecase {
     async updateProfile(id: string, user: user, file: string,percentage:number) {
         try {
             if (file) {
-                let cloudinary = await this.cloundinary.uploadImage(file, "User Profile")
+                const cloudinary = await this.cloundinary.uploadImage(file, "User Profile")
                 user.img_url = cloudinary
             }
 
 
-            let updatedData = await this.userRepo.updateProfile(id, user,percentage)
+            const updatedData = await this.userRepo.updateProfile(id, user,percentage)
             if (updatedData) {
-                let userData = await this.userRepo.getUserdata(id)
+                const userData = await this.userRepo.getUserdata(id)
                 return { success: true, message: "User profile updated successfully", userData }
             } else {
                 return { success: false, message: "Failed to update user profile" }
@@ -223,7 +223,7 @@ class userUsecase {
     }
     async manageSkill(skill:[],id:string,percentage:number){
         try {
-            let updateSkill =await this.userRepo.updateSkill(skill,id,percentage)
+            const updateSkill =await this.userRepo.updateSkill(skill,id,percentage)
             if(updateSkill){
                 return {success:true,message:"Skill added successfully"}
             }else{
@@ -236,7 +236,7 @@ class userUsecase {
     }
     async jobs(page:string,type:string,location:string,date:string) {
         try {
-            let jobData = await this.userRepo.viewjobs(page,type,location,date)
+            const jobData = await this.userRepo.viewjobs(page,type,location,date)
             if (jobData) {
                 const {jobs,count}=jobData
                 return { success: true, message: "Jobs sent successfully", jobs,count }
@@ -252,7 +252,7 @@ class userUsecase {
     }
     async posts() {
         try {
-            let posts = await this.userRepo.getPosts()
+            const posts = await this.userRepo.getPosts()
             if (posts) {
                 return { success: true, message: "Posts sent sucessfully", posts }
             } else {
@@ -269,7 +269,7 @@ class userUsecase {
             
             if (status == "Like") {
                 
-                let liked = await this.userRepo.likePost(post_id, user_id)
+                const liked = await this.userRepo.likePost(post_id, user_id)
                 if (liked) {
                     return { success: true, message: " Post linked successfully" }
                 } else {
@@ -277,7 +277,7 @@ class userUsecase {
 
                 }
             } else {
-                let unliked = await this.userRepo.unlikePost(post_id, user_id)
+                const unliked = await this.userRepo.unlikePost(post_id, user_id)
                 if (unliked) {
                     return { success: true, message: " Post unlinked successfully" }
 
@@ -295,7 +295,7 @@ class userUsecase {
 
     async postSave(postData:savedPost,message:string){
         try {
-            let savePost =await this.userRepo.savePost(postData,message)
+            const savePost =await this.userRepo.savePost(postData,message)
             if(savePost){
                 return {success:true,message:`Post ${message}`}
             }else{
@@ -307,9 +307,9 @@ class userUsecase {
             throw error 
         }
     }
-    async savedPosts(id:string){
+    async savedPosts(post_id:string){
         try {
-            let savedPosts = await this.userRepo.getSavedpost(id)
+            const savedPosts = await this.userRepo.getSavedpost(post_id)
             if(savedPosts){
                 return {success:true,message:"Saved posts sent succcessfully",savedPosts}
             }else{
@@ -349,11 +349,11 @@ class userUsecase {
             throw error
         }
     }
-    async jobDetails(job_id:string,id:string){
+    async jobDetails(job_id:string,user_id:string){
         try {
-            let jobDetails = await this.userRepo.findJobdetails(job_id)
+            const jobDetails = await this.userRepo.findJobdetails(job_id)
             if(jobDetails){
-                let userData = await this.userRepo.findUserById(id)
+                const userData = await this.userRepo.findUserById(user_id)
                 if(userData){
                     const {plan_id}=userData                    
                 return {success:true,message:"Jobdetails sent successfully",jobDetails,plan_id}
@@ -368,10 +368,10 @@ class userUsecase {
             throw error
         }
     }
-    async experience(experienceData:experienceData,percentage:number,id:string){
+    async experience(experienceData:experienceData,percentage:number,user_id:string){
         try {
             
-            let experience = await this.userRepo.addExperience(experienceData as experienceData,percentage as number,id as string)
+            const experience = await this.userRepo.addExperience(experienceData as experienceData,percentage as number,user_id as string)
             if(experience){
                 return {success:true,message:'User experience added successfully'}
             }else{
@@ -382,14 +382,14 @@ class userUsecase {
             throw error  
         }
     }
-    async resume(id:string,file:string,percentage:number){
+    async resume(user_id:string,file:string,percentage:number){
         try {
             let resume_url =''
             if(file){
-                let cloudinary = await this.cloundinary.uploaddocuments(file,"Resume")
+                const cloudinary = await this.cloundinary.uploaddocuments(file,"Resume")
                 resume_url=cloudinary
             }
-            let upload = await this.userRepo.updateResume(id,resume_url,percentage)
+            const upload = await this.userRepo.updateResume(user_id,resume_url,percentage)
             if(upload){
                 return {success:true,message:"Resume uploaded successfully"}
             }else{
@@ -403,7 +403,7 @@ class userUsecase {
     }
     async jobApplication(job_id:string,user_id:string,company_id:string){
         try {
-            let job = await this.userRepo.applyJob(job_id,user_id,company_id)
+            const job = await this.userRepo.applyJob(job_id,user_id,company_id)
             if(job){
                 return {success:true,message:"Job applied successfully"}
             }else{
@@ -418,7 +418,7 @@ class userUsecase {
     }
     async subscriptionPlans(){
         try {
-            let subscriptionplan = await this.userRepo.getsubscriptionplan()
+            const subscriptionplan = await this.userRepo.getsubscriptionplan()
             if(subscriptionplan){
                 return {success:true,message:"Subscription plans sent successfully",subscriptionplan}
             }else{
@@ -432,10 +432,10 @@ class userUsecase {
     async subscriptionPayment(price:string,subscribedData:subscriptedUser){
         try {
             
-            let payment_id = await this.stripe.createCheckoutSession(price)
+            const payment_id = await this.stripe.createCheckoutSession(price)
             if(payment_id){
                 subscribedData.session_id =payment_id
-                let save = await this.userRepo.savesubscribedUsers(subscribedData)
+                const save = await this.userRepo.savesubscribedUsers(subscribedData)
                 if(save){
                     return {success:true,message:"Payment id sent successfully",payment_id}
 
@@ -478,9 +478,9 @@ class userUsecase {
           throw new Error("Error updating subscribed users"); // Provide a clearer error message
         }
       }
-      async subscribedUserdetails(id:string){
+      async subscribedUserdetails(user_id:string){
         try {
-            let subscribedUser= await this.userRepo.findSubscribedUserById(id)
+            const subscribedUser= await this.userRepo.findSubscribedUserById(user_id)
             if(subscribedUser){
                 return {success:true,messsage:'Subscribed User details sent successfully',subscribedUser}
 
@@ -496,7 +496,7 @@ class userUsecase {
 
       async postReportsave(post_id:string,postreportData:postreport){
         try {
-            let reportPost = await this.userRepo.savePostReport(post_id,postreportData)
+            const reportPost = await this.userRepo.savePostReport(post_id,postreportData)
             if(reportPost){
                 return {success:true,message:"Post reported successfully"}
 
@@ -524,7 +524,7 @@ class userUsecase {
       }
       async findUsers() {
         try {
-            let userDatas = await this.userRepo.getUserdatas()
+            const userDatas = await this.userRepo.getUserdatas()
             if (userDatas) {
                 
                 return { success: true, message: "Userdatas sent suceessfully", userDatas }
@@ -540,7 +540,7 @@ class userUsecase {
     }
     async findCompanies() {
         try {
-            let companyDatas = await this.userRepo.getCompanydatas()
+            const companyDatas = await this.userRepo.getCompanydatas()
             if (companyDatas) {
                return { success: true, message: "Companydatas sent successfully",companyDatas }
             } else {
@@ -551,9 +551,9 @@ class userUsecase {
             throw error
         }
     }
-    async viewCompany(id:string){
+    async viewCompany(company_id:string){
         try {
-            const companyData = await this.userRepo.findCompanyById(id)
+            const companyData = await this.userRepo.findCompanyById(company_id)
             if(companyData){
                 return{success:true,message:"Companydata sent successfully",companyData}
             }else{
@@ -565,9 +565,9 @@ class userUsecase {
         }
     }
 
-    async findUserdetails(id:string){
+    async findUserdetails(user_id:string){
         try {
-            let userData = await this.userRepo.findUserById(id)
+            const userData = await this.userRepo.findUserById(user_id)
             if(userData){
                 return{success:true,message:"Userdata sent successfully",userData}
             }else{
@@ -591,9 +591,9 @@ class userUsecase {
             throw error  
         }
     }
-    async reviews(id :string){
+    async reviews(company_id :string){
         try {
-            const reviews = await this.userRepo.getReviews(id as string)
+            const reviews = await this.userRepo.getReviews(company_id as string)
             
             if(reviews){
                 console.log(reviews,"rrrrr ");
@@ -708,9 +708,9 @@ class userUsecase {
         }
     }
 
-    async deleteExperience(field:string,id:string){
+    async deleteExperience(field:string,user_id:string){
         try {
-            const removeExperience = await this.userRepo.removeExperience(field,id)
+            const removeExperience = await this.userRepo.removeExperience(field,user_id)
             if(removeExperience){
                 return {success:true,message:"Experience deleted"}
             }else{

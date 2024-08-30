@@ -38,7 +38,7 @@ class userRepository implements IUserInterface {
 
     async findUserById(id: string): Promise<user | null> {
         try {
-            let userData = await userModel.findOne({ _id: id }).populate('plan_id')
+            const userData = await userModel.findOne({ _id: id }).populate('plan_id')
             return userData ? userData : null
 
         } catch (error) {
@@ -50,7 +50,7 @@ class userRepository implements IUserInterface {
 
     async findUserByEmail(email: string): Promise<user | null> {
         try {
-            let userData = await userModel.findOne({ email: email })
+            const userData = await userModel.findOne({ email: email })
             return userData ? userData.toObject() : null
         } catch (error: any) {
             console.error(error);
@@ -102,7 +102,7 @@ class userRepository implements IUserInterface {
 
     async checkOtp(otp: string): Promise<string | null> {
         try {
-            let checkedOtp = await otpModel.findOne({ otp: otp })
+            const checkedOtp = await otpModel.findOne({ otp: otp })
             return checkedOtp ? checkedOtp.email : null
         } catch (error: any) {
             console.error(error);
@@ -113,7 +113,7 @@ class userRepository implements IUserInterface {
 
     async getUserdata(user_id: string): Promise<user | null> {
         try {
-            let userdata = await userModel.findOne({ _id: user_id }).populate("connections.connection_id").populate("companies.company_id")
+            const userdata = await userModel.findOne({ _id: user_id }).populate("connections.connection_id").populate("companies.company_id")
             return userdata ? userdata : null
 
         } catch (error) {
@@ -126,14 +126,14 @@ class userRepository implements IUserInterface {
 
     async saveUserdata(userdata: user): Promise<user | null> {
         try {
-            let finduser = await userModel.findOne({ email: userdata.email })
+            const finduser = await userModel.findOne({ email: userdata.email })
             if (finduser) {
                 return finduser
             } else {
-                let saveUser = new userModel(userdata)
+                const saveUser = new userModel(userdata)
                 await saveUser.save()
                 if (saveUser) {
-                    let data = await userModel.findOne({ email: userdata.email })
+                    const data = await userModel.findOne({ email: userdata.email })
                     return data
                 } else {
                     return null
@@ -148,8 +148,8 @@ class userRepository implements IUserInterface {
     }
     async resetPassword(user: user): Promise<boolean | null> {
         try {
-            let { email, password } = user
-            let reset = await userModel.updateOne({ email: email }, { $set: { password: password } })
+            const { email, password } = user
+            const reset = await userModel.updateOne({ email: email }, { $set: { password: password } })
             if (reset) {
                 return reset.acknowledged
             } else {
@@ -164,13 +164,13 @@ class userRepository implements IUserInterface {
     async updateProfile(id: string, user: user, percentage: number): Promise<boolean> {
         try {
             if (percentage == 15) {
-                let updated = await userModel.updateOne({ _id: id }, user, { new: true })
-                let percentageupdate = await userModel.updateOne({ _id: id }, { $inc: { percentage: percentage } })
+                const updated = await userModel.updateOne({ _id: id }, user, { new: true })
+                const percentageupdate = await userModel.updateOne({ _id: id }, { $inc: { percentage: percentage } })
                 return updated.acknowledged
             }
             else {
-                let updated = await userModel.updateOne({ _id: id }, user, { new: true })
-                let percentageupdate = await userModel.updateOne({ _id: id }, { $set: { percentage: percentage } })
+                const updated = await userModel.updateOne({ _id: id }, user, { new: true })
+                const percentageupdate = await userModel.updateOne({ _id: id }, { $set: { percentage: percentage } })
 
                 return updated.acknowledged
             }
@@ -223,7 +223,7 @@ class userRepository implements IUserInterface {
     
     async getPosts(): Promise<Post[] | null> {
         try {
-            let posts = await postModel.find({}).sort({ time: -1 }).populate('company_id').populate('like')
+            const posts = await postModel.find({}).sort({ time: -1 }).populate('company_id').populate('like')
             return posts ? posts : null
         } catch (error) {
             console.error(error);
@@ -232,7 +232,7 @@ class userRepository implements IUserInterface {
     }
     async likePost(post_id: string, user_id: string): Promise<boolean | null> {
         try {
-            let liked = await postModel.updateOne({ _id: post_id }, { $addToSet: { like: user_id } })
+            const liked = await postModel.updateOne({ _id: post_id }, { $addToSet: { like: user_id } })
             return liked.acknowledged ? liked.acknowledged : null
 
         } catch (error) {
@@ -242,7 +242,7 @@ class userRepository implements IUserInterface {
     }
     async unlikePost(post_id: string, user_id: string): Promise<boolean | null> {
         try {
-            let unLiked = await postModel.updateOne({ _id: post_id }, { $pull: { like: user_id } })
+            const unLiked = await postModel.updateOne({ _id: post_id }, { $pull: { like: user_id } })
             return unLiked.acknowledged ? unLiked.acknowledged : null
         } catch (error) {
             console.error(error);
@@ -252,7 +252,7 @@ class userRepository implements IUserInterface {
     async savePost(postData: savedPost,message:string): Promise<boolean> {
         try {
             if(message =="saved"){
-                let saved = new postSavedModel(postData)
+                const saved = new postSavedModel(postData)
                 await saved.save()
                 return true
 
@@ -268,7 +268,7 @@ class userRepository implements IUserInterface {
     }
     async getSavedpost(id: string): Promise<savedPost[] | null> {
         try {
-            let savedPost = await postSavedModel.find({ user_id: id }).populate('post_id').populate('company_id')
+            const savedPost = await postSavedModel.find({ user_id: id }).populate('post_id').populate('company_id')
             return savedPost ? savedPost : null
 
         } catch (error) {
@@ -298,7 +298,7 @@ class userRepository implements IUserInterface {
     }
     async findJobdetails(id: string): Promise<jobs | null> {
         try {
-            let jobs = await jobModel.findOne({ _id: id }).populate('company_id')
+            const jobs = await jobModel.findOne({ _id: id }).populate('company_id')
             return jobs ? jobs : null
 
         } catch (error) {
@@ -309,10 +309,10 @@ class userRepository implements IUserInterface {
     async addExperience(experienceData: experienceData, percentage: number, id: string): Promise<boolean> {
         try {
             if (percentage === 15) {
-                let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $inc: { percentage: percentage } })
+                const experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $inc: { percentage: percentage } })
                 return experience.acknowledged
             } else {
-                let experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $set: { percentage: percentage } })
+                const experience = await userModel.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $set: { percentage: percentage } })
                 return experience.acknowledged
             }
 
@@ -324,10 +324,10 @@ class userRepository implements IUserInterface {
     async updateResume(id: string, resume_url: string, percentage: number): Promise<boolean> {
         try {
             if (percentage === 15) {
-                let update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url }, $inc: { percentage: percentage } })
+                const update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url }, $inc: { percentage: percentage } })
                 return update.acknowledged
             } else {
-                let update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } })
+                const update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } })
                 return update.acknowledged
             }
 
@@ -339,8 +339,8 @@ class userRepository implements IUserInterface {
     async applyJob(job_id: string, user_id: string,company_id:string): Promise<boolean> {
         try {
             const data ={job_id:job_id,user_id:user_id,company_id:company_id}
-            let job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: user_id } })
-            let jobCount = await userModel.updateOne({ _id: user_id }, { $inc: { jobapplied_Count: 1 } })
+            const job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: user_id } })
+            const jobCount = await userModel.updateOne({ _id: user_id }, { $inc: { jobapplied_Count: 1 } })
             const saveApplied = new appliedJobModel(data)
             await saveApplied.save()
             return job.acknowledged
@@ -351,7 +351,7 @@ class userRepository implements IUserInterface {
     }
     async getsubscriptionplan(): Promise<subscriptions[] | null> {
         try {
-            let plans = await subscriptionModel.find({ unlist: false })
+            const plans = await subscriptionModel.find({ unlist: false })
             return plans ? plans : null
 
         } catch (error) {
@@ -361,7 +361,7 @@ class userRepository implements IUserInterface {
     }
     async findPlanbyId(id: string): Promise<subscriptions | null> {
         try {
-            let subscriptionData = await subscriptionModel.findOne({ _id: id })
+            const subscriptionData = await subscriptionModel.findOne({ _id: id })
             return subscriptionData ? subscriptionData : null
 
 
@@ -372,7 +372,7 @@ class userRepository implements IUserInterface {
     }
     async savesubscribedUsers(subscribedData: subscriptedUser): Promise<boolean> {
         try {
-            let saved = new subscribedModel(subscribedData)
+            const saved = new subscribedModel(subscribedData)
             await saved.save()
             return true
         } catch (error) {
@@ -384,13 +384,13 @@ class userRepository implements IUserInterface {
         try {
             if (status === 'success') {
                 
-                let updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: true } })
-                let plan = await subscribedModel.findOne({ session_id: id })
+                const updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: true } })
+                const plan = await subscribedModel.findOne({ session_id: id })
                 const subscriptionPlan = await subscriptionModel.findOne({ _id: plan?.plan_id })
                 const userUpdate = await userModel.updateOne({ _id: plan?.user_id }, { $set: { plan_id: subscriptionPlan?._id } })
                 return updated.acknowledged
             } else {
-                let updated = await subscribedModel.deleteOne({ session_id: id })
+                const updated = await subscribedModel.deleteOne({ session_id: id })
                 return updated.acknowledged
             }
 
@@ -401,7 +401,7 @@ class userRepository implements IUserInterface {
     }
     async findSubscribedUserById(id: string): Promise<subscriptedUser | null> {
         try {
-            let user = await subscribedModel.findOne({ user_id: id,payment_status:true }).populate('user_id').populate('plan_id')
+            const user = await subscribedModel.findOne({ user_id: id,payment_status:true }).populate('user_id').populate('plan_id')
 
             return user ? user : null
         } catch (error) {
@@ -434,7 +434,7 @@ class userRepository implements IUserInterface {
             const report = await postReportModel.findOne({ post_id: post_id })
             if (!report) {
                 const data = { post_id: post_id, user_datas: postreportData }
-                let saved = new postReportModel(data)
+                const saved = new postReportModel(data)
                 await saved.save()
                 return true
 
@@ -451,7 +451,7 @@ class userRepository implements IUserInterface {
     async findAppliedJobs(user_id: string): Promise<jobApplied[] | null> {
         try {
 
-            let data = await appliedJobModel.find({user_id:user_id }).populate("job_id").populate('company_id')
+            const data = await appliedJobModel.find({user_id:user_id }).populate("job_id").populate('company_id')
 
             return data ? data : null
         } catch (error) {
@@ -464,7 +464,7 @@ class userRepository implements IUserInterface {
 
 
 
-            let userData: user[] = await userModel.find({
+            const userData: user[] = await userModel.find({
                 is_blocked: false, is_verified: true, is_admin: false
             })
             return userData ? userData : null
@@ -478,7 +478,7 @@ class userRepository implements IUserInterface {
     async getCompanydatas(): Promise<company[] | null> {
         try {
 
-            let companyData = await companyModel.find({
+            const companyData = await companyModel.find({
                 is_verified: true, admin_verified: true, is_blocked: false
             })
 
@@ -493,7 +493,7 @@ class userRepository implements IUserInterface {
     }
     async findCompanyById(id: string): Promise<company | null> {
         try {
-            let company = await companyModel.findOne({ _id: id })
+            const company = await companyModel.findOne({ _id: id })
             return company ? company : null
         } catch (error) {
             console.error(error);
@@ -503,7 +503,7 @@ class userRepository implements IUserInterface {
     }
     async saveReviews(reviewData: reviews): Promise<boolean> {
         try {
-            let reviewdata = new reviewandRatingModel(reviewData)
+            const reviewdata = new reviewandRatingModel(reviewData)
             await reviewdata.save()
             return true
         } catch (error) {

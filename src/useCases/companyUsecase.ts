@@ -30,7 +30,7 @@ class CompanyUsecase {
     }
     async signUp(companyData :company){
         try {
-            let companyExist = await this.companyRepo.findCompanyByEmail(companyData.email)
+            const companyExist = await this.companyRepo.findCompanyByEmail(companyData.email)
             if(companyExist){
                 if(!companyExist.is_verified){ 
                     const  otp = await this.otpGenerator.otpgenerate()
@@ -67,16 +67,16 @@ class CompanyUsecase {
 
     async login(email:string,password:string){
         try {
-            let companyData = await this.companyRepo.findCompanyByEmail(email)
+            const companyData = await this.companyRepo.findCompanyByEmail(email)
            
             if(companyData){
-                let checkPassword =await this.hashPassword.comparePassword(password,companyData.password)
+                const checkPassword =await this.hashPassword.comparePassword(password,companyData.password)
                 if(checkPassword){
                     if(companyData.is_blocked){
                         return {success:false,message:"You've been blocked by admin"}
                     }
                     else{
-                let token = await this.jwttoken.generateToken(companyData._id,"company")
+                        const token = await this.jwttoken.generateToken(companyData._id,"company")
                         return {success:true,message:"Company logined successfully",companyData,token}
                     }
                 }else{
@@ -95,7 +95,7 @@ class CompanyUsecase {
     }
     async verifyOtp(otp:string){
         try {
-            let findOtp = await this.companyRepo.checkOtp(otp)
+            const findOtp = await this.companyRepo.checkOtp(otp)
             
             if(findOtp){
                 await this.companyRepo.verifyCompany(findOtp)
@@ -115,13 +115,13 @@ class CompanyUsecase {
 
     async googleSavecompany(companydata:company){
         try {
-            let saved = await this.companyRepo.saveCompanydata(companydata)
+            const saved = await this.companyRepo.saveCompanydata(companydata)
             if(saved){
                 if(saved.is_blocked){
                     return {success:false,message:"You've been blocked admin"}
     
                 }
-                let token = this.jwttoken.generateToken(saved._id,"company")
+                const token = this.jwttoken.generateToken(saved._id,"company")
                 return {success:true,message:"Logined successfully",token}
             }else{
                 return{success:false,message:"Logined failed"}
@@ -131,9 +131,9 @@ class CompanyUsecase {
             throw error
         }
     }
-    async companData(id:string){
+    async companData(company_id:string){
         try {
-            let companydata = await this.companyRepo.getCompanydata(id)
+            const companydata = await this.companyRepo.getCompanydata(company_id)
             if(companydata){
                 return {success:true,message:"Companydata sent successfully",companydata}
             }else{
@@ -148,10 +148,10 @@ class CompanyUsecase {
     }
     async companyExist(email:string){
         try {
-            let companyData = await this.companyRepo.findCompanyByEmail(email)
+            const companyData = await this.companyRepo.findCompanyByEmail(email)
            
             if(companyData){
-                let otp = this.otpGenerator.otpgenerate()
+                const otp = this.otpGenerator.otpgenerate()
                 await this.nodeMailer.sendEmail(email, otp)
                 await this.userRepo.saveOtp(email, otp)
                 return {success:true,message:"Otp sent sucessfully",companyData}
@@ -167,13 +167,13 @@ class CompanyUsecase {
     }
     async passwordReset(companydata:company){
         try {
-            let {password} =companydata
-            let hashed = await this.hashPassword.hashPassword(password)
+            const {password} =companydata
+            const hashed = await this.hashPassword.hashPassword(password)
             console.log(hashed);
             
             companydata.password=hashed as string
             
-            let data = await this.companyRepo.resetPassword(companydata )
+            const data = await this.companyRepo.resetPassword(companydata )
             if(data){
                 return {success:true,message:"Password reset successfully"}
             }else{
@@ -188,7 +188,7 @@ class CompanyUsecase {
     async savingJobs(jobData:jobs){
         try {
 
-            let savedJob = await this.companyRepo.saveJobs(jobData)
+            const savedJob = await this.companyRepo.saveJobs(jobData)
             if(savedJob){
                 return {success:true,message:"Job created successfully"}
             }else{
@@ -200,9 +200,9 @@ class CompanyUsecase {
         }
     }
 
-    async jobs(id:string,page:string){
+    async jobs(job_id:string,page:string){
       try {
-        let jobData = await this.companyRepo.getJobs(id,page)
+        const jobData = await this.companyRepo.getJobs(job_id,page)
         if(jobData){
             const {jobs,count}=jobData
             return{success:true,message:"Jobs sent successfully",jobs,count}
@@ -214,9 +214,9 @@ class CompanyUsecase {
         throw error
       }
     }
-    async jobRemove(id:string){
+    async jobRemove(job_id:string){
         try {
-            let removedJob =await this.companyRepo.removeJob(id)
+            const removedJob =await this.companyRepo.removeJob(job_id)
             if(removedJob){
                 return{success:true,message:"Job removed successfully"}
             }else{
@@ -230,10 +230,10 @@ class CompanyUsecase {
     async savePost(postData:Post,files:[]){
         try {
             if(files){
-                let cloudinary =await this.cloudinary.uploadMultipleimages(files,"Post")
+                const cloudinary =await this.cloudinary.uploadMultipleimages(files,"Post")
                 postData.images =cloudinary
             }
-            let savedPost = await this.companyRepo.savePosts(postData)
+            const savedPost = await this.companyRepo.savePosts(postData)
             if(savedPost){
                 return {success:true,message:'Post saved successfully'}
             }else{
@@ -246,9 +246,9 @@ class CompanyUsecase {
         }
     }
 
-    async Posts(id:string){
+    async Posts(post_id:string){
         try {
-            let posts = await this.companyRepo.getPosts(id)
+            const posts = await this.companyRepo.getPosts(post_id)
             if(posts){
                 return {success:true,message:"Posts sent successfully",posts}
             }else{
@@ -260,17 +260,17 @@ class CompanyUsecase {
             throw error
         }
     }
-    async updateProfile(id: string, company: company, file: string) {
+    async updateProfile(company_id: string, company: company, file: string) {
         try {
             if (file) {
-                let cloudinary = await this.cloudinary.uploadImage(file, "User Profile")
+                const cloudinary = await this.cloudinary.uploadImage(file, "User Profile")
                 company.img_url = cloudinary
             }
 
 
-            let updatedData = await this.companyRepo.updateProfile(id, company as company )
+            const updatedData = await this.companyRepo.updateProfile(company_id, company as company )
             if (updatedData) {
-                let companyData = await this.companyRepo.getCompanydata(id)
+                const companyData = await this.companyRepo.getCompanydata(company_id)
                 return { success: true, message: "Company profile updated successfully", companyData }
             } else {
                 return { success: false, message: "Failed to update company profile" }
@@ -282,13 +282,13 @@ class CompanyUsecase {
 
         }
     }
-    async documentUpload(id:string,file:string){
+    async documentUpload(company_id:string,file:string){
         try {
             let cloudinary=''
             if(file){
                 cloudinary = await this.cloudinary.uploaddocuments(file,"Documents")
             }
-            let upload = await this.companyRepo.uploadDocument(id,cloudinary)
+            const upload = await this.companyRepo.uploadDocument(company_id,cloudinary)
             if(upload){
                 return {success:true,message:"Document uploaded successfully"}
             }else{
@@ -299,9 +299,9 @@ class CompanyUsecase {
             throw error
         }
     }
-    async removePost(id:string){
+    async removePost(post_id:string){
         try {
-            let remove = await this.companyRepo.deletePost(id)
+            const remove = await this.companyRepo.deletePost(post_id)
             if(remove){
                 return {success:true,message:"Post deleted successfully"}
             }else{
@@ -316,7 +316,7 @@ class CompanyUsecase {
 
     async userAppliedJobs(job_id:string){
         try {
-            let appliedUsers = await this.companyRepo.jobApplications(job_id)
+            const appliedUsers = await this.companyRepo.jobApplications(job_id)
             if(appliedUsers){
                 return {success:true,message:"Applied Users sent successfully",appliedUsers}
             }else{
@@ -330,7 +330,7 @@ class CompanyUsecase {
     async scheduledJobs(jobScheduleddata:jobShedule){
         try {
             const {company_id,user_id}=jobScheduleddata
-            let scheduled = await this.companyRepo.saveScheduledJobs(jobScheduleddata)
+            const scheduled = await this.companyRepo.saveScheduledJobs(jobScheduleddata)
             if(scheduled){
                   const companData = await this.companyRepo.getCompanydata(company_id as string )
                   const userData = await this.userRepo.findUserById(user_id as string)
@@ -347,7 +347,7 @@ class CompanyUsecase {
     }
     async scheduled(job_id:String){
         try {
-            let scheduledJobdata = await this.companyRepo.getScheduledJobs(job_id as string)
+            const scheduledJobdata = await this.companyRepo.getScheduledJobs(job_id as string)
             if(scheduledJobdata){
                 return {success:true,message:"Scheduled job data sent successfully",scheduledJobdata}
             }else{
@@ -358,9 +358,9 @@ class CompanyUsecase {
             throw error  
         }
     }
-    async getScheduledJobs(id:string){
+    async getScheduledJobs(job_id:string){
         try {
-            let scheduledJobs = await this.companyRepo.findScheduledJobs(id)
+            const scheduledJobs = await this.companyRepo.findScheduledJobs(job_id)
             if(scheduledJobs){
                 return {success:true,message:"Scheduled jobs sent successfully",scheduledJobs}
             }else{
@@ -373,9 +373,9 @@ class CompanyUsecase {
         }
     }
 
-    async reviews(id :string){
+    async reviews(company_id :string){
         try {
-            const reviews = await this.companyRepo.getReviews(id as string)
+            const reviews = await this.companyRepo.getReviews(company_id as string)
             
             if(reviews){
                 console.log(reviews,"rrrrr ");

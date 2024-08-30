@@ -8,10 +8,10 @@ class adminController {
     }
     async login(req:Request,res:Response){
         try {            
-            let {email,password} =req.body
-            let adminExist =await this.adminUsecases.login(email,password)
+            const {email,password} =req.body
+            const adminExist =await this.adminUsecases.login(email,password)
             if(adminExist?.success){
-                let {token} =adminExist
+                const {token} =adminExist
                   res.status(200).json({success:true,message:adminExist.message,token})
             }else{
                 res.status(400).json({success:false,message:adminExist?.message})
@@ -25,10 +25,10 @@ class adminController {
 
     async userBlockUnblock(req:Request,res:Response){
         try {
-            let {user_id,status} =req.query 
+            const {user_id,status} =req.query 
             console.log(req.query);
                        
-            let blockUnblockUser=await this.adminUsecases.blockUnblockUsers(user_id as string,status as string)
+            const blockUnblockUser=await this.adminUsecases.blockUnblockUsers(user_id as string,status as string)
             console.log(blockUnblockUser);
             
             if(blockUnblockUser.success){
@@ -43,8 +43,8 @@ class adminController {
         }
     }
     async companyBlockUnblock(req:Request,res:Response){
-        let {company_id,status} =req.query          
-        let blockUnblockCompany = await this.adminUsecases.blockUnblockCompanies(company_id as string,status as string)
+        const {company_id,status} =req.query          
+        const blockUnblockCompany = await this.adminUsecases.blockUnblockCompanies(company_id as string,status as string)
         if(blockUnblockCompany.success){
             res.status(200).json({success:true,message:blockUnblockCompany.message})
         }else{
@@ -55,9 +55,9 @@ class adminController {
     async getUsers(req:Request,res:Response){
         try {
             const {page} =req.query
-            let userDetails= await this.adminUsecases.findUsers(page as string)
+            const userDetails= await this.adminUsecases.findUsers(page as string)
             if(userDetails.success){
-               let {userDatas,count} =userDetails;
+                const {userDatas,count} =userDetails;
                 
                 res.status(200).json({success:true,message:userDetails.message,userDatas,count})
             }else{
@@ -73,7 +73,7 @@ class adminController {
     async getComapnies(req:Request,res:Response){
         try {
             const {page}= req.query
-            let companyDetails = await this.adminUsecases.findCompanies(page as string)
+            const companyDetails = await this.adminUsecases.findCompanies(page as string)
             if(companyDetails.success){
                 const {companyDatas,count} =companyDetails
                 res.status(200).json({success:true,messsage:companyDetails.message,companyDatas,count})
@@ -89,14 +89,14 @@ class adminController {
     
     async subscription(req:Request,res:Response){
         try {
-            let {subscriptiontype,limit,month,price}=req.body
-            let subscriptionData ={subscriptiontype,limit,month,price}
+            const {subscriptiontype,limit,month,price}=req.body
+            const subscriptionData ={subscriptiontype,limit,month,price}
             console.log(
             subscriptionData
 
             );
             
-            let save = await this.adminUsecases.savesubscriptionPlan(subscriptionData as subscriptions)
+            const save = await this.adminUsecases.savesubscriptionPlan(subscriptionData as subscriptions)
             if(save.Success){
                 res.status(200).json({success:true,message:save.message})
             }else{
@@ -112,7 +112,7 @@ class adminController {
 
     async getSubscriptionPlans(req:Request,res:Response){
         try {
-            let subscriptionData = await this.adminUsecases.subscriptionPlans()
+            const subscriptionData = await this.adminUsecases.subscriptionPlans()
             if(subscriptionData.success){
                 const {subscriptionplan}=subscriptionData
             res.status(200).json({success:true,message:subscriptionData.message,subscriptionplan})
@@ -127,8 +127,8 @@ class adminController {
     }
     async deletePlan(req:Request,res:Response){
         try {
-             let {id} =req.query
-            let removed = await this.adminUsecases.removePlan(id as string)
+            const {id} =req.query
+            const removed = await this.adminUsecases.removePlan(id as string)
             if(removed?.success){
                 res.status(200).json({success:true,message:removed.message})
             }else{
@@ -143,7 +143,7 @@ class adminController {
     async listUnlistPlan(req:Request,res:Response){
         try {
             const {id,message} =req.body
-            let manage = await this.adminUsecases.managePlans(id,message)
+            const manage = await this.adminUsecases.managePlans(id,message)
             if(manage.success){
                 res.status(200).json({success:true,message:manage.message})
             }else{
@@ -156,7 +156,7 @@ class adminController {
     }
     async getDashboard(req:Request,res:Response){
         try {
-            let data = await this.adminUsecases.dashboard()
+            const data = await this.adminUsecases.dashboard()
             if(data.success){
                 const {dashboardData} =data
                 res.status(200).json({success:true,message:data.message,dashboardData})

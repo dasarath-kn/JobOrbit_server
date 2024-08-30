@@ -15,7 +15,7 @@ import userModel from "../database/userModel";
 class AdminRespositories implements IAdminInterface {
     async findAdminbyEmail(email: string): Promise<admin | null> {
         try {
-            let adminData = await userModel.findOne({ email: email })
+            const adminData = await userModel.findOne({ email: email })
             return adminData ? adminData : null
         } catch (error) {
             console.error(error);
@@ -27,10 +27,10 @@ class AdminRespositories implements IAdminInterface {
     async getUserdatas(page: string): Promise<UserDataResult | null> {
         try {
             
-            let skipCount = Number(page) * 3
-            let Count: number = await userModel.find({is_admin:false}).countDocuments()
+            const skipCount = Number(page) * 3
+            const Count: number = await userModel.find({is_admin:false}).countDocuments()
             
-            let userData: user[] = await userModel.find({is_admin:false}).skip(skipCount).limit(3)
+            const userData: user[] = await userModel.find({is_admin:false}).skip(skipCount).limit(3)
             if (userData.length === 0) {
                 return null;
             }
@@ -46,11 +46,11 @@ class AdminRespositories implements IAdminInterface {
     }
     async getCompanydatas(page: string): Promise<CompanyDataResult | null> {
         try {
-            let skipCount = Number(page) * 3
-            let Count: number = await companyModel.find().countDocuments()
+            const skipCount = Number(page) * 3
+            const Count: number = await companyModel.find().countDocuments()
             console.log(Count);
             
-            let companyData: company[] = await companyModel.find().skip(skipCount).limit(3)
+            const companyData: company[] = await companyModel.find().skip(skipCount).limit(3)
             if (companyData.length === 0) {
                 return null;
             }
@@ -68,10 +68,10 @@ class AdminRespositories implements IAdminInterface {
     async blockUnblockUsers(user_id: string, status: string): Promise<string> {
         try {
             if (status == "block") {
-                let updatedStatus = await userModel.updateOne({ _id: user_id }, { $set: { is_blocked: true } })
+                const updatedStatus = await userModel.updateOne({ _id: user_id }, { $set: { is_blocked: true } })
                 return updatedStatus.acknowledged ? "User Blocked successfully" : ""
             } else {
-                let updatedStatus = await userModel.updateOne({ _id: user_id }, { $set: { is_blocked: false } })
+                const updatedStatus = await userModel.updateOne({ _id: user_id }, { $set: { is_blocked: false } })
                 return updatedStatus.acknowledged ? "User UnBlocked successfully" : ""
 
             }
@@ -88,17 +88,17 @@ class AdminRespositories implements IAdminInterface {
     async blockUnblockCompanies(company_id: string, status: string): Promise<string> {
         try {
             if (status == "verify") {
-                let updatedStatus = await companyModel.updateOne({ _id: company_id }, { $set: { admin_verified: true } })
+                const updatedStatus = await companyModel.updateOne({ _id: company_id }, { $set: { admin_verified: true } })
                 return updatedStatus.acknowledged ? "Company Verified Successfully" : ""
             } else if (status == "block") {
-                let updatedStatus = await companyModel.updateOne({ _id: company_id }, { $set: { is_blocked: true } })
+                const updatedStatus = await companyModel.updateOne({ _id: company_id }, { $set: { is_blocked: true } })
                 return updatedStatus.acknowledged ? "Company blocked Successfully" : ""
             } else if (status == "reject") {
-                let updatedStatus = await companyModel.deleteOne({ _id: company_id })
+                const updatedStatus = await companyModel.deleteOne({ _id: company_id })
                 return updatedStatus.acknowledged ? "Company rejected Successfully" : ""
             }
             else {
-                let updatedStatus = await companyModel.updateOne({ _id: company_id }, { $set: { is_blocked: false } })
+                const updatedStatus = await companyModel.updateOne({ _id: company_id }, { $set: { is_blocked: false } })
                 return updatedStatus.acknowledged ? "Company unblocked Successfully" : ""
             }
 
@@ -110,7 +110,7 @@ class AdminRespositories implements IAdminInterface {
     }
     async subscription(subscriptionData: subscriptions): Promise<boolean> {
         try {
-            let subscription = new subscriptionModel(subscriptionData)
+            const subscription = new subscriptionModel(subscriptionData)
             await subscription.save()
             return true
         } catch (error) {
@@ -120,7 +120,7 @@ class AdminRespositories implements IAdminInterface {
     }
     async getsubscriptionplan(): Promise<subscriptions[] | null> {
         try {
-            let plans = await subscriptionModel.find()
+            const plans = await subscriptionModel.find()
             return plans ? plans : null
 
         } catch (error) {
@@ -166,7 +166,7 @@ class AdminRespositories implements IAdminInterface {
     }
   async  getPostreportdata(): Promise<postreport[] | null> {
         try {
-            let postReportdata = await postReportModel.find().populate('post_id').populate('user_datas.user_id')
+            const postReportdata = await postReportModel.find().populate('post_id').populate('user_datas.user_id')
             return postReportdata ? postReportdata : null
         } catch (error) {
             console.error(error);

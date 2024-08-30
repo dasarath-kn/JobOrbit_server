@@ -14,11 +14,11 @@ class CompanyController {
 
     async login(req: Request, res: Response) {
         try {
-            let { email, password } = req.body
-            let companyDetails = await this.companyusecase.login(email, password)
-            let { companyData } = companyDetails
+            const { email, password } = req.body
+            const companyDetails = await this.companyusecase.login(email, password)
+            const { companyData } = companyDetails
             if (companyDetails.success) {
-                let { token } = companyDetails
+                const { token } = companyDetails
                 res.status(200).json({ success: true, message: companyDetails.message, companyData, token })
             } else {
                 res.status(400).json({ success: false, message: companyDetails.message })
@@ -37,7 +37,7 @@ class CompanyController {
             const { companyname, email, phonenumber, password, industry, state, city, address, about } = req.body
             const companyData = { companyname, email, phonenumber, password, industry, state, city, address, about }
             const companyExist = await this.companyusecase.signUp(companyData as company)
-            let { companySaved } = companyExist
+            const { companySaved } = companyExist
             if (companyExist.success) {
                 res.status(200).json({ success: true, message: companyExist.message, companySaved })
             } else {
@@ -54,9 +54,9 @@ class CompanyController {
 
     async verifyOtp(req: Request, res: Response) {
         try {
-            let { otp } = req.body
+            const { otp } = req.body
 
-            let verfiyOtp = await this.companyusecase.verifyOtp(otp)
+            const verfiyOtp = await this.companyusecase.verifyOtp(otp)
             if (verfiyOtp.success) {
                 const { token } = verfiyOtp
                 res.status(200).json({ success: true, message: verfiyOtp.message, token })
@@ -73,14 +73,14 @@ class CompanyController {
 
     async googleSignup(req: Request, res: Response) {
         try {
-            let { name, email, isGoogle } = req.body
-            let companyname = name
-            let is_google = isGoogle
-            let companydata = { companyname, email, is_google }
+            const { name, email, isGoogle } = req.body
+            const companyname = name
+            const is_google = isGoogle
+            const companydata = { companyname, email, is_google }
 
-            let companySaveddata = await this.companyusecase.googleSavecompany(companydata as company)
+            const companySaveddata = await this.companyusecase.googleSavecompany(companydata as company)
             if (companySaveddata.success) {
-                let { token } = companySaveddata
+                const { token } = companySaveddata
                 res.status(200).json({ success: true, message: companySaveddata.message, token })
             } else {
                 res.status(400).json({ success: false, message: companySaveddata.message })
@@ -95,10 +95,10 @@ class CompanyController {
 
     async getCompanydata(req: Request, res: Response) {
         try {
-            let { id } = req
-            let companyData = await this.companyusecase.companData(id as string)
+            const { id } = req
+            const companyData = await this.companyusecase.companData(id as string)
             if (companyData.success) {
-                let { companydata } = companyData
+                const { companydata } = companyData
                 res.status(200).json({ success: true, message: companyData.message, companydata })
             } else {
                 res.status(400).json({ success: false, message: companyData.message })
@@ -112,8 +112,8 @@ class CompanyController {
     }
     async verifyCompany(req: Request, res: Response) {
         try {
-            let { email } = req.body
-            let companydata = await this.companyusecase.companyExist(email)
+            const { email } = req.body
+            const companydata = await this.companyusecase.companyExist(email)
             console.log(companydata);
 
             if (companydata.success) {
@@ -131,11 +131,11 @@ class CompanyController {
     }
     async resetPassword(req: Request, res: Response) {
         try {
-            let { email, password } = req.body
+            const { email, password } = req.body
             const companydata = { email, password }
             console.log(req.body);
 
-            let resetpassword = await this.companyusecase.passwordReset(companydata as company)
+            const resetpassword = await this.companyusecase.passwordReset(companydata as company)
             if (resetpassword.success) {
                 res.status(200).json({ success: true, message: resetpassword.message })
             } else {
@@ -152,9 +152,9 @@ class CompanyController {
         try {
             const { id } = req
             const company_id = id
-            let { jobtitle, description, responsibilities, requirements, qualification, location, type,skills } = req.body
+            const { jobtitle, description, responsibilities, requirements, qualification, location, type,skills } = req.body
             const jobData = { description, responsibilities, requirements,skills, qualification, jobtitle, location, type, company_id: new mongoose.Types.ObjectId(company_id) }
-            let jobs = await this.companyusecase.savingJobs(jobData as jobs)
+            const jobs = await this.companyusecase.savingJobs(jobData as jobs)
             if (jobs.success) {
                 res.status(200).json({ success: true, message: jobs.message })
             } else {
@@ -169,9 +169,9 @@ class CompanyController {
 
     async getJobs(req: Request, res: Response) {
         try {
-            let { id } = req
+            const { id } = req
             const {page}=req.query
-            let jobData = await this.companyusecase.jobs(id as string,page as string)
+            const jobData = await this.companyusecase.jobs(id as string,page as string)
             if (jobData.success) {
                 const { jobs,count } = jobData
                 res.status(200).json({ success: true, message: jobData.message, jobs,count })
@@ -185,8 +185,8 @@ class CompanyController {
     }
     async deleteJob(req: Request, res: Response) {
         try {
-            let { id } = req.query
-            let removed = await this.companyusecase.jobRemove(id as string)
+            const { id } = req.query
+            const removed = await this.companyusecase.jobRemove(id as string)
             if (removed.success) {
                 res.status(200).json({ success: true, message: removed.message })
             } else {
@@ -205,7 +205,7 @@ class CompanyController {
             const files = Array.isArray(req.files)?req.files.map((val) => val.path):[]
             const { description } = req.body
             const postData = {company_id,description, images: [] }
-            let post = await this.companyusecase.savePost(postData as any, files as any)
+            const post = await this.companyusecase.savePost(postData as any, files as any)
             if (post.success) {
                 for (const filePath of files) {
                     fs.unlink(filePath, (err) => {
@@ -229,7 +229,7 @@ class CompanyController {
     async getPosts(req:Request,res:Response){
         try {
             const {id} =req
-            let postDatas = await this.companyusecase.Posts(id as string)
+            const postDatas = await this.companyusecase.Posts(id as string)
             if(postDatas.success){
                 const {posts}=postDatas
                 res.status(200).json({success:true,message:postDatas,posts})
@@ -247,7 +247,7 @@ class CompanyController {
                 const {companyname,city,industry,address,website_url,about}=req.body
                 const companyData ={companyname,city,industry,address,website_url,about,img_url:''}
                  const file =req.file?.path
-                let editProfile =await this.companyusecase.updateProfile(id as string,companyData as company,file as string)
+                 const editProfile =await this.companyusecase.updateProfile(id as string,companyData as company,file as string)
                 if(editProfile.success){
                     const {companyData}=editProfile
                     res.status(200).json({success:true,message:editProfile.message,companyData})
@@ -280,10 +280,10 @@ class CompanyController {
 
         async deletePost(req:Request,res:Response){
             try {
-                let {id} =req.query
+                const {id} =req.query
                 console.log(id);
                 
-                let removepost = await this.companyusecase.removePost(id as string)
+                const removepost = await this.companyusecase.removePost(id as string)
                 if(removepost?.success){
                     res.status(200).json({success:true,message:removepost.message})
                 }else{
@@ -298,7 +298,7 @@ class CompanyController {
         async jobApplications(req:Request,res:Response){
             try {
                 const {job_id} =req.query
-                let appllications = await this.companyusecase.userAppliedJobs(job_id as string)
+                const appllications = await this.companyusecase.userAppliedJobs(job_id as string)
                 if(appllications.success){
                     const {appliedUsers} =appllications
                     res.status(200).json({success:true,message:appllications.message,appliedUsers})
@@ -318,7 +318,7 @@ class CompanyController {
                     console.log(req.body);
                     
                     const jobScheduleddata ={time,date,message,user_id,job_id,company_id:id,scheduled_time:Date.now()}                    
-                    let saveData = await this.companyusecase.scheduledJobs(jobScheduleddata as jobShedule)
+                    const saveData = await this.companyusecase.scheduledJobs(jobScheduleddata as jobShedule)
                     if(saveData.success){
                         res.status(200).json({success:true,message:saveData.message})
                     }else{
@@ -334,7 +334,7 @@ class CompanyController {
             async getScheduledJobs(req:Request,res:Response){
                 try {
                     const {job_id} =req.query
-                    let scheduledjob = await this.companyusecase.scheduled(job_id as string)
+                    const scheduledjob = await this.companyusecase.scheduled(job_id as string)
                     if(scheduledjob.success){
                         const {scheduledJobdata} =scheduledjob
                         res.status(200).json({success:true,message:scheduledjob.message,scheduledJobdata})
@@ -350,7 +350,7 @@ class CompanyController {
             async ScheduledJobs(req:Request,res:Response){
                 try {
                     const {id}=req.query
-                    let scheduled = await this.companyusecase.getScheduledJobs(id as string)
+                    const scheduled = await this.companyusecase.getScheduledJobs(id as string)
                     if(scheduled.success){
                         const {scheduledJobs} =scheduled
                         console.log(scheduled,"d");

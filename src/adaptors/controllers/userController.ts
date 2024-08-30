@@ -23,7 +23,7 @@ class userController {
             const exists = await this.userUsecases.findUser(userData as user)
             console.log(exists);
             if (!exists.data) {
-                let { userSaved } = exists
+                const { userSaved } = exists
                 res.status(200).json({ success: true, message: "saved user", userSaved })
             } else {
                 console.log("Email already exist");
@@ -44,9 +44,9 @@ class userController {
             const userExist = await this.userUsecases.login(email, password)
 
             if (userExist.success) {
-                let { userExistdata } = userExist
+                const { userExistdata } = userExist
                 console.log(userExistdata);
-                let { token } = userExist
+                const { token } = userExist
                 res.status(200).json({ message: userExist.message, userExistdata, token })
             } else {
                 res.status(400).json({ message: userExist.message })
@@ -61,9 +61,9 @@ class userController {
     }
     async otp(req: Request, res: Response) {
         try {
-            let { otp } = req.body
-            let verifiedOtp = await this.userUsecases.verfiyOtp(otp)
-            let { token } = verifiedOtp
+            const { otp } = req.body
+            const verifiedOtp = await this.userUsecases.verfiyOtp(otp)
+            const { token } = verifiedOtp
             if (verifiedOtp.success) {
                 res.status(200).json({ message: verifiedOtp.message, token })
             } else {
@@ -79,10 +79,10 @@ class userController {
 
     async resendOtp(req: Request, res: Response) {
         try {
-            let { email } = req.body
+            const { email } = req.body
             console.log(email);
 
-            let resendOtp = await this.userUsecases.resendOtp(email)
+            const resendOtp = await this.userUsecases.resendOtp(email)
             if (resendOtp.success) {
                 res.status(200).json({ success: true, message: resendOtp.message })
             } else {
@@ -99,11 +99,11 @@ class userController {
 
     async getUserdata(req: Request, res: Response) {
         try {
-            let { id } = req
+            const { id } = req
 
-            let data = await this.userUsecases.userData(id as string)
+            const data = await this.userUsecases.userData(id as string)
             if (data.success) {
-                let { userData } = data
+                const { userData } = data
                 res.status(200).json({ success: true, message: data.message, userData })
             } else {
                 res.status(400).json({ success: false, message: data.message })
@@ -117,15 +117,15 @@ class userController {
     }
     async googleSignup(req: Request, res: Response) {
         try {
-            let { name, email, isGoogle } = req.body
-            let firstname = name
-            let is_google = isGoogle
+            const { name, email, isGoogle } = req.body
+            const firstname = name
+            const is_google = isGoogle
             const userdata = { firstname, email, is_google }
             console.log(userdata);
 
-            let userSaveddata = await this.userUsecases.googleSaveuser(userdata as user)
+            const userSaveddata = await this.userUsecases.googleSaveuser(userdata as user)
             if (userSaveddata?.success) {
-                let { token } = userSaveddata
+                const { token } = userSaveddata
                 res.status(200).json({ success: true, message: userSaveddata.message, token })
             } else {
                 res.status(400).json({ success: false, message: userSaveddata?.message })
@@ -139,10 +139,10 @@ class userController {
     }
     async verifyUser(req: Request, res: Response) {
         try {
-            let { email } = req.body
+            const { email } = req.body
             console.log(req.body);
 
-            let userData = await this.userUsecases.userExist(email)
+            const userData = await this.userUsecases.userExist(email)
             if (userData.success) {
                 const { Userdata } = userData
                 res.status(200).json({ success: true, message: userData.message, Userdata })
@@ -158,10 +158,10 @@ class userController {
     }
     async resetPassword(req: Request, res: Response) {
         try {
-            let { email, password } = req.body
+            const { email, password } = req.body
             const userdata = { email, password }
 
-            let resetpassword = await this.userUsecases.passwordReset(userdata as user)
+            const resetpassword = await this.userUsecases.passwordReset(userdata as user)
             if (resetpassword.success) {
                 res.status(200).json({ success: true, message: resetpassword.message })
             } else {
@@ -183,7 +183,7 @@ class userController {
             console.log(req.body);
 
             const file = req.file?.path
-            let editProfile = await this.userUsecases.updateProfile(id as string, userData as user, file as string, percentages as number)
+            const editProfile = await this.userUsecases.updateProfile(id as string, userData as user, file as string, percentages as number)
             if (editProfile.success) {
                 const { userData } = editProfile
                 res.status(200).json({ success: true, message: editProfile.message, userData })
@@ -202,7 +202,7 @@ class userController {
         try {
             const { skill, percentage } = req.body
             const { id } = req
-            let addskills = await this.userUsecases.manageSkill(skill, id as string, percentage as number)
+            const addskills = await this.userUsecases.manageSkill(skill, id as string, percentage as number)
             if (addskills.success) {
                 res.status(200).json({ success: true, message: addskills.message })
             } else {
@@ -219,7 +219,7 @@ class userController {
     async getjobs(req: Request, res: Response) {
         try {
             const { page,type,location,date } = req.query            
-            let findJobs = await this.userUsecases.jobs(page as string,type as string,location as string,date as string)
+            const findJobs = await this.userUsecases.jobs(page as string,type as string,location as string,date as string)
             if (findJobs.success) {
                 const { jobs, count } = findJobs
                 res.status(200).json({ success: true, message: findJobs.message, jobs, count })
@@ -236,7 +236,7 @@ class userController {
     }
     async getPosts(req: Request, res: Response) {
         try {
-            let getPosts = await this.userUsecases.posts()
+            const getPosts = await this.userUsecases.posts()
             if (getPosts.success) {
                 const { posts } = getPosts
                 res.status(200).json({ success: true, messge: getPosts.message, posts })
@@ -253,7 +253,7 @@ class userController {
             const { post_id, status } = req.query
             const { id } = req
             const userid = id
-            let manageLikeUnlike = await this.userUsecases.manageLikeUnlike(post_id as string, userid as string, status as string)
+            const manageLikeUnlike = await this.userUsecases.manageLikeUnlike(post_id as string, userid as string, status as string)
             if (manageLikeUnlike.success) {
                 res.status(200).json({ success: true, message: manageLikeUnlike.message })
             } else {
@@ -267,11 +267,11 @@ class userController {
     }
     async savePost(req: Request, res: Response) {
         try {
-            let { id } = req
-            let { post_id, message, company_id } = req.body
-            let postData = { user_id: id, post_id, company_id }
+            const { id } = req
+            const { post_id, message, company_id } = req.body
+            const postData = { user_id: id, post_id, company_id }
 
-            let savedPost = await this.userUsecases.postSave(postData as savedPost, message)
+            const savedPost = await this.userUsecases.postSave(postData as savedPost, message)
             if (savedPost.success) {
                 res.status(200).json({ success: true, message: savedPost.message })
             } else {
@@ -284,9 +284,9 @@ class userController {
     }
     async getsavedPost(req: Request, res: Response) {
         try {
-            let { id } = req
+            const { id } = req
 
-            let getsavedPosts = await this.userUsecases.savedPosts(id as string)
+            const getsavedPosts = await this.userUsecases.savedPosts(id as string)
             if (getsavedPosts.success) {
                 const { savedPosts } = getsavedPosts
 
@@ -305,7 +305,7 @@ class userController {
             const { id } = req
             const { post_id, message, company_id } = req.body
             const commentData = { user_id: id, post_id, company_id, message }
-            let comments = await this.userUsecases.shareComment(commentData as comment)
+            const comments = await this.userUsecases.shareComment(commentData as comment)
             if (comments.success) {
                 res.status(200).json({ success: true, message: comments.message })
             } else {
@@ -336,7 +336,7 @@ class userController {
         try {
             const { job_id } = req.query
             const { id } = req
-            let details = await this.userUsecases.jobDetails(job_id as string, id as string)
+            const details = await this.userUsecases.jobDetails(job_id as string, id as string)
             if (details.success) {
                 const { jobDetails, plan_id } = details
 
@@ -356,7 +356,7 @@ class userController {
             const { experiencefield, mode, start_date, end_date, responsibilities, percentage } = req.body
             const experienceData = { experiencefield, mode, start_date, end_date, responsibilities }
             const percentages = Number(percentage)
-            let addexperience = await this.userUsecases.experience(experienceData as any, percentages, id as string)
+            const addexperience = await this.userUsecases.experience(experienceData as any, percentages, id as string)
             if (addexperience.success) {
                 res.status(200).json({ success: true, message: addexperience.message })
             } else {
@@ -375,7 +375,7 @@ class userController {
             const file = req.file?.path
             const { percentage } = req.body
             const percentages = Number(percentage)
-            let upload = await this.userUsecases.resume(id as string, file as any, percentages)
+            const upload = await this.userUsecases.resume(id as string, file as any, percentages)
             if (upload.success) {
                 res.status(200).json({ success: true, message: upload.message })
             } else {
@@ -407,7 +407,7 @@ class userController {
     }
     async getSubscriptionPlans(req: Request, res: Response) {
         try {
-            let subscriptionData = await this.userUsecases.subscriptionPlans()
+            const subscriptionData = await this.userUsecases.subscriptionPlans()
             if (subscriptionData.success) {
                 const { subscriptionplan } = subscriptionData
                 res.status(200).json({ success: true, message: subscriptionData.message, subscriptionplan })
@@ -485,7 +485,7 @@ class userController {
 
             console.log(postreportData, "ddlj");
 
-            let report = await this.userUsecases.postReportsave(post_id as string, postreportData as any)
+            const report = await this.userUsecases.postReportsave(post_id as string, postreportData as any)
             if (report.success) {
                 res.status(200).json({ success: true, message: report.message })
             } else {
@@ -503,7 +503,7 @@ class userController {
         try {
             const { id } = req
 
-            let applied = await this.userUsecases.findAppliedJobsByUserid(id as string)
+            const applied = await this.userUsecases.findAppliedJobsByUserid(id as string)
             if (applied.success) {
                 const { appliedJobs } = applied
                 res.status(200).json({ success: true, message: applied.message, appliedJobs })
@@ -519,9 +519,9 @@ class userController {
     }
     async getUsers(req: Request, res: Response) {
         try {
-            let userDetails = await this.userUsecases.findUsers()
+            const userDetails = await this.userUsecases.findUsers()
             if (userDetails.success) {
-                let { userDatas } = userDetails;
+                const { userDatas } = userDetails;
 
                 res.status(200).json({ success: true, message: userDetails.message, userDatas })
             } else {
@@ -536,7 +536,7 @@ class userController {
     }
     async getComapnies(req: Request, res: Response) {
         try {
-            let companyDetails = await this.userUsecases.findCompanies()
+            const companyDetails = await this.userUsecases.findCompanies()
             if (companyDetails.success) {
                 const { companyDatas } = companyDetails
                 res.status(200).json({ success: true, messsage: companyDetails.message, companyDatas })
@@ -553,7 +553,7 @@ class userController {
     async getCompany(req: Request, res: Response) {
         try {
             const { id } = req.query
-            let company = await this.userUsecases.viewCompany(id as string)
+            const company = await this.userUsecases.viewCompany(id as string)
             if (company.success) {
                 const { companyData } = company
                 res.status(200).json({ success: true, message: company.message, companyData })
@@ -570,7 +570,7 @@ class userController {
     async findUser(req: Request, res: Response) {
         try {
             const { id } = req.query
-            let user = await this.userUsecases.findUserdetails(id as string)
+            const user = await this.userUsecases.findUserdetails(id as string)
             if (user?.success) {
                 const { userData } = user
                 res.status(200).json({ success: true, message: user.message, userData })
@@ -777,7 +777,6 @@ class userController {
         try {
             const {field}=req.query
             const  {id} =req
-            console.log(field);
             
             const remove = await this.userUsecases.deleteExperience(field as string,id as string)
             if(remove.success){
