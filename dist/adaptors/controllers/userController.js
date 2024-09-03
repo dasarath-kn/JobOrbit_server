@@ -26,7 +26,7 @@ class userController {
                 const exists = yield this.userUsecases.findUser(userData);
                 console.log(exists);
                 if (!exists.data) {
-                    let { userSaved } = exists;
+                    const { userSaved } = exists;
                     res.status(200).json({ success: true, message: "saved user", userSaved });
                 }
                 else {
@@ -46,9 +46,9 @@ class userController {
                 const { email, password } = req.body;
                 const userExist = yield this.userUsecases.login(email, password);
                 if (userExist.success) {
-                    let { userExistdata } = userExist;
+                    const { userExistdata } = userExist;
                     console.log(userExistdata);
-                    let { token } = userExist;
+                    const { token } = userExist;
                     res.status(200).json({ message: userExist.message, userExistdata, token });
                 }
                 else {
@@ -64,9 +64,9 @@ class userController {
     otp(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { otp } = req.body;
-                let verifiedOtp = yield this.userUsecases.verfiyOtp(otp);
-                let { token } = verifiedOtp;
+                const { otp } = req.body;
+                const verifiedOtp = yield this.userUsecases.verfiyOtp(otp);
+                const { token } = verifiedOtp;
                 if (verifiedOtp.success) {
                     res.status(200).json({ message: verifiedOtp.message, token });
                 }
@@ -83,9 +83,9 @@ class userController {
     resendOtp(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email } = req.body;
+                const { email } = req.body;
                 console.log(email);
-                let resendOtp = yield this.userUsecases.resendOtp(email);
+                const resendOtp = yield this.userUsecases.resendOtp(email);
                 if (resendOtp.success) {
                     res.status(200).json({ success: true, message: resendOtp.message });
                 }
@@ -102,10 +102,10 @@ class userController {
     getUserdata(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { id } = req;
-                let data = yield this.userUsecases.userData(id);
+                const { id } = req;
+                const data = yield this.userUsecases.userData(id);
                 if (data.success) {
-                    let { userData } = data;
+                    const { userData } = data;
                     res.status(200).json({ success: true, message: data.message, userData });
                 }
                 else {
@@ -121,14 +121,14 @@ class userController {
     googleSignup(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { name, email, isGoogle } = req.body;
-                let firstname = name;
-                let is_google = isGoogle;
+                const { name, email, isGoogle } = req.body;
+                const firstname = name;
+                const is_google = isGoogle;
                 const userdata = { firstname, email, is_google };
                 console.log(userdata);
-                let userSaveddata = yield this.userUsecases.googleSaveuser(userdata);
+                const userSaveddata = yield this.userUsecases.googleSaveuser(userdata);
                 if (userSaveddata === null || userSaveddata === void 0 ? void 0 : userSaveddata.success) {
-                    let { token } = userSaveddata;
+                    const { token } = userSaveddata;
                     res.status(200).json({ success: true, message: userSaveddata.message, token });
                 }
                 else {
@@ -144,9 +144,9 @@ class userController {
     verifyUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email } = req.body;
+                const { email } = req.body;
                 console.log(req.body);
-                let userData = yield this.userUsecases.userExist(email);
+                const userData = yield this.userUsecases.userExist(email);
                 if (userData.success) {
                     const { Userdata } = userData;
                     res.status(200).json({ success: true, message: userData.message, Userdata });
@@ -164,9 +164,9 @@ class userController {
     resetPassword(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email, password } = req.body;
+                const { email, password } = req.body;
                 const userdata = { email, password };
-                let resetpassword = yield this.userUsecases.passwordReset(userdata);
+                const resetpassword = yield this.userUsecases.passwordReset(userdata);
                 if (resetpassword.success) {
                     res.status(200).json({ success: true, message: resetpassword.message });
                 }
@@ -190,7 +190,7 @@ class userController {
                 const userData = { firstname, lastname, field, location, github_url, portfolio_url, about, qualification, img_url };
                 console.log(req.body);
                 const file = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-                let editProfile = yield this.userUsecases.updateProfile(id, userData, file, percentages);
+                const editProfile = yield this.userUsecases.updateProfile(id, userData, file, percentages);
                 if (editProfile.success) {
                     const { userData } = editProfile;
                     res.status(200).json({ success: true, message: editProfile.message, userData });
@@ -210,7 +210,7 @@ class userController {
             try {
                 const { skill, percentage } = req.body;
                 const { id } = req;
-                let addskills = yield this.userUsecases.manageSkill(skill, id, percentage);
+                const addskills = yield this.userUsecases.manageSkill(skill, id, percentage);
                 if (addskills.success) {
                     res.status(200).json({ success: true, message: addskills.message });
                 }
@@ -228,7 +228,7 @@ class userController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { page, type, location, date } = req.query;
-                let findJobs = yield this.userUsecases.jobs(page, type, location, date);
+                const findJobs = yield this.userUsecases.jobs(page, type, location, date);
                 if (findJobs.success) {
                     const { jobs, count } = findJobs;
                     res.status(200).json({ success: true, message: findJobs.message, jobs, count });
@@ -246,7 +246,7 @@ class userController {
     getPosts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let getPosts = yield this.userUsecases.posts();
+                const getPosts = yield this.userUsecases.posts();
                 if (getPosts.success) {
                     const { posts } = getPosts;
                     res.status(200).json({ success: true, messge: getPosts.message, posts });
@@ -267,7 +267,7 @@ class userController {
                 const { post_id, status } = req.query;
                 const { id } = req;
                 const userid = id;
-                let manageLikeUnlike = yield this.userUsecases.manageLikeUnlike(post_id, userid, status);
+                const manageLikeUnlike = yield this.userUsecases.manageLikeUnlike(post_id, userid, status);
                 if (manageLikeUnlike.success) {
                     res.status(200).json({ success: true, message: manageLikeUnlike.message });
                 }
@@ -284,10 +284,10 @@ class userController {
     savePost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { id } = req;
-                let { post_id, message, company_id } = req.body;
-                let postData = { user_id: id, post_id, company_id };
-                let savedPost = yield this.userUsecases.postSave(postData, message);
+                const { id } = req;
+                const { post_id, message, company_id } = req.body;
+                const postData = { user_id: id, post_id, company_id };
+                const savedPost = yield this.userUsecases.postSave(postData, message);
                 if (savedPost.success) {
                     res.status(200).json({ success: true, message: savedPost.message });
                 }
@@ -304,8 +304,8 @@ class userController {
     getsavedPost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { id } = req;
-                let getsavedPosts = yield this.userUsecases.savedPosts(id);
+                const { id } = req;
+                const getsavedPosts = yield this.userUsecases.savedPosts(id);
                 if (getsavedPosts.success) {
                     const { savedPosts } = getsavedPosts;
                     res.status(200).json({ success: true, message: getsavedPosts.success, savedPosts });
@@ -326,7 +326,7 @@ class userController {
                 const { id } = req;
                 const { post_id, message, company_id } = req.body;
                 const commentData = { user_id: id, post_id, company_id, message };
-                let comments = yield this.userUsecases.shareComment(commentData);
+                const comments = yield this.userUsecases.shareComment(commentData);
                 if (comments.success) {
                     res.status(200).json({ success: true, message: comments.message });
                 }
@@ -364,7 +364,7 @@ class userController {
             try {
                 const { job_id } = req.query;
                 const { id } = req;
-                let details = yield this.userUsecases.jobDetails(job_id, id);
+                const details = yield this.userUsecases.jobDetails(job_id, id);
                 if (details.success) {
                     const { jobDetails, plan_id } = details;
                     res.status(200).json({ success: true, message: details.message, jobDetails, plan_id });
@@ -386,7 +386,7 @@ class userController {
                 const { experiencefield, mode, start_date, end_date, responsibilities, percentage } = req.body;
                 const experienceData = { experiencefield, mode, start_date, end_date, responsibilities };
                 const percentages = Number(percentage);
-                let addexperience = yield this.userUsecases.experience(experienceData, percentages, id);
+                const addexperience = yield this.userUsecases.experience(experienceData, percentages, id);
                 if (addexperience.success) {
                     res.status(200).json({ success: true, message: addexperience.message });
                 }
@@ -409,7 +409,7 @@ class userController {
                 const file = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
                 const { percentage } = req.body;
                 const percentages = Number(percentage);
-                let upload = yield this.userUsecases.resume(id, file, percentages);
+                const upload = yield this.userUsecases.resume(id, file, percentages);
                 if (upload.success) {
                     res.status(200).json({ success: true, message: upload.message });
                 }
@@ -427,9 +427,9 @@ class userController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req;
-                const { job_id, company_id } = req.body;
+                const { job_id, company_id, resume_url } = req.body;
                 console.log(req.body);
-                const applyJob = yield this.userUsecases.jobApplication(job_id, id, company_id);
+                const applyJob = yield this.userUsecases.jobApplication(job_id, id, company_id, resume_url);
                 if (applyJob.success) {
                     res.status(200).json({ success: true, message: applyJob.message });
                 }
@@ -446,7 +446,7 @@ class userController {
     getSubscriptionPlans(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let subscriptionData = yield this.userUsecases.subscriptionPlans();
+                const subscriptionData = yield this.userUsecases.subscriptionPlans();
                 if (subscriptionData.success) {
                     const { subscriptionplan } = subscriptionData;
                     res.status(200).json({ success: true, message: subscriptionData.message, subscriptionplan });
@@ -528,7 +528,7 @@ class userController {
                 const date = Date.now();
                 const postreportData = { user_id: id, report_message, date };
                 console.log(postreportData, "ddlj");
-                let report = yield this.userUsecases.postReportsave(post_id, postreportData);
+                const report = yield this.userUsecases.postReportsave(post_id, postreportData);
                 if (report.success) {
                     res.status(200).json({ success: true, message: report.message });
                 }
@@ -546,7 +546,7 @@ class userController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req;
-                let applied = yield this.userUsecases.findAppliedJobsByUserid(id);
+                const applied = yield this.userUsecases.findAppliedJobsByUserid(id);
                 if (applied.success) {
                     const { appliedJobs } = applied;
                     res.status(200).json({ success: true, message: applied.message, appliedJobs });
@@ -564,9 +564,9 @@ class userController {
     getUsers(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userDetails = yield this.userUsecases.findUsers();
+                const userDetails = yield this.userUsecases.findUsers();
                 if (userDetails.success) {
-                    let { userDatas } = userDetails;
+                    const { userDatas } = userDetails;
                     res.status(200).json({ success: true, message: userDetails.message, userDatas });
                 }
                 else {
@@ -582,7 +582,7 @@ class userController {
     getComapnies(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companyDetails = yield this.userUsecases.findCompanies();
+                const companyDetails = yield this.userUsecases.findCompanies();
                 if (companyDetails.success) {
                     const { companyDatas } = companyDetails;
                     res.status(200).json({ success: true, messsage: companyDetails.message, companyDatas });
@@ -601,7 +601,7 @@ class userController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req.query;
-                let company = yield this.userUsecases.viewCompany(id);
+                const company = yield this.userUsecases.viewCompany(id);
                 if (company.success) {
                     const { companyData } = company;
                     res.status(200).json({ success: true, message: company.message, companyData });
@@ -620,7 +620,7 @@ class userController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req.query;
-                let user = yield this.userUsecases.findUserdetails(id);
+                const user = yield this.userUsecases.findUserdetails(id);
                 if (user === null || user === void 0 ? void 0 : user.success) {
                     const { userData } = user;
                     res.status(200).json({ success: true, message: user.message, userData });
@@ -849,7 +849,6 @@ class userController {
             try {
                 const { field } = req.query;
                 const { id } = req;
-                console.log(field);
                 const remove = yield this.userUsecases.deleteExperience(field, id);
                 if (remove.success) {
                     res.status(200).json({ success: true, message: remove.message });

@@ -26,7 +26,7 @@ class CompanyRepositories {
     saveCompany(companyData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let newCompany = new companyModel_1.default(companyData);
+                const newCompany = new companyModel_1.default(companyData);
                 yield newCompany.save();
                 return companyData ? companyData : null;
             }
@@ -39,7 +39,7 @@ class CompanyRepositories {
     findCompanyByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companyData = yield companyModel_1.default.findOne({ email: email });
+                const companyData = yield companyModel_1.default.findOne({ email: email });
                 return companyData ? companyData : null;
             }
             catch (error) {
@@ -51,7 +51,7 @@ class CompanyRepositories {
     checkOtp(otp) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let checkedOtp = yield otpModel_1.default.findOne({ otp: otp });
+                const checkedOtp = yield otpModel_1.default.findOne({ otp: otp });
                 return checkedOtp ? checkedOtp.email : null;
             }
             catch (error) {
@@ -63,7 +63,7 @@ class CompanyRepositories {
     verifyCompany(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let verifyCompany = yield companyModel_1.default.updateOne({ email: email }, { $set: { is_verified: true } }, { upsert: true });
+                const verifyCompany = yield companyModel_1.default.updateOne({ email: email }, { $set: { is_verified: true } }, { upsert: true });
                 return verifyCompany.acknowledged;
             }
             catch (error) {
@@ -75,15 +75,15 @@ class CompanyRepositories {
     saveCompanydata(companydata) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let findCompany = yield companyModel_1.default.findOne({ email: companydata.email });
+                const findCompany = yield companyModel_1.default.findOne({ email: companydata.email });
                 if (findCompany) {
                     return findCompany;
                 }
                 else {
-                    let saveCompany = new companyModel_1.default(companydata);
+                    const saveCompany = new companyModel_1.default(companydata);
                     yield saveCompany.save();
                     if (saveCompany) {
-                        let data = yield companyModel_1.default.findOne({ email: saveCompany.email });
+                        const data = yield companyModel_1.default.findOne({ email: saveCompany.email });
                         return data;
                     }
                     else {
@@ -100,7 +100,7 @@ class CompanyRepositories {
     getCompanydata(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companData = yield companyModel_1.default.findOne({ _id: id }).populate("users.user_id");
+                const companData = yield companyModel_1.default.findOne({ _id: id }).populate("users.user_id");
                 return companData ? companData : null;
             }
             catch (error) {
@@ -112,8 +112,8 @@ class CompanyRepositories {
     resetPassword(company) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email, password } = company;
-                let reset = yield companyModel_1.default.updateOne({ email: email }, { $set: { password: password } });
+                const { email, password } = company;
+                const reset = yield companyModel_1.default.updateOne({ email: email }, { $set: { password: password } });
                 if (reset) {
                     return reset.acknowledged;
                 }
@@ -150,7 +150,7 @@ class CompanyRepositories {
             try {
                 const pages = Number(page) * 6;
                 const jobCount = yield jobModel_1.default.find({ company_id: id }).countDocuments();
-                let jobs = yield jobModel_1.default.find({ company_id: id }).sort({ time: -1 }).skip(pages).limit(6).populate('company_id');
+                const jobs = yield jobModel_1.default.find({ company_id: id }).sort({ time: -1 }).skip(pages).limit(6).populate('company_id');
                 if (jobs.length === 0) {
                     return null;
                 }
@@ -168,7 +168,7 @@ class CompanyRepositories {
     removeJob(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let removed = yield jobModel_1.default.deleteOne({ _id: id });
+                const removed = yield jobModel_1.default.deleteOne({ _id: id });
                 return removed.acknowledged;
             }
             catch (error) {
@@ -180,7 +180,7 @@ class CompanyRepositories {
     savePosts(postData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let savedPost = new postModel_1.default(postData);
+                const savedPost = new postModel_1.default(postData);
                 yield savedPost.save();
                 return true;
             }
@@ -193,7 +193,7 @@ class CompanyRepositories {
     getPosts(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let posts = yield postModel_1.default.find({ company_id: id }).sort({ time: -1 }).populate('company_id');
+                const posts = yield postModel_1.default.find({ company_id: id }).sort({ time: -1 }).populate('company_id');
                 return posts ? posts : null;
             }
             catch (error) {
@@ -205,7 +205,7 @@ class CompanyRepositories {
     updateProfile(id, company) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let updated = yield companyModel_1.default.updateOne({ _id: id }, company, { new: true });
+                const updated = yield companyModel_1.default.updateOne({ _id: id }, company, { new: true });
                 return updated.acknowledged;
             }
             catch (error) {
@@ -217,7 +217,7 @@ class CompanyRepositories {
     uploadDocument(id, document_url) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let upload = yield companyModel_1.default.updateOne({ _id: id }, { $set: { document_url: document_url } });
+                const upload = yield companyModel_1.default.updateOne({ _id: id }, { $set: { document_url: document_url } });
                 return upload.acknowledged;
             }
             catch (error) {
@@ -229,7 +229,7 @@ class CompanyRepositories {
     deletePost(post_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let remove = yield postModel_1.default.deleteOne({ _id: post_id });
+                const remove = yield postModel_1.default.deleteOne({ _id: post_id });
                 return remove.acknowledged;
             }
             catch (error) {
@@ -241,7 +241,7 @@ class CompanyRepositories {
     jobApplications(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let job = yield jobModel_1.default.find({ _id: id }).populate('applicants_id');
+                const job = yield jobModel_1.default.find({ _id: id }).populate('applicants_id.user_id');
                 return job ? job : null;
             }
             catch (error) {
@@ -253,7 +253,7 @@ class CompanyRepositories {
     saveScheduledJobs(jobScheduleddata) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let scheduled = new jobSheduled_1.default(jobScheduleddata);
+                const scheduled = new jobSheduled_1.default(jobScheduleddata);
                 yield scheduled.save();
                 return true;
             }
@@ -278,7 +278,7 @@ class CompanyRepositories {
     findScheduledJobs(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let scheduled = yield jobSheduled_1.default.find({ job_id: id }).populate('user_id');
+                const scheduled = yield jobSheduled_1.default.find({ job_id: id }).populate('user_id');
                 return scheduled ? scheduled : null;
             }
             catch (error) {

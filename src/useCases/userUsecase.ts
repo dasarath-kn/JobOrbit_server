@@ -401,9 +401,9 @@ class userUsecase {
             throw error  
         }
     }
-    async jobApplication(job_id:string,user_id:string,company_id:string){
+    async jobApplication(job_id:string,user_id:string,company_id:string,resume_url:string){
         try {
-            const job = await this.userRepo.applyJob(job_id,user_id,company_id)
+            const job = await this.userRepo.applyJob(job_id,user_id,company_id,resume_url)
             if(job){
                 return {success:true,message:"Job applied successfully"}
             }else{

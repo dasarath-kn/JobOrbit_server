@@ -3,7 +3,6 @@ import path from 'path';
 
 const Storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        console.log(file,"sss");
     
     cb(null, path.join(__dirname, '../../public'));
   },

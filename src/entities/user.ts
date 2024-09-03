@@ -19,7 +19,7 @@ interface user {
     portfolio_url: string,
     isGoogle: boolean,
     percentage: number
-    resume_url: string,
+    resume_url: [string],
     skills: [string],
     qualification: string,
     online:boolean

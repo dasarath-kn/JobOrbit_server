@@ -390,10 +390,10 @@ class userController {
     async applyJob(req: Request, res: Response) {
         try {
             const { id } = req
-            const { job_id, company_id } = req.body
+            const { job_id, company_id,resume_url } = req.body
             console.log(req.body);
 
-            const applyJob = await this.userUsecases.jobApplication(job_id as string, id as string, company_id as string)
+            const applyJob = await this.userUsecases.jobApplication(job_id as string, id as string, company_id as string,resume_url as string)
             if (applyJob.success) {
                 res.status(200).json({ success: true, message: applyJob.message })
             } else {

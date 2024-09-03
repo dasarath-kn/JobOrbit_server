@@ -21,11 +21,11 @@ class CompanyController {
     login(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email, password } = req.body;
-                let companyDetails = yield this.companyusecase.login(email, password);
-                let { companyData } = companyDetails;
+                const { email, password } = req.body;
+                const companyDetails = yield this.companyusecase.login(email, password);
+                const { companyData } = companyDetails;
                 if (companyDetails.success) {
-                    let { token } = companyDetails;
+                    const { token } = companyDetails;
                     res.status(200).json({ success: true, message: companyDetails.message, companyData, token });
                 }
                 else {
@@ -44,7 +44,7 @@ class CompanyController {
                 const { companyname, email, phonenumber, password, industry, state, city, address, about } = req.body;
                 const companyData = { companyname, email, phonenumber, password, industry, state, city, address, about };
                 const companyExist = yield this.companyusecase.signUp(companyData);
-                let { companySaved } = companyExist;
+                const { companySaved } = companyExist;
                 if (companyExist.success) {
                     res.status(200).json({ success: true, message: companyExist.message, companySaved });
                 }
@@ -61,8 +61,8 @@ class CompanyController {
     verifyOtp(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { otp } = req.body;
-                let verfiyOtp = yield this.companyusecase.verifyOtp(otp);
+                const { otp } = req.body;
+                const verfiyOtp = yield this.companyusecase.verifyOtp(otp);
                 if (verfiyOtp.success) {
                     const { token } = verfiyOtp;
                     res.status(200).json({ success: true, message: verfiyOtp.message, token });
@@ -80,13 +80,13 @@ class CompanyController {
     googleSignup(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { name, email, isGoogle } = req.body;
-                let companyname = name;
-                let is_google = isGoogle;
-                let companydata = { companyname, email, is_google };
-                let companySaveddata = yield this.companyusecase.googleSavecompany(companydata);
+                const { name, email, isGoogle } = req.body;
+                const companyname = name;
+                const is_google = isGoogle;
+                const companydata = { companyname, email, is_google };
+                const companySaveddata = yield this.companyusecase.googleSavecompany(companydata);
                 if (companySaveddata.success) {
-                    let { token } = companySaveddata;
+                    const { token } = companySaveddata;
                     res.status(200).json({ success: true, message: companySaveddata.message, token });
                 }
                 else {
@@ -102,10 +102,10 @@ class CompanyController {
     getCompanydata(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { id } = req;
-                let companyData = yield this.companyusecase.companData(id);
+                const { id } = req;
+                const companyData = yield this.companyusecase.companData(id);
                 if (companyData.success) {
-                    let { companydata } = companyData;
+                    const { companydata } = companyData;
                     res.status(200).json({ success: true, message: companyData.message, companydata });
                 }
                 else {
@@ -121,8 +121,8 @@ class CompanyController {
     verifyCompany(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email } = req.body;
-                let companydata = yield this.companyusecase.companyExist(email);
+                const { email } = req.body;
+                const companydata = yield this.companyusecase.companyExist(email);
                 console.log(companydata);
                 if (companydata.success) {
                     const { companyData } = companydata;
@@ -141,10 +141,10 @@ class CompanyController {
     resetPassword(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email, password } = req.body;
+                const { email, password } = req.body;
                 const companydata = { email, password };
                 console.log(req.body);
-                let resetpassword = yield this.companyusecase.passwordReset(companydata);
+                const resetpassword = yield this.companyusecase.passwordReset(companydata);
                 if (resetpassword.success) {
                     res.status(200).json({ success: true, message: resetpassword.message });
                 }
@@ -163,9 +163,9 @@ class CompanyController {
             try {
                 const { id } = req;
                 const company_id = id;
-                let { jobtitle, description, responsibilities, requirements, qualification, location, type, skills } = req.body;
+                const { jobtitle, description, responsibilities, requirements, qualification, location, type, skills } = req.body;
                 const jobData = { description, responsibilities, requirements, skills, qualification, jobtitle, location, type, company_id: new mongoose_1.default.Types.ObjectId(company_id) };
-                let jobs = yield this.companyusecase.savingJobs(jobData);
+                const jobs = yield this.companyusecase.savingJobs(jobData);
                 if (jobs.success) {
                     res.status(200).json({ success: true, message: jobs.message });
                 }
@@ -182,9 +182,9 @@ class CompanyController {
     getJobs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { id } = req;
+                const { id } = req;
                 const { page } = req.query;
-                let jobData = yield this.companyusecase.jobs(id, page);
+                const jobData = yield this.companyusecase.jobs(id, page);
                 if (jobData.success) {
                     const { jobs, count } = jobData;
                     res.status(200).json({ success: true, message: jobData.message, jobs, count });
@@ -202,8 +202,8 @@ class CompanyController {
     deleteJob(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { id } = req.query;
-                let removed = yield this.companyusecase.jobRemove(id);
+                const { id } = req.query;
+                const removed = yield this.companyusecase.jobRemove(id);
                 if (removed.success) {
                     res.status(200).json({ success: true, message: removed.message });
                 }
@@ -225,7 +225,7 @@ class CompanyController {
                 const files = Array.isArray(req.files) ? req.files.map((val) => val.path) : [];
                 const { description } = req.body;
                 const postData = { company_id, description, images: [] };
-                let post = yield this.companyusecase.savePost(postData, files);
+                const post = yield this.companyusecase.savePost(postData, files);
                 if (post.success) {
                     for (const filePath of files) {
                         fs_1.default.unlink(filePath, (err) => {
@@ -253,7 +253,7 @@ class CompanyController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req;
-                let postDatas = yield this.companyusecase.Posts(id);
+                const postDatas = yield this.companyusecase.Posts(id);
                 if (postDatas.success) {
                     const { posts } = postDatas;
                     res.status(200).json({ success: true, message: postDatas, posts });
@@ -276,7 +276,7 @@ class CompanyController {
                 const { companyname, city, industry, address, website_url, about } = req.body;
                 const companyData = { companyname, city, industry, address, website_url, about, img_url: '' };
                 const file = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-                let editProfile = yield this.companyusecase.updateProfile(id, companyData, file);
+                const editProfile = yield this.companyusecase.updateProfile(id, companyData, file);
                 if (editProfile.success) {
                     const { companyData } = editProfile;
                     res.status(200).json({ success: true, message: editProfile.message, companyData });
@@ -314,9 +314,9 @@ class CompanyController {
     deletePost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { id } = req.query;
+                const { id } = req.query;
                 console.log(id);
-                let removepost = yield this.companyusecase.removePost(id);
+                const removepost = yield this.companyusecase.removePost(id);
                 if (removepost === null || removepost === void 0 ? void 0 : removepost.success) {
                     res.status(200).json({ success: true, message: removepost.message });
                 }
@@ -334,7 +334,7 @@ class CompanyController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { job_id } = req.query;
-                let appllications = yield this.companyusecase.userAppliedJobs(job_id);
+                const appllications = yield this.companyusecase.userAppliedJobs(job_id);
                 if (appllications.success) {
                     const { appliedUsers } = appllications;
                     res.status(200).json({ success: true, message: appllications.message, appliedUsers });
@@ -356,7 +356,7 @@ class CompanyController {
                 const { id } = req;
                 console.log(req.body);
                 const jobScheduleddata = { time, date, message, user_id, job_id, company_id: id, scheduled_time: Date.now() };
-                let saveData = yield this.companyusecase.scheduledJobs(jobScheduleddata);
+                const saveData = yield this.companyusecase.scheduledJobs(jobScheduleddata);
                 if (saveData.success) {
                     res.status(200).json({ success: true, message: saveData.message });
                 }
@@ -374,7 +374,7 @@ class CompanyController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { job_id } = req.query;
-                let scheduledjob = yield this.companyusecase.scheduled(job_id);
+                const scheduledjob = yield this.companyusecase.scheduled(job_id);
                 if (scheduledjob.success) {
                     const { scheduledJobdata } = scheduledjob;
                     res.status(200).json({ success: true, message: scheduledjob.message, scheduledJobdata });
@@ -393,7 +393,7 @@ class CompanyController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req.query;
-                let scheduled = yield this.companyusecase.getScheduledJobs(id);
+                const scheduled = yield this.companyusecase.getScheduledJobs(id);
                 if (scheduled.success) {
                     const { scheduledJobs } = scheduled;
                     console.log(scheduled, "d");

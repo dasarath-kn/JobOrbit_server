@@ -18,13 +18,13 @@ class AdminUsecase {
     login(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let adminExistdata = yield this.adminRepo.findAdminbyEmail(email);
+                const adminExistdata = yield this.adminRepo.findAdminbyEmail(email);
                 if (adminExistdata) {
-                    let checkPassword = yield this.hashPassword.comparePassword(password, adminExistdata.password);
+                    const checkPassword = yield this.hashPassword.comparePassword(password, adminExistdata.password);
                     if (checkPassword) {
                         if (adminExistdata.is_admin) {
-                            let id = adminExistdata._id.toString();
-                            let token = yield this.jwttoken.generateToken(id, "admin");
+                            const id = adminExistdata._id.toString();
+                            const token = yield this.jwttoken.generateToken(id, "admin");
                             return { success: true, adminExistdata, message: 'Admin logined successfully', token };
                         }
                         else {
@@ -48,7 +48,7 @@ class AdminUsecase {
     findUsers(page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userData = yield this.adminRepo.getUserdatas(page);
+                const userData = yield this.adminRepo.getUserdatas(page);
                 if (userData) {
                     const { count, userDatas } = userData;
                     return { success: true, message: "Userdatas sent suceessfully", userDatas, count };
@@ -66,7 +66,7 @@ class AdminUsecase {
     findCompanies(page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companyData = yield this.adminRepo.getCompanydatas(page);
+                const companyData = yield this.adminRepo.getCompanydatas(page);
                 if (companyData) {
                     const { count, companyDatas } = companyData;
                     return { success: true, message: "Companydatas sent successfully", count, companyDatas };
@@ -84,7 +84,7 @@ class AdminUsecase {
     blockUnblockUsers(user_id, status) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let changeStatus = yield this.adminRepo.blockUnblockUsers(user_id, status);
+                const changeStatus = yield this.adminRepo.blockUnblockUsers(user_id, status);
                 if (changeStatus) {
                     return { success: true, message: changeStatus };
                 }
@@ -101,7 +101,7 @@ class AdminUsecase {
     blockUnblockCompanies(company_id, status) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let changeStatus = yield this.adminRepo.blockUnblockCompanies(company_id, status);
+                const changeStatus = yield this.adminRepo.blockUnblockCompanies(company_id, status);
                 if (changeStatus) {
                     return { success: true, message: changeStatus };
                 }
@@ -118,7 +118,7 @@ class AdminUsecase {
     savesubscriptionPlan(subscriptionData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let savedSubscription = yield this.adminRepo.subscription(subscriptionData);
+                const savedSubscription = yield this.adminRepo.subscription(subscriptionData);
                 if (savedSubscription) {
                     return { Success: true, message: "Subscription plan saved successfully" };
                 }
@@ -135,7 +135,7 @@ class AdminUsecase {
     subscriptionPlans() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let subscriptionplan = yield this.adminRepo.getsubscriptionplan();
+                const subscriptionplan = yield this.adminRepo.getsubscriptionplan();
                 if (subscriptionplan) {
                     return { success: true, message: "Subscription plans sent successfully", subscriptionplan };
                 }
@@ -149,10 +149,10 @@ class AdminUsecase {
             }
         });
     }
-    removePlan(id) {
+    removePlan(plan_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let remove = yield this.adminRepo.deletePlan(id);
+                const remove = yield this.adminRepo.deletePlan(plan_id);
                 if (remove) {
                     return { success: true, message: "Plan removed successfully" };
                 }
@@ -166,10 +166,10 @@ class AdminUsecase {
             }
         });
     }
-    managePlans(id, message) {
+    managePlans(plan_id, message) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let manage = yield this.adminRepo.listUnlistPlans(id, message);
+                const manage = yield this.adminRepo.listUnlistPlans(plan_id, message);
                 if (manage) {
                     return { success: true, message: `Plan ${message} successfully` };
                 }
@@ -186,7 +186,7 @@ class AdminUsecase {
     dashboard() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let dashboardData = yield this.adminRepo.getDashboard();
+                const dashboardData = yield this.adminRepo.getDashboard();
                 if (dashboardData) {
                     return { success: true, message: 'Dashboard data sent successfully', dashboardData };
                 }
@@ -203,7 +203,7 @@ class AdminUsecase {
     postreport() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let postReportData = yield this.adminRepo.getPostreportdata();
+                const postReportData = yield this.adminRepo.getPostreportdata();
                 if (postReportData) {
                     return { success: true, message: "Post report data sent successfully", postReportData };
                 }

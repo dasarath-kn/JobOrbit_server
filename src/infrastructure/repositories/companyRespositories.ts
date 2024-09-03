@@ -207,7 +207,7 @@ class CompanyRepositories implements ICompanyInterface {
   }
  async jobApplications(id: string): Promise<jobs[] | null> {
      try {
-      const job = await jobModel.find({_id:id}).populate('applicants_id')
+      const job = await jobModel.find({_id:id}).populate('applicants_id.user_id')
          return job ?job :null
      } catch (error) {
       console.error(error);

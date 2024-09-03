@@ -32,7 +32,7 @@ class userRepository {
     findUserById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userData = yield userModel_1.default.findOne({ _id: id }).populate('plan_id');
+                const userData = yield userModel_1.default.findOne({ _id: id }).populate('plan_id');
                 return userData ? userData : null;
             }
             catch (error) {
@@ -44,7 +44,7 @@ class userRepository {
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userData = yield userModel_1.default.findOne({ email: email });
+                const userData = yield userModel_1.default.findOne({ email: email });
                 return userData ? userData.toObject() : null;
             }
             catch (error) {
@@ -94,7 +94,7 @@ class userRepository {
     checkOtp(otp) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let checkedOtp = yield otpModel_1.default.findOne({ otp: otp });
+                const checkedOtp = yield otpModel_1.default.findOne({ otp: otp });
                 return checkedOtp ? checkedOtp.email : null;
             }
             catch (error) {
@@ -106,7 +106,7 @@ class userRepository {
     getUserdata(user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userdata = yield userModel_1.default.findOne({ _id: user_id }).populate("connections.connection_id").populate("companies.company_id");
+                const userdata = yield userModel_1.default.findOne({ _id: user_id }).populate("connections.connection_id").populate("companies.company_id");
                 return userdata ? userdata : null;
             }
             catch (error) {
@@ -118,15 +118,15 @@ class userRepository {
     saveUserdata(userdata) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let finduser = yield userModel_1.default.findOne({ email: userdata.email });
+                const finduser = yield userModel_1.default.findOne({ email: userdata.email });
                 if (finduser) {
                     return finduser;
                 }
                 else {
-                    let saveUser = new userModel_1.default(userdata);
+                    const saveUser = new userModel_1.default(userdata);
                     yield saveUser.save();
                     if (saveUser) {
-                        let data = yield userModel_1.default.findOne({ email: userdata.email });
+                        const data = yield userModel_1.default.findOne({ email: userdata.email });
                         return data;
                     }
                     else {
@@ -143,8 +143,8 @@ class userRepository {
     resetPassword(user) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email, password } = user;
-                let reset = yield userModel_1.default.updateOne({ email: email }, { $set: { password: password } });
+                const { email, password } = user;
+                const reset = yield userModel_1.default.updateOne({ email: email }, { $set: { password: password } });
                 if (reset) {
                     return reset.acknowledged;
                 }
@@ -162,13 +162,13 @@ class userRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (percentage == 15) {
-                    let updated = yield userModel_1.default.updateOne({ _id: id }, user, { new: true });
-                    let percentageupdate = yield userModel_1.default.updateOne({ _id: id }, { $inc: { percentage: percentage } });
+                    const updated = yield userModel_1.default.updateOne({ _id: id }, user, { new: true });
+                    const percentageupdate = yield userModel_1.default.updateOne({ _id: id }, { $inc: { percentage: percentage } });
                     return updated.acknowledged;
                 }
                 else {
-                    let updated = yield userModel_1.default.updateOne({ _id: id }, user, { new: true });
-                    let percentageupdate = yield userModel_1.default.updateOne({ _id: id }, { $set: { percentage: percentage } });
+                    const updated = yield userModel_1.default.updateOne({ _id: id }, user, { new: true });
+                    const percentageupdate = yield userModel_1.default.updateOne({ _id: id }, { $set: { percentage: percentage } });
                     return updated.acknowledged;
                 }
             }
@@ -219,7 +219,7 @@ class userRepository {
     getPosts() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let posts = yield postModel_1.default.find({}).sort({ time: -1 }).populate('company_id').populate('like');
+                const posts = yield postModel_1.default.find({}).sort({ time: -1 }).populate('company_id').populate('like');
                 return posts ? posts : null;
             }
             catch (error) {
@@ -231,7 +231,7 @@ class userRepository {
     likePost(post_id, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let liked = yield postModel_1.default.updateOne({ _id: post_id }, { $addToSet: { like: user_id } });
+                const liked = yield postModel_1.default.updateOne({ _id: post_id }, { $addToSet: { like: user_id } });
                 return liked.acknowledged ? liked.acknowledged : null;
             }
             catch (error) {
@@ -243,7 +243,7 @@ class userRepository {
     unlikePost(post_id, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let unLiked = yield postModel_1.default.updateOne({ _id: post_id }, { $pull: { like: user_id } });
+                const unLiked = yield postModel_1.default.updateOne({ _id: post_id }, { $pull: { like: user_id } });
                 return unLiked.acknowledged ? unLiked.acknowledged : null;
             }
             catch (error) {
@@ -256,7 +256,7 @@ class userRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (message == "saved") {
-                    let saved = new savedPostModel_1.default(postData);
+                    const saved = new savedPostModel_1.default(postData);
                     yield saved.save();
                     return true;
                 }
@@ -275,7 +275,7 @@ class userRepository {
     getSavedpost(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let savedPost = yield savedPostModel_1.default.find({ user_id: id }).populate('post_id').populate('company_id');
+                const savedPost = yield savedPostModel_1.default.find({ user_id: id }).populate('post_id').populate('company_id');
                 return savedPost ? savedPost : null;
             }
             catch (error) {
@@ -312,7 +312,7 @@ class userRepository {
     findJobdetails(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let jobs = yield jobModel_1.default.findOne({ _id: id }).populate('company_id');
+                const jobs = yield jobModel_1.default.findOne({ _id: id }).populate('company_id');
                 return jobs ? jobs : null;
             }
             catch (error) {
@@ -325,11 +325,11 @@ class userRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (percentage === 15) {
-                    let experience = yield userModel_1.default.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $inc: { percentage: percentage } });
+                    const experience = yield userModel_1.default.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $inc: { percentage: percentage } });
                     return experience.acknowledged;
                 }
                 else {
-                    let experience = yield userModel_1.default.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $set: { percentage: percentage } });
+                    const experience = yield userModel_1.default.updateOne({ _id: id }, { $addToSet: { experience: experienceData }, $set: { percentage: percentage } });
                     return experience.acknowledged;
                 }
             }
@@ -342,12 +342,20 @@ class userRepository {
     updateResume(id, resume_url, percentage) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log(resume_url, "urllll");
                 if (percentage === 15) {
-                    let update = yield userModel_1.default.updateOne({ _id: id }, { $set: { resume_url: resume_url }, $inc: { percentage: percentage } });
+                    const update = yield userModel_1.default.updateOne({ _id: id }, {
+                        $addToSet: { resume_url: { $each: Array.isArray(resume_url) ? resume_url : [resume_url] } },
+                        $inc: { percentage: percentage }
+                    });
                     return update.acknowledged;
                 }
                 else {
-                    let update = yield userModel_1.default.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } });
+                    // const update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } })
+                    const update = yield userModel_1.default.updateOne({ _id: id }, {
+                        $addToSet: { resume_url: { $each: Array.isArray(resume_url) ? resume_url : [resume_url] } },
+                        $set: { percentage: percentage }
+                    });
                     return update.acknowledged;
                 }
             }
@@ -357,12 +365,13 @@ class userRepository {
             }
         });
     }
-    applyJob(job_id, user_id, company_id) {
+    applyJob(job_id, user_id, company_id, resume_url) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const data = { job_id: job_id, user_id: user_id, company_id: company_id };
-                let job = yield jobModel_1.default.updateOne({ _id: job_id }, { $addToSet: { applicants_id: user_id } });
-                let jobCount = yield userModel_1.default.updateOne({ _id: user_id }, { $inc: { jobapplied_Count: 1 } });
+                const jobData = { user_id: user_id, resume_url: resume_url };
+                const job = yield jobModel_1.default.updateOne({ _id: job_id }, { $addToSet: { applicants_id: jobData } });
+                const jobCount = yield userModel_1.default.updateOne({ _id: user_id }, { $inc: { jobapplied_Count: 1 } });
                 const saveApplied = new jobApplied_1.default(data);
                 yield saveApplied.save();
                 return job.acknowledged;
@@ -376,7 +385,7 @@ class userRepository {
     getsubscriptionplan() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let plans = yield subscription_1.default.find({ unlist: false });
+                const plans = yield subscription_1.default.find({ unlist: false });
                 return plans ? plans : null;
             }
             catch (error) {
@@ -388,7 +397,7 @@ class userRepository {
     findPlanbyId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let subscriptionData = yield subscription_1.default.findOne({ _id: id });
+                const subscriptionData = yield subscription_1.default.findOne({ _id: id });
                 return subscriptionData ? subscriptionData : null;
             }
             catch (error) {
@@ -400,7 +409,7 @@ class userRepository {
     savesubscribedUsers(subscribedData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let saved = new subscribedUsersModel_1.default(subscribedData);
+                const saved = new subscribedUsersModel_1.default(subscribedData);
                 yield saved.save();
                 return true;
             }
@@ -414,14 +423,14 @@ class userRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (status === 'success') {
-                    let updated = yield subscribedUsersModel_1.default.updateOne({ session_id: id }, { $set: { payment_status: true } });
-                    let plan = yield subscribedUsersModel_1.default.findOne({ session_id: id });
+                    const updated = yield subscribedUsersModel_1.default.updateOne({ session_id: id }, { $set: { payment_status: true } });
+                    const plan = yield subscribedUsersModel_1.default.findOne({ session_id: id });
                     const subscriptionPlan = yield subscription_1.default.findOne({ _id: plan === null || plan === void 0 ? void 0 : plan.plan_id });
                     const userUpdate = yield userModel_1.default.updateOne({ _id: plan === null || plan === void 0 ? void 0 : plan.user_id }, { $set: { plan_id: subscriptionPlan === null || subscriptionPlan === void 0 ? void 0 : subscriptionPlan._id } });
                     return updated.acknowledged;
                 }
                 else {
-                    let updated = yield subscribedUsersModel_1.default.deleteOne({ session_id: id });
+                    const updated = yield subscribedUsersModel_1.default.deleteOne({ session_id: id });
                     return updated.acknowledged;
                 }
             }
@@ -434,7 +443,7 @@ class userRepository {
     findSubscribedUserById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield subscribedUsersModel_1.default.findOne({ user_id: id, payment_status: true }).populate('user_id').populate('plan_id');
+                const user = yield subscribedUsersModel_1.default.findOne({ user_id: id, payment_status: true }).populate('user_id').populate('plan_id');
                 return user ? user : null;
             }
             catch (error) {
@@ -467,7 +476,7 @@ class userRepository {
                 const report = yield postReportModel_1.default.findOne({ post_id: post_id });
                 if (!report) {
                     const data = { post_id: post_id, user_datas: postreportData };
-                    let saved = new postReportModel_1.default(data);
+                    const saved = new postReportModel_1.default(data);
                     yield saved.save();
                     return true;
                 }
@@ -485,7 +494,7 @@ class userRepository {
     findAppliedJobs(user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let data = yield jobApplied_1.default.find({ user_id: user_id }).populate("job_id").populate('company_id');
+                const data = yield jobApplied_1.default.find({ user_id: user_id }).populate("job_id").populate('company_id').populate("job_id.company_id");
                 return data ? data : null;
             }
             catch (error) {
@@ -497,8 +506,8 @@ class userRepository {
     getUserdatas() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userData = yield userModel_1.default.find({
-                    is_blocked: false, is_verified: true, is_admin: false
+                const userData = yield userModel_1.default.find({
+                    is_blocked: false, is_admin: false
                 });
                 return userData ? userData : null;
             }
@@ -511,7 +520,7 @@ class userRepository {
     getCompanydatas() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companyData = yield companyModel_1.default.find({
+                const companyData = yield companyModel_1.default.find({
                     is_verified: true, admin_verified: true, is_blocked: false
                 });
                 return companyData ? companyData : null;
@@ -525,7 +534,7 @@ class userRepository {
     findCompanyById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let company = yield companyModel_1.default.findOne({ _id: id });
+                const company = yield companyModel_1.default.findOne({ _id: id });
                 return company ? company : null;
             }
             catch (error) {
@@ -537,7 +546,7 @@ class userRepository {
     saveReviews(reviewData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let reviewdata = new reviewRatingModel_1.default(reviewData);
+                const reviewdata = new reviewRatingModel_1.default(reviewData);
                 yield reviewdata.save();
                 return true;
             }
@@ -576,8 +585,6 @@ class userRepository {
     connectUser(id, connection_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("id", id);
-                console.log("connection", connection_id);
                 const connect = { connection_id };
                 const user = { connection_id: id };
                 const updaterUser = yield userModel_1.default.updateOne({ _id: id }, { $addToSet: { connections: connect } });

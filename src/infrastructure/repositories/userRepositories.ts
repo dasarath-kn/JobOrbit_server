@@ -323,11 +323,27 @@ class userRepository implements IUserInterface {
     }
     async updateResume(id: string, resume_url: string, percentage: number): Promise<boolean> {
         try {
+            console.log(resume_url,"urllll");
+            
             if (percentage === 15) {
-                const update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url }, $inc: { percentage: percentage } })
-                return update.acknowledged
+                const update = await userModel.updateOne(
+                    { _id: id },
+                    {
+                      $addToSet: { resume_url: { $each: Array.isArray(resume_url) ? resume_url : [resume_url] } },
+                      $inc: { percentage: percentage }
+                    }
+                  );
+                                  return update.acknowledged
             } else {
-                const update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } })
+                // const update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } })
+                const update = await userModel.updateOne(
+                    { _id: id },
+                    {
+                      $addToSet: { resume_url: { $each: Array.isArray(resume_url) ? resume_url : [resume_url] } },
+                      $set: { percentage: percentage }
+                    }
+                  );
+                  
                 return update.acknowledged
             }
 
@@ -336,10 +352,11 @@ class userRepository implements IUserInterface {
             throw new Error('Unable to update user resume')
         }
     }
-    async applyJob(job_id: string, user_id: string,company_id:string): Promise<boolean> {
+    async applyJob(job_id: string, user_id: string,company_id:string,resume_url:string): Promise<boolean> {
         try {
             const data ={job_id:job_id,user_id:user_id,company_id:company_id}
-            const job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: user_id } })
+            const jobData ={user_id:user_id,resume_url:resume_url}
+            const job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: jobData } })
             const jobCount = await userModel.updateOne({ _id: user_id }, { $inc: { jobapplied_Count: 1 } })
             const saveApplied = new appliedJobModel(data)
             await saveApplied.save()
@@ -451,7 +468,7 @@ class userRepository implements IUserInterface {
     async findAppliedJobs(user_id: string): Promise<jobApplied[] | null> {
         try {
 
-            const data = await appliedJobModel.find({user_id:user_id }).populate("job_id").populate('company_id')
+            const data = await appliedJobModel.find({user_id:user_id }).populate("job_id").populate('company_id').populate("job_id.company_id")
 
             return data ? data : null
         } catch (error) {
@@ -465,7 +482,7 @@ class userRepository implements IUserInterface {
 
 
             const userData: user[] = await userModel.find({
-                is_blocked: false, is_verified: true, is_admin: false
+                is_blocked: false , is_admin: false
             })
             return userData ? userData : null
 
@@ -543,8 +560,7 @@ class userRepository implements IUserInterface {
     }
     async connectUser(id: string, connection_id: string): Promise<boolean> {
         try {
-            console.log("id", id);
-            console.log("connection", connection_id);
+            
             const connect = { connection_id }
             const user = { connection_id: id }
             const updaterUser = await userModel.updateOne({ _id: id }, { $addToSet: { connections: connect } })

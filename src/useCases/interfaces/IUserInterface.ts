@@ -46,7 +46,7 @@ interface IUserInterface {
     getcomment(id: string): Promise<comment[] | null>
     findJobdetails(id: string): Promise<jobs | null>
     addExperience(experienceData: experienceData, percentage: number, id: string): Promise<boolean>
-    applyJob(job_id: string, user_id: string,company_id:string): Promise<boolean>
+    applyJob(job_id: string, user_id: string,company_id:string,resume_url:string): Promise<boolean>
     getsubscriptionplan(): Promise<subscriptions[] | null>
     findPlanbyId(id: string): Promise<subscriptions | null>
     savesubscribedUsers(subscribedData: subscriptedUser): Promise<boolean>

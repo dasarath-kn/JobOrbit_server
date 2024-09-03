@@ -111,7 +111,7 @@ const userSchema = new mongoose_1.Schema({
         type: String
     },
     resume_url: {
-        type: String
+        type: [String]
     },
     skills: {
         type: [String]

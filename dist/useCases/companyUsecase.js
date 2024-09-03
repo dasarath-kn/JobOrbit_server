@@ -22,7 +22,7 @@ class CompanyUsecase {
     signUp(companyData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companyExist = yield this.companyRepo.findCompanyByEmail(companyData.email);
+                const companyExist = yield this.companyRepo.findCompanyByEmail(companyData.email);
                 if (companyExist) {
                     if (!companyExist.is_verified) {
                         const otp = yield this.otpGenerator.otpgenerate();
@@ -58,15 +58,15 @@ class CompanyUsecase {
     login(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companyData = yield this.companyRepo.findCompanyByEmail(email);
+                const companyData = yield this.companyRepo.findCompanyByEmail(email);
                 if (companyData) {
-                    let checkPassword = yield this.hashPassword.comparePassword(password, companyData.password);
+                    const checkPassword = yield this.hashPassword.comparePassword(password, companyData.password);
                     if (checkPassword) {
                         if (companyData.is_blocked) {
                             return { success: false, message: "You've been blocked by admin" };
                         }
                         else {
-                            let token = yield this.jwttoken.generateToken(companyData._id, "company");
+                            const token = yield this.jwttoken.generateToken(companyData._id, "company");
                             return { success: true, message: "Company logined successfully", companyData, token };
                         }
                     }
@@ -87,7 +87,7 @@ class CompanyUsecase {
     verifyOtp(otp) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let findOtp = yield this.companyRepo.checkOtp(otp);
+                const findOtp = yield this.companyRepo.checkOtp(otp);
                 if (findOtp) {
                     yield this.companyRepo.verifyCompany(findOtp);
                     const companyData = yield this.companyRepo.findCompanyByEmail(findOtp);
@@ -107,12 +107,12 @@ class CompanyUsecase {
     googleSavecompany(companydata) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let saved = yield this.companyRepo.saveCompanydata(companydata);
+                const saved = yield this.companyRepo.saveCompanydata(companydata);
                 if (saved) {
                     if (saved.is_blocked) {
                         return { success: false, message: "You've been blocked admin" };
                     }
-                    let token = this.jwttoken.generateToken(saved._id, "company");
+                    const token = this.jwttoken.generateToken(saved._id, "company");
                     return { success: true, message: "Logined successfully", token };
                 }
                 else {
@@ -125,10 +125,10 @@ class CompanyUsecase {
             }
         });
     }
-    companData(id) {
+    companData(company_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companydata = yield this.companyRepo.getCompanydata(id);
+                const companydata = yield this.companyRepo.getCompanydata(company_id);
                 if (companydata) {
                     return { success: true, message: "Companydata sent successfully", companydata };
                 }
@@ -145,9 +145,9 @@ class CompanyUsecase {
     companyExist(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companyData = yield this.companyRepo.findCompanyByEmail(email);
+                const companyData = yield this.companyRepo.findCompanyByEmail(email);
                 if (companyData) {
-                    let otp = this.otpGenerator.otpgenerate();
+                    const otp = this.otpGenerator.otpgenerate();
                     yield this.nodeMailer.sendEmail(email, otp);
                     yield this.userRepo.saveOtp(email, otp);
                     return { success: true, message: "Otp sent sucessfully", companyData };
@@ -165,11 +165,11 @@ class CompanyUsecase {
     passwordReset(companydata) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { password } = companydata;
-                let hashed = yield this.hashPassword.hashPassword(password);
+                const { password } = companydata;
+                const hashed = yield this.hashPassword.hashPassword(password);
                 console.log(hashed);
                 companydata.password = hashed;
-                let data = yield this.companyRepo.resetPassword(companydata);
+                const data = yield this.companyRepo.resetPassword(companydata);
                 if (data) {
                     return { success: true, message: "Password reset successfully" };
                 }
@@ -186,7 +186,7 @@ class CompanyUsecase {
     savingJobs(jobData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let savedJob = yield this.companyRepo.saveJobs(jobData);
+                const savedJob = yield this.companyRepo.saveJobs(jobData);
                 if (savedJob) {
                     return { success: true, message: "Job created successfully" };
                 }
@@ -200,10 +200,10 @@ class CompanyUsecase {
             }
         });
     }
-    jobs(id, page) {
+    jobs(job_id, page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let jobData = yield this.companyRepo.getJobs(id, page);
+                const jobData = yield this.companyRepo.getJobs(job_id, page);
                 if (jobData) {
                     const { jobs, count } = jobData;
                     return { success: true, message: "Jobs sent successfully", jobs, count };
@@ -218,10 +218,10 @@ class CompanyUsecase {
             }
         });
     }
-    jobRemove(id) {
+    jobRemove(job_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let removedJob = yield this.companyRepo.removeJob(id);
+                const removedJob = yield this.companyRepo.removeJob(job_id);
                 if (removedJob) {
                     return { success: true, message: "Job removed successfully" };
                 }
@@ -239,10 +239,10 @@ class CompanyUsecase {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (files) {
-                    let cloudinary = yield this.cloudinary.uploadMultipleimages(files, "Post");
+                    const cloudinary = yield this.cloudinary.uploadMultipleimages(files, "Post");
                     postData.images = cloudinary;
                 }
-                let savedPost = yield this.companyRepo.savePosts(postData);
+                const savedPost = yield this.companyRepo.savePosts(postData);
                 if (savedPost) {
                     return { success: true, message: 'Post saved successfully' };
                 }
@@ -256,10 +256,10 @@ class CompanyUsecase {
             }
         });
     }
-    Posts(id) {
+    Posts(post_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let posts = yield this.companyRepo.getPosts(id);
+                const posts = yield this.companyRepo.getPosts(post_id);
                 if (posts) {
                     return { success: true, message: "Posts sent successfully", posts };
                 }
@@ -273,16 +273,16 @@ class CompanyUsecase {
             }
         });
     }
-    updateProfile(id, company, file) {
+    updateProfile(company_id, company, file) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (file) {
-                    let cloudinary = yield this.cloudinary.uploadImage(file, "User Profile");
+                    const cloudinary = yield this.cloudinary.uploadImage(file, "User Profile");
                     company.img_url = cloudinary;
                 }
-                let updatedData = yield this.companyRepo.updateProfile(id, company);
+                const updatedData = yield this.companyRepo.updateProfile(company_id, company);
                 if (updatedData) {
-                    let companyData = yield this.companyRepo.getCompanydata(id);
+                    const companyData = yield this.companyRepo.getCompanydata(company_id);
                     return { success: true, message: "Company profile updated successfully", companyData };
                 }
                 else {
@@ -295,14 +295,14 @@ class CompanyUsecase {
             }
         });
     }
-    documentUpload(id, file) {
+    documentUpload(company_id, file) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let cloudinary = '';
                 if (file) {
                     cloudinary = yield this.cloudinary.uploaddocuments(file, "Documents");
                 }
-                let upload = yield this.companyRepo.uploadDocument(id, cloudinary);
+                const upload = yield this.companyRepo.uploadDocument(company_id, cloudinary);
                 if (upload) {
                     return { success: true, message: "Document uploaded successfully" };
                 }
@@ -316,10 +316,10 @@ class CompanyUsecase {
             }
         });
     }
-    removePost(id) {
+    removePost(post_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let remove = yield this.companyRepo.deletePost(id);
+                const remove = yield this.companyRepo.deletePost(post_id);
                 if (remove) {
                     return { success: true, message: "Post deleted successfully" };
                 }
@@ -336,7 +336,7 @@ class CompanyUsecase {
     userAppliedJobs(job_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let appliedUsers = yield this.companyRepo.jobApplications(job_id);
+                const appliedUsers = yield this.companyRepo.jobApplications(job_id);
                 if (appliedUsers) {
                     return { success: true, message: "Applied Users sent successfully", appliedUsers };
                 }
@@ -354,7 +354,7 @@ class CompanyUsecase {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { company_id, user_id } = jobScheduleddata;
-                let scheduled = yield this.companyRepo.saveScheduledJobs(jobScheduleddata);
+                const scheduled = yield this.companyRepo.saveScheduledJobs(jobScheduleddata);
                 if (scheduled) {
                     const companData = yield this.companyRepo.getCompanydata(company_id);
                     const userData = yield this.userRepo.findUserById(user_id);
@@ -374,7 +374,7 @@ class CompanyUsecase {
     scheduled(job_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let scheduledJobdata = yield this.companyRepo.getScheduledJobs(job_id);
+                const scheduledJobdata = yield this.companyRepo.getScheduledJobs(job_id);
                 if (scheduledJobdata) {
                     return { success: true, message: "Scheduled job data sent successfully", scheduledJobdata };
                 }
@@ -388,10 +388,10 @@ class CompanyUsecase {
             }
         });
     }
-    getScheduledJobs(id) {
+    getScheduledJobs(job_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let scheduledJobs = yield this.companyRepo.findScheduledJobs(id);
+                const scheduledJobs = yield this.companyRepo.findScheduledJobs(job_id);
                 if (scheduledJobs) {
                     return { success: true, message: "Scheduled jobs sent successfully", scheduledJobs };
                 }
@@ -405,10 +405,10 @@ class CompanyUsecase {
             }
         });
     }
-    reviews(id) {
+    reviews(company_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const reviews = yield this.companyRepo.getReviews(id);
+                const reviews = yield this.companyRepo.getReviews(company_id);
                 if (reviews) {
                     console.log(reviews, "rrrrr ");
                     return { success: true, message: "Reviews sent successfully", reviews };

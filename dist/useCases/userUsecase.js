@@ -22,18 +22,18 @@ class userUsecase {
     findUser(userData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userExist = yield this.userRepo.findUserByEmail(userData.email);
+                const userExist = yield this.userRepo.findUserByEmail(userData.email);
                 if (userExist) {
                     return { data: true };
                 }
                 else {
-                    let hashed = yield this.hashPassword.hashPassword(userData.password);
+                    const hashed = yield this.hashPassword.hashPassword(userData.password);
                     userData.password = hashed;
-                    let userSaved = yield this.userRepo.saveUser(userData);
-                    let otp = yield this.otpGenerator.otpgenerate();
+                    const userSaved = yield this.userRepo.saveUser(userData);
+                    const otp = yield this.otpGenerator.otpgenerate();
                     yield this.nodeMailer.sendEmail(userData.email, otp);
                     yield this.userRepo.saveOtp(userSaved === null || userSaved === void 0 ? void 0 : userSaved.email, otp);
-                    let token = yield this.jwttoken.generateToken(userData._id, "user");
+                    const token = yield this.jwttoken.generateToken(userData._id, "user");
                     return { data: false, userSaved };
                 }
             }
@@ -46,22 +46,22 @@ class userUsecase {
     login(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userExistdata = yield this.userRepo.findUserByEmail(email);
+                const userExistdata = yield this.userRepo.findUserByEmail(email);
                 if (userExistdata) {
-                    let checkPassword = yield this.hashPassword.comparePassword(password, userExistdata.password);
+                    const checkPassword = yield this.hashPassword.comparePassword(password, userExistdata.password);
                     if (checkPassword) {
                         if (userExistdata.is_blocked) {
                             return { success: false, message: "You've been blocked admin" };
                         }
                         else if (!userExistdata.is_verified) {
-                            let otp = this.otpGenerator.otpgenerate();
+                            const otp = this.otpGenerator.otpgenerate();
                             yield this.nodeMailer.sendEmail(email, otp);
                             yield this.userRepo.saveOtp(email, otp);
                             return { success: true, message: "User not verified", userExistdata };
                         }
                         else {
-                            let token = yield this.jwttoken.generateToken(userExistdata._id, "user");
-                            let refreshtoken = yield this.jwttoken.generateRefreshtoken(userExistdata._id, "user");
+                            const token = yield this.jwttoken.generateToken(userExistdata._id, "user");
+                            const refreshtoken = yield this.jwttoken.generateRefreshtoken(userExistdata._id, "user");
                             return { success: true, userExistdata, message: "User logined successfully", token, refreshtoken };
                         }
                     }
@@ -82,11 +82,11 @@ class userUsecase {
     verfiyOtp(otp) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let verifiedOtp = yield this.userRepo.checkOtp(otp);
+                const verifiedOtp = yield this.userRepo.checkOtp(otp);
                 if (verifiedOtp) {
                     yield this.userRepo.verifyUser(verifiedOtp);
-                    let userData = yield this.userRepo.findUserByEmail(verifiedOtp);
-                    let token = yield this.jwttoken.generateToken(userData === null || userData === void 0 ? void 0 : userData._id, "user");
+                    const userData = yield this.userRepo.findUserByEmail(verifiedOtp);
+                    const token = yield this.jwttoken.generateToken(userData === null || userData === void 0 ? void 0 : userData._id, "user");
                     return { success: true, message: 'User verified successfully', token };
                 }
                 else {
@@ -102,7 +102,7 @@ class userUsecase {
     resendOtp(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let otp = this.otpGenerator.otpgenerate();
+                const otp = this.otpGenerator.otpgenerate();
                 yield this.nodeMailer.sendEmail(email, otp);
                 yield this.userRepo.saveOtp(email, otp);
                 return { success: true, message: "Otp send successfully" };
@@ -116,7 +116,7 @@ class userUsecase {
     userData(user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userData = yield this.userRepo.getUserdata(user_id);
+                const userData = yield this.userRepo.getUserdata(user_id);
                 if (userData) {
                     return { success: true, message: "Userdata sent successfully", userData };
                 }
@@ -133,13 +133,13 @@ class userUsecase {
     googleSaveuser(userdata) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let saved = yield this.userRepo.saveUserdata(userdata);
+                const saved = yield this.userRepo.saveUserdata(userdata);
                 if (saved) {
                     if (saved.is_blocked) {
                         return { success: false, message: "You've been blocked admin" };
                     }
                     else {
-                        let token = this.jwttoken.generateToken(saved._id, "user");
+                        const token = this.jwttoken.generateToken(saved._id, "user");
                         return { success: true, message: " Logined successfully", token };
                     }
                 }
@@ -153,10 +153,10 @@ class userUsecase {
     userExist(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let Userdata = yield this.userRepo.findUserByEmail(email);
+                const Userdata = yield this.userRepo.findUserByEmail(email);
                 console.log(Userdata);
                 if (Userdata) {
-                    let otp = this.otpGenerator.otpgenerate();
+                    const otp = this.otpGenerator.otpgenerate();
                     yield this.nodeMailer.sendEmail(email, otp);
                     yield this.userRepo.saveOtp(email, otp);
                     return { success: true, message: "Otp sent sucessfully", Userdata };
@@ -174,11 +174,11 @@ class userUsecase {
     passwordReset(userdata) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { password } = userdata;
-                let hashed = yield this.hashPassword.hashPassword(password);
+                const { password } = userdata;
+                const hashed = yield this.hashPassword.hashPassword(password);
                 console.log(hashed);
                 userdata.password = hashed;
-                let data = yield this.userRepo.resetPassword(userdata);
+                const data = yield this.userRepo.resetPassword(userdata);
                 if (data) {
                     return { success: true, message: "Password reset successfully" };
                 }
@@ -196,12 +196,12 @@ class userUsecase {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (file) {
-                    let cloudinary = yield this.cloundinary.uploadImage(file, "User Profile");
+                    const cloudinary = yield this.cloundinary.uploadImage(file, "User Profile");
                     user.img_url = cloudinary;
                 }
-                let updatedData = yield this.userRepo.updateProfile(id, user, percentage);
+                const updatedData = yield this.userRepo.updateProfile(id, user, percentage);
                 if (updatedData) {
-                    let userData = yield this.userRepo.getUserdata(id);
+                    const userData = yield this.userRepo.getUserdata(id);
                     return { success: true, message: "User profile updated successfully", userData };
                 }
                 else {
@@ -217,7 +217,7 @@ class userUsecase {
     manageSkill(skill, id, percentage) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let updateSkill = yield this.userRepo.updateSkill(skill, id, percentage);
+                const updateSkill = yield this.userRepo.updateSkill(skill, id, percentage);
                 if (updateSkill) {
                     return { success: true, message: "Skill added successfully" };
                 }
@@ -234,7 +234,7 @@ class userUsecase {
     jobs(page, type, location, date) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let jobData = yield this.userRepo.viewjobs(page, type, location, date);
+                const jobData = yield this.userRepo.viewjobs(page, type, location, date);
                 if (jobData) {
                     const { jobs, count } = jobData;
                     return { success: true, message: "Jobs sent successfully", jobs, count };
@@ -252,7 +252,7 @@ class userUsecase {
     posts() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let posts = yield this.userRepo.getPosts();
+                const posts = yield this.userRepo.getPosts();
                 if (posts) {
                     return { success: true, message: "Posts sent sucessfully", posts };
                 }
@@ -270,7 +270,7 @@ class userUsecase {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (status == "Like") {
-                    let liked = yield this.userRepo.likePost(post_id, user_id);
+                    const liked = yield this.userRepo.likePost(post_id, user_id);
                     if (liked) {
                         return { success: true, message: " Post linked successfully" };
                     }
@@ -279,7 +279,7 @@ class userUsecase {
                     }
                 }
                 else {
-                    let unliked = yield this.userRepo.unlikePost(post_id, user_id);
+                    const unliked = yield this.userRepo.unlikePost(post_id, user_id);
                     if (unliked) {
                         return { success: true, message: " Post unlinked successfully" };
                     }
@@ -297,7 +297,7 @@ class userUsecase {
     postSave(postData, message) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let savePost = yield this.userRepo.savePost(postData, message);
+                const savePost = yield this.userRepo.savePost(postData, message);
                 if (savePost) {
                     return { success: true, message: `Post ${message}` };
                 }
@@ -311,10 +311,10 @@ class userUsecase {
             }
         });
     }
-    savedPosts(id) {
+    savedPosts(post_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let savedPosts = yield this.userRepo.getSavedpost(id);
+                const savedPosts = yield this.userRepo.getSavedpost(post_id);
                 if (savedPosts) {
                     return { success: true, message: "Saved posts sent succcessfully", savedPosts };
                 }
@@ -362,12 +362,12 @@ class userUsecase {
             }
         });
     }
-    jobDetails(job_id, id) {
+    jobDetails(job_id, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let jobDetails = yield this.userRepo.findJobdetails(job_id);
+                const jobDetails = yield this.userRepo.findJobdetails(job_id);
                 if (jobDetails) {
-                    let userData = yield this.userRepo.findUserById(id);
+                    const userData = yield this.userRepo.findUserById(user_id);
                     if (userData) {
                         const { plan_id } = userData;
                         return { success: true, message: "Jobdetails sent successfully", jobDetails, plan_id };
@@ -386,10 +386,10 @@ class userUsecase {
             }
         });
     }
-    experience(experienceData, percentage, id) {
+    experience(experienceData, percentage, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let experience = yield this.userRepo.addExperience(experienceData, percentage, id);
+                const experience = yield this.userRepo.addExperience(experienceData, percentage, user_id);
                 if (experience) {
                     return { success: true, message: 'User experience added successfully' };
                 }
@@ -403,15 +403,15 @@ class userUsecase {
             }
         });
     }
-    resume(id, file, percentage) {
+    resume(user_id, file, percentage) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let resume_url = '';
                 if (file) {
-                    let cloudinary = yield this.cloundinary.uploaddocuments(file, "Resume");
+                    const cloudinary = yield this.cloundinary.uploaddocuments(file, "Resume");
                     resume_url = cloudinary;
                 }
-                let upload = yield this.userRepo.updateResume(id, resume_url, percentage);
+                const upload = yield this.userRepo.updateResume(user_id, resume_url, percentage);
                 if (upload) {
                     return { success: true, message: "Resume uploaded successfully" };
                 }
@@ -425,10 +425,10 @@ class userUsecase {
             }
         });
     }
-    jobApplication(job_id, user_id, company_id) {
+    jobApplication(job_id, user_id, company_id, resume_url) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let job = yield this.userRepo.applyJob(job_id, user_id, company_id);
+                const job = yield this.userRepo.applyJob(job_id, user_id, company_id, resume_url);
                 if (job) {
                     return { success: true, message: "Job applied successfully" };
                 }
@@ -445,7 +445,7 @@ class userUsecase {
     subscriptionPlans() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let subscriptionplan = yield this.userRepo.getsubscriptionplan();
+                const subscriptionplan = yield this.userRepo.getsubscriptionplan();
                 if (subscriptionplan) {
                     return { success: true, message: "Subscription plans sent successfully", subscriptionplan };
                 }
@@ -462,10 +462,10 @@ class userUsecase {
     subscriptionPayment(price, subscribedData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let payment_id = yield this.stripe.createCheckoutSession(price);
+                const payment_id = yield this.stripe.createCheckoutSession(price);
                 if (payment_id) {
                     subscribedData.session_id = payment_id;
-                    let save = yield this.userRepo.savesubscribedUsers(subscribedData);
+                    const save = yield this.userRepo.savesubscribedUsers(subscribedData);
                     if (save) {
                         return { success: true, message: "Payment id sent successfully", payment_id };
                     }
@@ -511,10 +511,10 @@ class userUsecase {
             }
         });
     }
-    subscribedUserdetails(id) {
+    subscribedUserdetails(user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let subscribedUser = yield this.userRepo.findSubscribedUserById(id);
+                const subscribedUser = yield this.userRepo.findSubscribedUserById(user_id);
                 if (subscribedUser) {
                     return { success: true, messsage: 'Subscribed User details sent successfully', subscribedUser };
                 }
@@ -531,7 +531,7 @@ class userUsecase {
     postReportsave(post_id, postreportData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let reportPost = yield this.userRepo.savePostReport(post_id, postreportData);
+                const reportPost = yield this.userRepo.savePostReport(post_id, postreportData);
                 if (reportPost) {
                     return { success: true, message: "Post reported successfully" };
                 }
@@ -565,7 +565,7 @@ class userUsecase {
     findUsers() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userDatas = yield this.userRepo.getUserdatas();
+                const userDatas = yield this.userRepo.getUserdatas();
                 if (userDatas) {
                     return { success: true, message: "Userdatas sent suceessfully", userDatas };
                 }
@@ -582,7 +582,7 @@ class userUsecase {
     findCompanies() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let companyDatas = yield this.userRepo.getCompanydatas();
+                const companyDatas = yield this.userRepo.getCompanydatas();
                 if (companyDatas) {
                     return { success: true, message: "Companydatas sent successfully", companyDatas };
                 }
@@ -596,10 +596,10 @@ class userUsecase {
             }
         });
     }
-    viewCompany(id) {
+    viewCompany(company_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const companyData = yield this.userRepo.findCompanyById(id);
+                const companyData = yield this.userRepo.findCompanyById(company_id);
                 if (companyData) {
                     return { success: true, message: "Companydata sent successfully", companyData };
                 }
@@ -613,10 +613,10 @@ class userUsecase {
             }
         });
     }
-    findUserdetails(id) {
+    findUserdetails(user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userData = yield this.userRepo.findUserById(id);
+                const userData = yield this.userRepo.findUserById(user_id);
                 if (userData) {
                     return { success: true, message: "Userdata sent successfully", userData };
                 }
@@ -645,10 +645,10 @@ class userUsecase {
             }
         });
     }
-    reviews(id) {
+    reviews(company_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const reviews = yield this.userRepo.getReviews(id);
+                const reviews = yield this.userRepo.getReviews(company_id);
                 if (reviews) {
                     console.log(reviews, "rrrrr ");
                     return { success: true, message: "Reviews sent successfully", reviews };
@@ -782,10 +782,10 @@ class userUsecase {
             }
         });
     }
-    deleteExperience(field, id) {
+    deleteExperience(field, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const removeExperience = yield this.userRepo.removeExperience(field, id);
+                const removeExperience = yield this.userRepo.removeExperience(field, user_id);
                 if (removeExperience) {
                     return { success: true, message: "Experience deleted" };
                 }

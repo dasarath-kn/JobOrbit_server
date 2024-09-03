@@ -16,10 +16,10 @@ class adminController {
     login(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { email, password } = req.body;
-                let adminExist = yield this.adminUsecases.login(email, password);
+                const { email, password } = req.body;
+                const adminExist = yield this.adminUsecases.login(email, password);
                 if (adminExist === null || adminExist === void 0 ? void 0 : adminExist.success) {
-                    let { token } = adminExist;
+                    const { token } = adminExist;
                     res.status(200).json({ success: true, message: adminExist.message, token });
                 }
                 else {
@@ -35,9 +35,9 @@ class adminController {
     userBlockUnblock(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { user_id, status } = req.query;
+                const { user_id, status } = req.query;
                 console.log(req.query);
-                let blockUnblockUser = yield this.adminUsecases.blockUnblockUsers(user_id, status);
+                const blockUnblockUser = yield this.adminUsecases.blockUnblockUsers(user_id, status);
                 console.log(blockUnblockUser);
                 if (blockUnblockUser.success) {
                     res.status(200).json({ success: true, message: blockUnblockUser.message });
@@ -54,8 +54,8 @@ class adminController {
     }
     companyBlockUnblock(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let { company_id, status } = req.query;
-            let blockUnblockCompany = yield this.adminUsecases.blockUnblockCompanies(company_id, status);
+            const { company_id, status } = req.query;
+            const blockUnblockCompany = yield this.adminUsecases.blockUnblockCompanies(company_id, status);
             if (blockUnblockCompany.success) {
                 res.status(200).json({ success: true, message: blockUnblockCompany.message });
             }
@@ -68,9 +68,9 @@ class adminController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { page } = req.query;
-                let userDetails = yield this.adminUsecases.findUsers(page);
+                const userDetails = yield this.adminUsecases.findUsers(page);
                 if (userDetails.success) {
-                    let { userDatas, count } = userDetails;
+                    const { userDatas, count } = userDetails;
                     res.status(200).json({ success: true, message: userDetails.message, userDatas, count });
                 }
                 else {
@@ -87,7 +87,7 @@ class adminController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { page } = req.query;
-                let companyDetails = yield this.adminUsecases.findCompanies(page);
+                const companyDetails = yield this.adminUsecases.findCompanies(page);
                 if (companyDetails.success) {
                     const { companyDatas, count } = companyDetails;
                     res.status(200).json({ success: true, messsage: companyDetails.message, companyDatas, count });
@@ -105,10 +105,10 @@ class adminController {
     subscription(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { subscriptiontype, limit, month, price } = req.body;
-                let subscriptionData = { subscriptiontype, limit, month, price };
+                const { subscriptiontype, limit, month, price } = req.body;
+                const subscriptionData = { subscriptiontype, limit, month, price };
                 console.log(subscriptionData);
-                let save = yield this.adminUsecases.savesubscriptionPlan(subscriptionData);
+                const save = yield this.adminUsecases.savesubscriptionPlan(subscriptionData);
                 if (save.Success) {
                     res.status(200).json({ success: true, message: save.message });
                 }
@@ -125,7 +125,7 @@ class adminController {
     getSubscriptionPlans(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let subscriptionData = yield this.adminUsecases.subscriptionPlans();
+                const subscriptionData = yield this.adminUsecases.subscriptionPlans();
                 if (subscriptionData.success) {
                     const { subscriptionplan } = subscriptionData;
                     res.status(200).json({ success: true, message: subscriptionData.message, subscriptionplan });
@@ -143,8 +143,8 @@ class adminController {
     deletePlan(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { id } = req.query;
-                let removed = yield this.adminUsecases.removePlan(id);
+                const { id } = req.query;
+                const removed = yield this.adminUsecases.removePlan(id);
                 if (removed === null || removed === void 0 ? void 0 : removed.success) {
                     res.status(200).json({ success: true, message: removed.message });
                 }
@@ -162,7 +162,7 @@ class adminController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id, message } = req.body;
-                let manage = yield this.adminUsecases.managePlans(id, message);
+                const manage = yield this.adminUsecases.managePlans(id, message);
                 if (manage.success) {
                     res.status(200).json({ success: true, message: manage.message });
                 }
@@ -179,7 +179,7 @@ class adminController {
     getDashboard(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let data = yield this.adminUsecases.dashboard();
+                const data = yield this.adminUsecases.dashboard();
                 if (data.success) {
                     const { dashboardData } = data;
                     res.status(200).json({ success: true, message: data.message, dashboardData });

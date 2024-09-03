@@ -61,8 +61,11 @@ const jobSchema = new mongoose_1.Schema({
         ref: 'company'
     },
     applicants_id: [{
-            type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: 'user'
+            user_id: { type: mongoose_1.default.Schema.Types.ObjectId,
+                ref: 'user' },
+            resume_url: {
+                type: String
+            }
         }],
     time: {
         type: Date,

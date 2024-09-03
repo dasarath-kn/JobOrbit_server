@@ -17,6 +17,7 @@ const socket_1 = require("./infrastructure/utils/socket");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT;
+const url = process.env.URL;
 (0, connectDB_1.default)();
 const server = http_1.default.createServer(app);
 (0, socket_1.initializeSocket)(server);
@@ -35,5 +36,5 @@ app.use('/', userRoute_1.default);
 app.use('/admin', adminRoute_1.default);
 app.use('/company', companyRoute_1.default);
 server.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+    console.log(`Server is running at ${url}:${port}`);
 });

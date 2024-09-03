@@ -22,7 +22,7 @@ class AdminRespositories {
     findAdminbyEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let adminData = yield userModel_1.default.findOne({ email: email });
+                const adminData = yield userModel_1.default.findOne({ email: email });
                 return adminData ? adminData : null;
             }
             catch (error) {
@@ -34,9 +34,9 @@ class AdminRespositories {
     getUserdatas(page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let skipCount = Number(page) * 3;
-                let Count = yield userModel_1.default.find({ is_admin: false }).countDocuments();
-                let userData = yield userModel_1.default.find({ is_admin: false }).skip(skipCount).limit(3);
+                const skipCount = Number(page) * 3;
+                const Count = yield userModel_1.default.find({ is_admin: false }).countDocuments();
+                const userData = yield userModel_1.default.find({ is_admin: false }).skip(skipCount).limit(3);
                 if (userData.length === 0) {
                     return null;
                 }
@@ -54,10 +54,10 @@ class AdminRespositories {
     getCompanydatas(page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let skipCount = Number(page) * 3;
-                let Count = yield companyModel_1.default.find().countDocuments();
+                const skipCount = Number(page) * 3;
+                const Count = yield companyModel_1.default.find().countDocuments();
                 console.log(Count);
-                let companyData = yield companyModel_1.default.find().skip(skipCount).limit(3);
+                const companyData = yield companyModel_1.default.find().skip(skipCount).limit(3);
                 if (companyData.length === 0) {
                     return null;
                 }
@@ -76,11 +76,11 @@ class AdminRespositories {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (status == "block") {
-                    let updatedStatus = yield userModel_1.default.updateOne({ _id: user_id }, { $set: { is_blocked: true } });
+                    const updatedStatus = yield userModel_1.default.updateOne({ _id: user_id }, { $set: { is_blocked: true } });
                     return updatedStatus.acknowledged ? "User Blocked successfully" : "";
                 }
                 else {
-                    let updatedStatus = yield userModel_1.default.updateOne({ _id: user_id }, { $set: { is_blocked: false } });
+                    const updatedStatus = yield userModel_1.default.updateOne({ _id: user_id }, { $set: { is_blocked: false } });
                     return updatedStatus.acknowledged ? "User UnBlocked successfully" : "";
                 }
             }
@@ -95,19 +95,19 @@ class AdminRespositories {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (status == "verify") {
-                    let updatedStatus = yield companyModel_1.default.updateOne({ _id: company_id }, { $set: { admin_verified: true } });
+                    const updatedStatus = yield companyModel_1.default.updateOne({ _id: company_id }, { $set: { admin_verified: true } });
                     return updatedStatus.acknowledged ? "Company Verified Successfully" : "";
                 }
                 else if (status == "block") {
-                    let updatedStatus = yield companyModel_1.default.updateOne({ _id: company_id }, { $set: { is_blocked: true } });
+                    const updatedStatus = yield companyModel_1.default.updateOne({ _id: company_id }, { $set: { is_blocked: true } });
                     return updatedStatus.acknowledged ? "Company blocked Successfully" : "";
                 }
                 else if (status == "reject") {
-                    let updatedStatus = yield companyModel_1.default.deleteOne({ _id: company_id });
+                    const updatedStatus = yield companyModel_1.default.deleteOne({ _id: company_id });
                     return updatedStatus.acknowledged ? "Company rejected Successfully" : "";
                 }
                 else {
-                    let updatedStatus = yield companyModel_1.default.updateOne({ _id: company_id }, { $set: { is_blocked: false } });
+                    const updatedStatus = yield companyModel_1.default.updateOne({ _id: company_id }, { $set: { is_blocked: false } });
                     return updatedStatus.acknowledged ? "Company unblocked Successfully" : "";
                 }
             }
@@ -120,7 +120,7 @@ class AdminRespositories {
     subscription(subscriptionData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let subscription = new subscription_1.default(subscriptionData);
+                const subscription = new subscription_1.default(subscriptionData);
                 yield subscription.save();
                 return true;
             }
@@ -133,7 +133,7 @@ class AdminRespositories {
     getsubscriptionplan() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let plans = yield subscription_1.default.find();
+                const plans = yield subscription_1.default.find();
                 return plans ? plans : null;
             }
             catch (error) {
@@ -190,7 +190,7 @@ class AdminRespositories {
     getPostreportdata() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let postReportdata = yield postReportModel_1.default.find().populate('post_id').populate('user_datas.user_id');
+                const postReportdata = yield postReportModel_1.default.find().populate('post_id').populate('user_datas.user_id');
                 return postReportdata ? postReportdata : null;
             }
             catch (error) {
