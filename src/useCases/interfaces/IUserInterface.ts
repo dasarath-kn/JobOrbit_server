@@ -23,6 +23,11 @@ export interface jobData {
     count: number;
     jobs: jobs[];
 }
+export interface jobAppliedData {
+    count:number,
+    jobs:jobApplied[]
+
+}
 interface IUserInterface {
     findUserById(id: string): Promise<user | null>
     findUserByEmail(email: string): Promise<user | null>
@@ -36,7 +41,7 @@ interface IUserInterface {
     updateProfile(id: string, user: user, percentage: number): Promise<boolean | null>
     updateSkill(skill: [], id: string, percentage: number): Promise<boolean>
     updateResume(id: string, resume_url: string, percentage: number): Promise<boolean>
-    viewjobs(page:string,type:string,location:string,date:string): Promise<jobData | null>
+    viewjobs(page:string,type:string,location:string,date:string,user_id:string): Promise<jobData | null>
     getPosts(): Promise<Post[] | null>
     likePost(post_id: string, user_id: string): Promise<boolean | null>
     unlikePost(post_id: string, user_id: string): Promise<boolean | null>
@@ -53,7 +58,7 @@ interface IUserInterface {
     updatesubscribedUsers(id: string, status: string): Promise<boolean>
     findSubscribedUserById(id: string): Promise<subscriptedUser | null>
     savePostReport(post_id:string,postreportData: postreport): Promise<Boolean>
-    findAppliedJobs(user_id: string): Promise<jobApplied[] | null>
+    findAppliedJobs(user_id: string,page:string): Promise<jobAppliedData | null>
     getUserdatas(): Promise<user[] | null>
     getCompanydatas(): Promise<company[] | null>
     findCompanyById(id: string): Promise<company | null>
@@ -73,6 +78,7 @@ interface IUserInterface {
     updateOnlineStatus(user_id:string,status:boolean):Promise<boolean>
     removeSkills(val:string,id:string):Promise<boolean>
     removeExperience(field:string,id:string):Promise<boolean>
+
 }   
 
 

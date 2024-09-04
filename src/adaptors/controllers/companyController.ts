@@ -466,6 +466,24 @@ class CompanyController {
                     res.status(500).json({ success: false, message: "Internal server error" })
                 }
             }
+
+            async listJob(req:Request,res:Response){
+                try {
+                    const {job_id,status}=req.body
+                    console.log(req.body);
+                    
+                    const handleListJob  =await this.companyusecase.jobList(job_id,status)
+                    if(handleListJob.success){
+                        res.status(200).json({success:true,message:handleListJob.message})
+                    }else{
+                        res.status(400).json({success:false,message:handleListJob.message})
+                    }
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ success: false, message: "Internal server error" })
+                    
+                }
+            }
        
 }
 

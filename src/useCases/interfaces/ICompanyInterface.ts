@@ -37,7 +37,7 @@ interface ICompanyInterface {
     replycomment(comment_id:string,reply:string):Promise<boolean>
     deleteApplicant(job_id:string,user_id:string):Promise<boolean>
     findInbox(reciever_id:string):Promise<inbox[]|inbox|null>
-
+    listJob(job_id:string,status:string):Promise<string>
 }
 
 export default ICompanyInterface

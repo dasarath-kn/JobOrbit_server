@@ -337,6 +337,21 @@ async findInbox(reciever_id: string): Promise<inbox[] | inbox | null> {
       throw new Error("Unable to find inboxData ") 
   } 
 }
+async listJob(job_id: string, status: string): Promise<string> {
+   try {
+      if(status =="block"){
+         const jobListing = await jobModel.updateOne({_id:job_id},{$set:{list:false}})
+         return jobListing.acknowledged?"Job unlisted from user":""
+      }else{
+         const jobListing = await jobModel.updateOne({_id:job_id},{$set:{list:true}})
+         return jobListing.acknowledged?"Job listed to user":""
+      }
+      
+   } catch (error) {
+      console.error(error);
+      throw new Error("Unable to listjob ") 
+   }
+}
 }
 
 

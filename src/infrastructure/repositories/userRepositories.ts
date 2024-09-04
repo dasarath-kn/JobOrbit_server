@@ -12,7 +12,7 @@ import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
 import user, { experienceData, reviews } from "../../entities/user";
 import { UserDataResult } from "../../useCases/interfaces/IAdminInterface";
-import IUserInterface, { data, jobData, messages } from '../../useCases/interfaces/IUserInterface'
+import IUserInterface, { data, jobAppliedData, jobData, messages } from '../../useCases/interfaces/IUserInterface'
 import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
 import inboxModel from "../database/inboxModel";
@@ -180,7 +180,7 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to update userdata")
         }
     }
-    async viewjobs(page: string, type: string, location: string, date: string): Promise<jobData | null> {
+    async viewjobs(page: string, type: string, location: string, date: string, user_id: string): Promise<jobData | null> {
         try {
             const pages = Number(page) * 8;
             const filter: any = {};
@@ -191,7 +191,6 @@ class userRepository implements IUserInterface {
                 filter.location = location;
             }
             if (date) {
-                
                 const now = new Date();
                 let dateFilter: any;
                 if (date === 'last-week') {
@@ -199,28 +198,33 @@ class userRepository implements IUserInterface {
                 } else if (date === 'last-month') {
                     dateFilter = new Date(now.setMonth(now.getMonth() - 1));
                 }
-    
                 filter.time = { $gte: dateFilter };
             }
-    
+            filter["applicants_id.user_id"] = { $nin: [user_id] };
+            filter.list = true;
             const jobCount = await jobModel.find(filter).countDocuments();
-            const jobs = await jobModel.find(filter).sort({ time: -1 }).skip(pages).limit(8).populate('company_id');
-    
+            const jobs = await jobModel.find(filter)
+                .sort({ time: -1 })
+                .skip(pages)
+                .limit(8)
+                .populate('company_id');
+
             if (jobs.length === 0) {
                 return null;
             }
-    
+
             return {
                 count: Math.ceil(jobCount / 8),
                 jobs
             };
-    
+
         } catch (error) {
             console.error(error);
             throw new Error("Unable to find jobs");
         }
     }
-    
+
+
     async getPosts(): Promise<Post[] | null> {
         try {
             const posts = await postModel.find({}).sort({ time: -1 }).populate('company_id').populate('like')
@@ -249,16 +253,16 @@ class userRepository implements IUserInterface {
             throw new Error(`Unable to unlike post`)
         }
     }
-    async savePost(postData: savedPost,message:string): Promise<boolean> {
+    async savePost(postData: savedPost, message: string): Promise<boolean> {
         try {
-            if(message =="saved"){
+            if (message == "saved") {
                 const saved = new postSavedModel(postData)
                 await saved.save()
                 return true
 
-            }else{
-                const {post_id}=postData
-                const remove = await postSavedModel.deleteOne({post_id:post_id})
+            } else {
+                const { post_id } = postData
+                const remove = await postSavedModel.deleteOne({ post_id: post_id })
                 return remove.acknowledged
             }
         } catch (error) {
@@ -321,29 +325,29 @@ class userRepository implements IUserInterface {
             throw new Error('Unable to save user experience')
         }
     }
-    async updateResume(id: string, resume_url: string, percentage: number): Promise<boolean> {
+    async updateResume(id: string, resumeurl: string, percentage: number): Promise<boolean> {
         try {
-            console.log(resume_url,"urllll");
-            
+            const resumeUrlsArray = Array.isArray(resumeurl) ? resumeurl : [resumeurl];
+
             if (percentage === 15) {
                 const update = await userModel.updateOne(
                     { _id: id },
                     {
-                      $addToSet: { resume_url: { $each: Array.isArray(resume_url) ? resume_url : [resume_url] } },
-                      $inc: { percentage: percentage }
+                        $addToSet: { resume_url: { $each:resumeUrlsArray } },
+                        $inc: { percentage: percentage }
                     }
-                  );
-                                  return update.acknowledged
+                );
+                return update.acknowledged
             } else {
                 // const update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } })
                 const update = await userModel.updateOne(
                     { _id: id },
                     {
-                      $addToSet: { resume_url: { $each: Array.isArray(resume_url) ? resume_url : [resume_url] } },
-                      $set: { percentage: percentage }
+                        $addToSet: { resume_url: { $each: resumeUrlsArray } },
+                        $set: { percentage: percentage }
                     }
-                  );
-                  
+                );
+
                 return update.acknowledged
             }
 
@@ -352,10 +356,10 @@ class userRepository implements IUserInterface {
             throw new Error('Unable to update user resume')
         }
     }
-    async applyJob(job_id: string, user_id: string,company_id:string,resume_url:string): Promise<boolean> {
+    async applyJob(job_id: string, user_id: string, company_id: string, resume_url: string): Promise<boolean> {
         try {
-            const data ={job_id:job_id,user_id:user_id,company_id:company_id}
-            const jobData ={user_id:user_id,resume_url:resume_url}
+            const data = { job_id: job_id, user_id: user_id, company_id: company_id }
+            const jobData = { user_id: user_id, resume_url: resume_url }
             const job = await jobModel.updateOne({ _id: job_id }, { $addToSet: { applicants_id: jobData } })
             const jobCount = await userModel.updateOne({ _id: user_id }, { $inc: { jobapplied_Count: 1 } })
             const saveApplied = new appliedJobModel(data)
@@ -400,7 +404,7 @@ class userRepository implements IUserInterface {
     async updatesubscribedUsers(id: string, status: string): Promise<boolean> {
         try {
             if (status === 'success') {
-                
+
                 const updated = await subscribedModel.updateOne({ session_id: id }, { $set: { payment_status: true } })
                 const plan = await subscribedModel.findOne({ session_id: id })
                 const subscriptionPlan = await subscriptionModel.findOne({ _id: plan?.plan_id })
@@ -418,7 +422,7 @@ class userRepository implements IUserInterface {
     }
     async findSubscribedUserById(id: string): Promise<subscriptedUser | null> {
         try {
-            const user = await subscribedModel.findOne({ user_id: id,payment_status:true }).populate('user_id').populate('plan_id')
+            const user = await subscribedModel.findOne({ user_id: id, payment_status: true }).populate('user_id').populate('plan_id')
 
             return user ? user : null
         } catch (error) {
@@ -465,12 +469,20 @@ class userRepository implements IUserInterface {
         }
     }
 
-    async findAppliedJobs(user_id: string): Promise<jobApplied[] | null> {
+    async findAppliedJobs(user_id: string, page: string): Promise<jobAppliedData | null> {
         try {
+            const pages = Number(page) * 8
+            const jobCount = await appliedJobModel.find().countDocuments()
+            const jobs = await appliedJobModel.find({ user_id: user_id }).skip(pages).limit(8).populate("job_id").populate('company_id').populate("job_id.company_id")
 
-            const data = await appliedJobModel.find({user_id:user_id }).populate("job_id").populate('company_id').populate("job_id.company_id")
+            if (jobs.length === 0) {
+                return null;
+            }
 
-            return data ? data : null
+            return {
+                count: Math.ceil(jobCount / 8),
+                jobs
+            };
         } catch (error) {
             console.error(error);
             throw new Error("Unable to find applied jobs");
@@ -482,7 +494,7 @@ class userRepository implements IUserInterface {
 
 
             const userData: user[] = await userModel.find({
-                is_blocked: false , is_admin: false
+                is_blocked: false, is_admin: false
             })
             return userData ? userData : null
 
@@ -533,7 +545,7 @@ class userRepository implements IUserInterface {
         try {
             const objectId = new ObjectId(id);
             const reviewdata = await reviewandRatingModel.find({ company_id: id }).populate('user_id')
-            const count:number[] = []
+            const count: number[] = []
             for (let i = 5; i >= 1; i--) {
                 const averageStar = await reviewandRatingModel.aggregate([{ $match: { company_id: objectId, rating_count: i } }, { $group: { _id: null, average: { $avg: "$rating_count" } } }])
 
@@ -545,7 +557,7 @@ class userRepository implements IUserInterface {
 
                 }
             }
-            const datas:data = {
+            const datas: data = {
                 review: reviewdata, counts: count
             }
 
@@ -560,7 +572,7 @@ class userRepository implements IUserInterface {
     }
     async connectUser(id: string, connection_id: string): Promise<boolean> {
         try {
-            
+
             const connect = { connection_id }
             const user = { connection_id: id }
             const updaterUser = await userModel.updateOne({ _id: id }, { $addToSet: { connections: connect } })
@@ -591,9 +603,9 @@ class userRepository implements IUserInterface {
         try {
             const sender = await messageModel.find({ reciever_id: reciever_id, sender_id: sender_id })
             const reciever = await messageModel.find({ reciever_id: sender_id, sender_id: reciever_id })
-        ;
-            
-            const messages:messages = {
+                ;
+
+            const messages: messages = {
                 sender: sender,
                 reciever: reciever
             }
@@ -656,104 +668,106 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to find connection")
         }
     }
-    async manageConnection(user_id: string,connection_id:string, notification_id: string, message: string): Promise<boolean> {
+    async manageConnection(user_id: string, connection_id: string, notification_id: string, message: string): Promise<boolean> {
         try {
-            if(message =="accept"){
-            const users =await userModel.updateOne(   { _id: user_id, 'connections.connection_id': connection_id },
-                { $set: { 'connections.$.status': true } })
-            const connection = await userModel.updateOne(   { _id: connection_id, 'connections.connection_id': user_id },
-                { $set: { 'connections.$.status': true } })  
-                const notification = await notificationModel.deleteOne({_id:notification_id})  
-            return true
-            }else{
-                const users =await userModel.updateOne(
+            if (message == "accept") {
+                const users = await userModel.updateOne({ _id: user_id, 'connections.connection_id': connection_id },
+                    { $set: { 'connections.$.status': true } })
+                const connection = await userModel.updateOne({ _id: connection_id, 'connections.connection_id': user_id },
+                    { $set: { 'connections.$.status': true } })
+                const notification = await notificationModel.deleteOne({ _id: notification_id })
+                return true
+            } else {
+                const users = await userModel.updateOne(
                     { _id: user_id },
                     { $pull: { connections: { connection_id: connection_id } } }
-                  );
+                );
                 const connection = await userModel.updateOne(
                     { _id: connection_id },
                     { $pull: { connections: { connection_id: user_id } } }
-                  );  
-                    const notification = await notificationModel.deleteOne({_id:notification_id})  
+                );
+                const notification = await notificationModel.deleteOne({ _id: notification_id })
                 return true
             }
-            } catch (error) {
+        } catch (error) {
             console.error(error);
             throw new Error("Unable to update connection")
         }
     }
-    async saveInbox(sender_id: string, reciever_id: string,role:string): Promise<boolean> {
+    async saveInbox(sender_id: string, reciever_id: string, role: string): Promise<boolean> {
         try {
-            const data1 ={sender_id:sender_id,reciever_id:reciever_id,role:role}
-            const data2 ={sender_id:reciever_id,reciever_id:sender_id,role:role}
-            
-            const exist = await inboxModel.findOne({sender_id:sender_id,reciever_id:reciever_id})
-            if(!exist){
-            const inbox = new inboxModel(data1)
-            await inbox.save()
-            const inboxsave =new inboxModel(data2)
-            await inboxsave.save() 
-            return true}else{                
+            const data1 = { sender_id: sender_id, reciever_id: reciever_id, role: role }
+            const data2 = { sender_id: reciever_id, reciever_id: sender_id, role: role }
+
+            const exist = await inboxModel.findOne({ sender_id: sender_id, reciever_id: reciever_id })
+            if (!exist) {
+                const inbox = new inboxModel(data1)
+                await inbox.save()
+                const inboxsave = new inboxModel(data2)
+                await inboxsave.save()
+                return true
+            } else {
                 return false
             }
-            
+
         } catch (error) {
             console.error(error);
-            throw new Error("Unable to save ") 
+            throw new Error("Unable to save ")
         }
     }
-    async findInbox(sender_id: string,role:string): Promise<inbox[] | inbox | null> {
+    async findInbox(sender_id: string, role: string): Promise<inbox[] | inbox | null> {
         try {
             const inbox = await inboxModel.find({
-                sender_id: sender_id,role:role})
-              
-            .sort({ time: -1 })
-            .populate('reciever_id');           
-             return inbox ?inbox :null
+                sender_id: sender_id, role: role
+            })
+
+                .sort({ time: -1 })
+                .populate('reciever_id');
+            return inbox ? inbox : null
         } catch (error) {
             console.error(error);
-            throw new Error("Unable to find inboxData ") 
+            throw new Error("Unable to find inboxData ")
         }
     }
-    async updateInbox(sender_id: string, reciever_id: string,message:string): Promise<boolean> {
+    async updateInbox(sender_id: string, reciever_id: string, message: string): Promise<boolean> {
         try {
-            const senderUpdate = await inboxModel.updateOne({sender_id:sender_id,reciever_id:reciever_id},{message:message,time:Date.now()})
-            const recieverUpdate = await inboxModel.updateOne({sender_id:reciever_id,reciever_id:sender_id},{message:message,time:Date.now()})
-            if(senderUpdate && recieverUpdate){
+            const senderUpdate = await inboxModel.updateOne({ sender_id: sender_id, reciever_id: reciever_id }, { message: message, time: Date.now() })
+            const recieverUpdate = await inboxModel.updateOne({ sender_id: reciever_id, reciever_id: sender_id }, { message: message, time: Date.now() })
+            if (senderUpdate && recieverUpdate) {
                 return true
-            }else{
+            } else {
                 return false
             }
         } catch (error) {
             console.error(error);
-            throw new Error("Unable to find inboxData ") 
+            throw new Error("Unable to find inboxData ")
         }
     }
-    async updateOnlineStatus(user_id: string,status:boolean): Promise<boolean> {
+    async updateOnlineStatus(user_id: string, status: boolean): Promise<boolean> {
         try {
-            const onlineStatus = await userModel.updateOne({_id:user_id},{$set:{online:status}})
+            const onlineStatus = await userModel.updateOne({ _id: user_id }, { $set: { online: status } })
             return onlineStatus.acknowledged
         } catch (error) {
             console.error(error);
-            throw new Error("Unable to update user online status ") 
+            throw new Error("Unable to update user online status ")
         }
     }
-    async removeExperience(field: string,id:string): Promise<boolean> {
+    async removeExperience(field: string, id: string): Promise<boolean> {
         try {
-            const remove = await userModel.updateOne({_id:id},{$pull:{experience:{experiencefield:field}}})            
+            const remove = await userModel.updateOne({ _id: id }, { $pull: { experience: { experiencefield: field } } })
             return remove.acknowledged
         } catch (error) {
             console.error(error);
-            throw new Error("Unable to delete user experience ")  
+            throw new Error("Unable to delete user experience ")
         }
     }
-    async removeSkills(val: string,id:string): Promise<boolean> {
+    async removeSkills(val: string, id: string): Promise<boolean> {
         try {
-            const remove = await userModel.updateOne({_id:id},{$pull:{skills:val}})
-            return  remove.acknowledged
+            const remove = await userModel.updateOne({ _id: id }, { $pull: { skills: val } })
+            return remove.acknowledged
         } catch (error) {
             console.error(error);
-            throw new Error("Unable to removeskills ")  
+            throw new Error("Unable to removeskills ")
         }
     }
 }

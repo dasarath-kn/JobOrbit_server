@@ -48,6 +48,10 @@ const jobSchema:Schema<jobs> = new Schema({
     time:{
         type: Date,
         default: Date.now
+    },
+    list:{
+        type:Boolean,
+        default:true
     }
 })
 const jobModel =model<jobs>('job',jobSchema)

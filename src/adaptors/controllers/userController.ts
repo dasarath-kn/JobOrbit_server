@@ -218,8 +218,8 @@ class userController {
 
     async getjobs(req: Request, res: Response) {
         try {
-            const { page,type,location,date } = req.query            
-            const findJobs = await this.userUsecases.jobs(page as string,type as string,location as string,date as string)
+            const { page,type,location,date,user_id} = req.query            
+            const findJobs = await this.userUsecases.jobs(page as string,type as string,location as string,date as string,user_id as string)
             if (findJobs.success) {
                 const { jobs, count } = findJobs
                 res.status(200).json({ success: true, message: findJobs.message, jobs, count })
@@ -391,7 +391,6 @@ class userController {
         try {
             const { id } = req
             const { job_id, company_id,resume_url } = req.body
-            console.log(req.body);
 
             const applyJob = await this.userUsecases.jobApplication(job_id as string, id as string, company_id as string,resume_url as string)
             if (applyJob.success) {
@@ -502,11 +501,11 @@ class userController {
     async appliedJobs(req: Request, res: Response) {
         try {
             const { id } = req
-
-            const applied = await this.userUsecases.findAppliedJobsByUserid(id as string)
+            const {page}=req.query            
+            const applied = await this.userUsecases.findAppliedJobsByUserid(id as string,page as string)
             if (applied.success) {
-                const { appliedJobs } = applied
-                res.status(200).json({ success: true, message: applied.message, appliedJobs })
+                const { jobs,count } = applied
+                res.status(200).json({ success: true, message: applied.message, appliedJobs:jobs,count })
             } else {
                 res.status(400).json({ success: false, message: applied.message })
             }

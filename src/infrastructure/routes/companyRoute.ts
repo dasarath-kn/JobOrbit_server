@@ -47,6 +47,7 @@ companyRoute.get('/getreviews',companyAuth,(req,res)=>companyController.getRevie
 companyRoute.get('/messages',companyAuth,(req,res)=>companyController.getMessages(req,res))
 companyRoute.patch('/replycomment',companyAuth,(req,res)=>companyController.replyComment(req,res))
 companyRoute.get('/conversation',companyAuth,(req,res)=>companyController.conversationData(req,res))
+companyRoute.patch('/listjob',companyAuth,(req,res)=>companyController.listJob(req,res))
 
 
 export default companyRoute

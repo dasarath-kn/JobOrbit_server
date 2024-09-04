@@ -8,3 +8,4 @@ interface jobApplied {
     applied_date:Date
 }
 export default jobApplied
+ 

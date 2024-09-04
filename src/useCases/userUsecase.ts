@@ -234,9 +234,9 @@ class userUsecase {
             throw error
         }
     }
-    async jobs(page:string,type:string,location:string,date:string) {
+    async jobs(page:string,type:string,location:string,date:string,user_id:string) {
         try {
-            const jobData = await this.userRepo.viewjobs(page,type,location,date)
+            const jobData = await this.userRepo.viewjobs(page,type,location,date,user_id)
             if (jobData) {
                 const {jobs,count}=jobData
                 return { success: true, message: "Jobs sent successfully", jobs,count }
@@ -509,11 +509,12 @@ class userUsecase {
         }
       }
 
-      async findAppliedJobsByUserid(user_id:string){
+      async findAppliedJobsByUserid(user_id:string,page:string){
         try {
-            const appliedJobs = await this.userRepo.findAppliedJobs(user_id)
+            const appliedJobs = await this.userRepo.findAppliedJobs(user_id,page)
             if(appliedJobs){
-                return {success:true,message:"User Applied jobs sent successfully",appliedJobs}
+                const {jobs,count}=appliedJobs
+                return {success:true,message:"User Applied jobs sent successfully",jobs,count}
             }else{
                 return {success:false,message:"Failed to sent user applied jobs"}
             }

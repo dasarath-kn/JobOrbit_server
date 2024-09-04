@@ -459,5 +459,20 @@ class CompanyUsecase {
             throw error  
         }
     }
+
+    async jobList(job_id:string,status:string){
+        try {
+            const handleJoblisting = await this.companyRepo.listJob(job_id,status)
+            if(handleJoblisting){
+                return {success:true,message:handleJoblisting}
+            }else{
+                return {success:true,message:handleJoblisting}
+  
+            }
+        } catch (error) {
+            console.log(error);
+            throw error   
+        }
+    }
 }
 export default CompanyUsecase

@@ -77,7 +77,8 @@ const userSchema:Schema<user> =new Schema({
         type: String
       },
       resume_url: {
-        type: [String]
+        type: [String],
+        default:[]
       },
       skills: {
         type: [String]
