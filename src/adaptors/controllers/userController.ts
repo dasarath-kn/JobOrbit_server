@@ -120,9 +120,7 @@ class userController {
             const { name, email, isGoogle } = req.body
             const firstname = name
             const is_google = isGoogle
-            const userdata = { firstname, email, is_google }
-            console.log(userdata);
-
+            const userdata = { firstname, email, is_google,is_verified:true }
             const userSaveddata = await this.userUsecases.googleSaveuser(userdata as user)
             if (userSaveddata?.success) {
                 const { token } = userSaveddata

@@ -76,7 +76,7 @@ class CompanyController {
             const { name, email, isGoogle } = req.body
             const companyname = name
             const is_google = isGoogle
-            const companydata = { companyname, email, is_google }
+            const companydata = { companyname, email, is_google,is_verified:true }
 
             const companySaveddata = await this.companyusecase.googleSavecompany(companydata as company)
             if (companySaveddata.success) {

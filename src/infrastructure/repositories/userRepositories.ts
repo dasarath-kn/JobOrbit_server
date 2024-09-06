@@ -494,7 +494,7 @@ class userRepository implements IUserInterface {
 
 
             const userData: user[] = await userModel.find({
-                is_blocked: false, is_admin: false
+                is_blocked: false,is_verified:true, is_admin: false
             })
             return userData ? userData : null
 
