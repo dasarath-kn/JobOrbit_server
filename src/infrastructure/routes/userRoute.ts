@@ -63,7 +63,7 @@ router.post('/inbox',Auth,(req,res)=>UserController.saveInbox(req,res))
 router.get('/conversation',Auth,(req,res)=>UserController.conversationData(req,res))
 router.delete('/removeskill',Auth,(req,res)=>UserController.removeSkill(req,res))
 router.delete('/removeexperience',Auth,(req,res)=>UserController.removeExperience(req,res))
-
+router.patch('/rewards',Auth,(req,res)=>UserController.addReward(req,res))
 
 
 

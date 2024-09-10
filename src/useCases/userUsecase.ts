@@ -250,9 +250,9 @@ class userUsecase {
 
         }
     }
-    async posts() {
+    async posts(page:string) {
         try {
-            const posts = await this.userRepo.getPosts()
+            const posts = await this.userRepo.getPosts(page)
             if (posts) {
                 return { success: true, message: "Posts sent sucessfully", posts }
             } else {
@@ -729,6 +729,19 @@ class userUsecase {
                 return {success:true,message:"Skill removed"}
             }else{
                 return {success:false,message:"Failed to remove skill"}
+            }
+        } catch (error) {
+            console.log(error)
+            throw error 
+        }
+    }
+    async rewards(user_id:string,rewardData:user){
+        try {
+            const reward = await this.userRepo.addRewards(user_id,rewardData)
+            if(reward){
+                return {success:true,message:"Reward added"}
+            }else{
+                return {success:false,message:"Failed to add reward"}
             }
         } catch (error) {
             console.log(error)

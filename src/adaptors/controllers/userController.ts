@@ -234,7 +234,8 @@ class userController {
     }
     async getPosts(req: Request, res: Response) {
         try {
-            const getPosts = await this.userUsecases.posts()
+            const {page}=req.query
+            const getPosts = await this.userUsecases.posts(page as string)
             if (getPosts.success) {
                 const { posts } = getPosts
                 res.status(200).json({ success: true, messge: getPosts.message, posts })
@@ -784,6 +785,15 @@ class userController {
         }  catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: "Internal server error" })  
+        }
+    }
+    async addReward(req:Request,res:Response){
+        try {
+            const {awardtitle,issuedby,details} =req.body
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })  
+
         }
     }
 }

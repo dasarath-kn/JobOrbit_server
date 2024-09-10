@@ -231,10 +231,10 @@ class userUsecase {
             }
         });
     }
-    jobs(page, type, location, date) {
+    jobs(page, type, location, date, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const jobData = yield this.userRepo.viewjobs(page, type, location, date);
+                const jobData = yield this.userRepo.viewjobs(page, type, location, date, user_id);
                 if (jobData) {
                     const { jobs, count } = jobData;
                     return { success: true, message: "Jobs sent successfully", jobs, count };
@@ -249,10 +249,10 @@ class userUsecase {
             }
         });
     }
-    posts() {
+    posts(page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const posts = yield this.userRepo.getPosts();
+                const posts = yield this.userRepo.getPosts(page);
                 if (posts) {
                     return { success: true, message: "Posts sent sucessfully", posts };
                 }
@@ -545,12 +545,13 @@ class userUsecase {
             }
         });
     }
-    findAppliedJobsByUserid(user_id) {
+    findAppliedJobsByUserid(user_id, page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const appliedJobs = yield this.userRepo.findAppliedJobs(user_id);
+                const appliedJobs = yield this.userRepo.findAppliedJobs(user_id, page);
                 if (appliedJobs) {
-                    return { success: true, message: "User Applied jobs sent successfully", appliedJobs };
+                    const { jobs, count } = appliedJobs;
+                    return { success: true, message: "User Applied jobs sent successfully", jobs, count };
                 }
                 else {
                     return { success: false, message: "Failed to sent user applied jobs" };
@@ -808,6 +809,23 @@ class userUsecase {
                 }
                 else {
                     return { success: false, message: "Failed to remove skill" };
+                }
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
+    rewards(user_id, rewardData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const reward = yield this.userRepo.addRewards(user_id, rewardData);
+                if (reward) {
+                    return { success: true, message: "Reward added" };
+                }
+                else {
+                    return { success: false, message: "Failed to add reward" };
                 }
             }
             catch (error) {

@@ -225,9 +225,10 @@ class userRepository implements IUserInterface {
     }
 
 
-    async getPosts(): Promise<Post[] | null> {
+    async getPosts(page:string): Promise<Post[] | null> {
         try {
-            const posts = await postModel.find({}).sort({ time: -1 }).populate('company_id').populate('like')
+            const skipCount = Number(page)*2
+            const posts = await postModel.find({}).skip(skipCount).limit(2).sort({ time: -1 }).populate('company_id').populate('like')
             return posts ? posts : null
         } catch (error) {
             console.error(error);
@@ -769,6 +770,15 @@ class userRepository implements IUserInterface {
             console.error(error);
             throw new Error("Unable to removeskills ")
         }
+    }
+  async addRewards(user_id:string,rewardData: user): Promise<boolean> {
+       try {
+        const reward = await userModel.updateOne({_id:user_id},{$addToSet:{rewards:rewardData}})
+        return reward.acknowledged
+       } catch (error) {
+        console.error(error);
+        throw new Error("Unable to addRewards ")
+       } 
     }
 }
 

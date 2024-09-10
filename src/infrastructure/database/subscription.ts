@@ -1,20 +1,6 @@
 import mongoose, { model, Schema } from "mongoose";
 import subscriptions from "../../entities/subscriptions";
-// const userdetailsSchema = new Schema({
-//     user_id: {
-//         type: mongoose.Schema.Types.ObjectId
-//     },
-//     transaction_id: {
-//         type: String
-//     },
-//     activated_date: {
-//         type: Date
-//     },
-//     expiry_date: {
-//         type: Date
-//     }
 
-// })
 const subscriptionSchema: Schema<subscriptions> = new Schema({
     subscriptiontype: {
         type: String,
@@ -36,10 +22,7 @@ const subscriptionSchema: Schema<subscriptions> = new Schema({
         type:Boolean,
         default:false
     }
-    // userdetails: {
-    //     type: [userdetailsSchema],
-    //     default: []
-    // }
+    
 
 
 

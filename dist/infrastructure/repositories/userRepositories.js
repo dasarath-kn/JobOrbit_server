@@ -178,7 +178,7 @@ class userRepository {
             }
         });
     }
-    viewjobs(page, type, location, date) {
+    viewjobs(page, type, location, date, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const pages = Number(page) * 8;
@@ -200,8 +200,14 @@ class userRepository {
                     }
                     filter.time = { $gte: dateFilter };
                 }
+                filter["applicants_id.user_id"] = { $nin: [user_id] };
+                filter.list = true;
                 const jobCount = yield jobModel_1.default.find(filter).countDocuments();
-                const jobs = yield jobModel_1.default.find(filter).sort({ time: -1 }).skip(pages).limit(8).populate('company_id');
+                const jobs = yield jobModel_1.default.find(filter)
+                    .sort({ time: -1 })
+                    .skip(pages)
+                    .limit(8)
+                    .populate('company_id');
                 if (jobs.length === 0) {
                     return null;
                 }
@@ -216,10 +222,11 @@ class userRepository {
             }
         });
     }
-    getPosts() {
+    getPosts(page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const posts = yield postModel_1.default.find({}).sort({ time: -1 }).populate('company_id').populate('like');
+                const skipCount = Number(page) * 2;
+                const posts = yield postModel_1.default.find({}).skip(skipCount).limit(2).sort({ time: -1 }).populate('company_id').populate('like');
                 return posts ? posts : null;
             }
             catch (error) {
@@ -339,13 +346,13 @@ class userRepository {
             }
         });
     }
-    updateResume(id, resume_url, percentage) {
+    updateResume(id, resumeurl, percentage) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(resume_url, "urllll");
+                const resumeUrlsArray = Array.isArray(resumeurl) ? resumeurl : [resumeurl];
                 if (percentage === 15) {
                     const update = yield userModel_1.default.updateOne({ _id: id }, {
-                        $addToSet: { resume_url: { $each: Array.isArray(resume_url) ? resume_url : [resume_url] } },
+                        $addToSet: { resume_url: { $each: resumeUrlsArray } },
                         $inc: { percentage: percentage }
                     });
                     return update.acknowledged;
@@ -353,7 +360,7 @@ class userRepository {
                 else {
                     // const update = await userModel.updateOne({ _id: id }, { $set: { resume_url: resume_url, percentage: percentage } })
                     const update = yield userModel_1.default.updateOne({ _id: id }, {
-                        $addToSet: { resume_url: { $each: Array.isArray(resume_url) ? resume_url : [resume_url] } },
+                        $addToSet: { resume_url: { $each: resumeUrlsArray } },
                         $set: { percentage: percentage }
                     });
                     return update.acknowledged;
@@ -491,11 +498,19 @@ class userRepository {
             }
         });
     }
-    findAppliedJobs(user_id) {
+    findAppliedJobs(user_id, page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const data = yield jobApplied_1.default.find({ user_id: user_id }).populate("job_id").populate('company_id').populate("job_id.company_id");
-                return data ? data : null;
+                const pages = Number(page) * 8;
+                const jobCount = yield jobApplied_1.default.find().countDocuments();
+                const jobs = yield jobApplied_1.default.find({ user_id: user_id }).skip(pages).limit(8).populate("job_id").populate('company_id').populate("job_id.company_id");
+                if (jobs.length === 0) {
+                    return null;
+                }
+                return {
+                    count: Math.ceil(jobCount / 8),
+                    jobs
+                };
             }
             catch (error) {
                 console.error(error);
@@ -507,7 +522,7 @@ class userRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userData = yield userModel_1.default.find({
-                    is_blocked: false, is_admin: false
+                    is_blocked: false, is_verified: true, is_admin: false
                 });
                 return userData ? userData : null;
             }
@@ -804,6 +819,18 @@ class userRepository {
             catch (error) {
                 console.error(error);
                 throw new Error("Unable to removeskills ");
+            }
+        });
+    }
+    addRewards(user_id, rewardData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const reward = yield userModel_1.default.updateOne({ _id: user_id }, { $addToSet: { rewards: rewardData } });
+                return reward.acknowledged;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error("Unable to addRewards ");
             }
         });
     }

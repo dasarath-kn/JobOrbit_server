@@ -51,4 +51,5 @@ companyRoute.get('/getreviews', companyAuth_1.default, (req, res) => companyCont
 companyRoute.get('/messages', companyAuth_1.default, (req, res) => companyController.getMessages(req, res));
 companyRoute.patch('/replycomment', companyAuth_1.default, (req, res) => companyController.replyComment(req, res));
 companyRoute.get('/conversation', companyAuth_1.default, (req, res) => companyController.conversationData(req, res));
+companyRoute.patch('/listjob', companyAuth_1.default, (req, res) => companyController.listJob(req, res));
 exports.default = companyRoute;

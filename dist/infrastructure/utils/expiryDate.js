@@ -9,9 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getExpiryDay = void 0;
 const getExpiryDate = (monthsToAdd) => __awaiter(void 0, void 0, void 0, function* () {
     const currentDate = new Date();
     const expiryDate = new Date(currentDate.setMonth(currentDate.getMonth() + monthsToAdd));
     return expiryDate;
 });
 exports.default = getExpiryDate;
+const getExpiryDay = (daysToAdd) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentDate = new Date();
+    const expiryDate = new Date(currentDate.setDate(currentDate.getDate() + daysToAdd));
+    return expiryDate;
+});
+exports.getExpiryDay = getExpiryDay;

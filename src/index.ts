@@ -9,6 +9,7 @@ import cors from 'cors'
 import path from 'path';
 import http from 'http'
 import { initializeSocket } from './infrastructure/utils/socket';
+import { CronJobService } from './infrastructure/utils/cronJob';
 dotenv.config()
 const app = express();
 const port =process.env.PORT
@@ -31,6 +32,7 @@ app.use('/public', express.static(path.join(__dirname, '../../public')));
 app.use('/',userRoute)
 app.use('/admin',adminRoute)
 app.use('/company',companyRoute)
+new CronJobService();
 
 
 server.listen(port, () => {

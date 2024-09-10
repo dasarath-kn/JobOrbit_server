@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const expiryDate_1 = require("../infrastructure/utils/expiryDate");
 class CompanyUsecase {
     constructor(companyRepo, hashPassword, userRepo, otpGenerator, nodeMailer, jwttoken, cloudinary) {
         this.companyRepo = companyRepo;
@@ -183,15 +184,32 @@ class CompanyUsecase {
             }
         });
     }
-    savingJobs(jobData) {
+    savingJobs(jobData, job_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const savedJob = yield this.companyRepo.saveJobs(jobData);
-                if (savedJob) {
-                    return { success: true, message: "Job created successfully" };
+                if (job_id) {
+                    const exist = yield this.companyRepo.findJobById(job_id);
+                    if ((exist === null || exist === void 0 ? void 0 : exist.closedate) !== jobData.closedate) {
+                        const expirydate = yield (0, expiryDate_1.getExpiryDay)(Number(jobData.closedate));
+                        console.log(typeof expirydate);
+                        jobData.unlistTime = expirydate;
+                    }
+                    else {
+                        jobData.unlistTime = exist.unlistTime;
+                    }
+                    const update = yield this.companyRepo.editJob(job_id, jobData);
+                    return { success: true, message: "Job updated successfully" };
                 }
                 else {
-                    return { success: false, message: "Failed to create job" };
+                    const expirydate = yield (0, expiryDate_1.getExpiryDay)(Number(jobData.closedate));
+                    jobData.unlistTime = expirydate;
+                    const savedJob = yield this.companyRepo.saveJobs(jobData);
+                    if (savedJob) {
+                        return { success: true, message: "Job created successfully" };
+                    }
+                    else {
+                        return { success: false, message: "Failed to create job" };
+                    }
                 }
             }
             catch (error) {
@@ -500,6 +518,23 @@ class CompanyUsecase {
                 }
                 else {
                     return { success: false, messsage: "Failed to sent conversation data" };
+                }
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
+    jobList(job_id, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const handleJoblisting = yield this.companyRepo.listJob(job_id, status);
+                if (handleJoblisting) {
+                    return { success: true, message: handleJoblisting };
+                }
+                else {
+                    return { success: true, message: handleJoblisting };
                 }
             }
             catch (error) {

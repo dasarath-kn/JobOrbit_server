@@ -70,6 +70,18 @@ const jobSchema = new mongoose_1.Schema({
     time: {
         type: Date,
         default: Date.now
+    },
+    list: {
+        type: Boolean,
+        default: true
+    },
+    closedate: {
+        type: String,
+        required: true
+    },
+    unlistTime: {
+        type: Date,
+        required: true
     }
 });
 const jobModel = (0, mongoose_1.model)('job', jobSchema);

@@ -126,6 +126,14 @@ const userSchema:Schema<user> =new Schema({
         company_id:{
           type:mongoose.Schema.Types.ObjectId,
         ref:'company'}
+      }],
+      rewards:[{
+        awardTitle:{type:String},
+        issuedBy:{type:String},
+        details:{type:String},
+        img_url:{
+          type:String
+        }
       }]
     
 
@@ -134,7 +142,7 @@ const userSchema:Schema<user> =new Schema({
 const userModel = model<user>('user',userSchema)
 export default userModel
 
-cron.schedule('0 0 * * *', async () => { 
+cron.schedule('1 0 * * *', async () => { 
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
   try {

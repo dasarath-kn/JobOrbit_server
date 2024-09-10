@@ -1,6 +1,8 @@
 import { application } from "express";
 import mongoose, {  model, Schema } from "mongoose";
 import jobs from "../../entities/jobs";
+import cron from 'node-cron';
+
 
 const jobSchema:Schema<jobs> = new Schema({
     jobtitle:{
@@ -52,7 +54,16 @@ const jobSchema:Schema<jobs> = new Schema({
     list:{
         type:Boolean,
         default:true
+    },
+    closedate:{
+        type:String,
+        required:true
+    },
+    unlistTime:{
+        type:Date,
+        required:true
     }
 })
 const jobModel =model<jobs>('job',jobSchema)
 export default jobModel
+

@@ -111,7 +111,8 @@ const userSchema = new mongoose_1.Schema({
         type: String
     },
     resume_url: {
-        type: [String]
+        type: [String],
+        default: []
     },
     skills: {
         type: [String]
@@ -159,11 +160,19 @@ const userSchema = new mongoose_1.Schema({
                 type: mongoose_1.default.Schema.Types.ObjectId,
                 ref: 'company'
             }
+        }],
+    rewards: [{
+            awardTitle: { type: String },
+            issuedBy: { type: String },
+            details: { type: String },
+            img_url: {
+                type: String
+            }
         }]
 });
 const userModel = (0, mongoose_1.model)('user', userSchema);
 exports.default = userModel;
-node_cron_1.default.schedule('0 0 * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+node_cron_1.default.schedule('1 0 * * *', () => __awaiter(void 0, void 0, void 0, function* () {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     try {
         const users = yield userModel.find({ jobapplied_LastReset: { $lte: oneDayAgo } });

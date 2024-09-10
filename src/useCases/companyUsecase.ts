@@ -10,6 +10,7 @@ import HashPassword from "../infrastructure/utils/hashedPassword";
 import Jwt from "../infrastructure/utils/jwtToken";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
 import Otpgenerator from "../infrastructure/utils/otpGenerator";
+import { getExpiryDay } from "../infrastructure/utils/expiryDate";
 
 class CompanyUsecase {
     private companyRepo:CompanyRepositories
@@ -185,15 +186,31 @@ class CompanyUsecase {
             throw error
         }
     }
-    async savingJobs(jobData:jobs){
+    async savingJobs(jobData:jobs,job_id:string){
         try {
+            if(job_id){
+                const exist = await this.companyRepo.findJobById(job_id)
+                if(exist?.closedate !== jobData.closedate){
+                    const expirydate =await getExpiryDay( Number(jobData.closedate))
+                    console.log(typeof expirydate);
+                    
+                    jobData.unlistTime=  expirydate 
+                }else{
+                    jobData.unlistTime =exist.unlistTime
+                }
+                const update = await this.companyRepo.editJob(job_id,jobData)
+                return {success:true,message:"Job updated successfully"}
 
+            }else{
+            const expirydate =await getExpiryDay(Number(jobData.closedate))
+             jobData.unlistTime=  expirydate
             const savedJob = await this.companyRepo.saveJobs(jobData)
             if(savedJob){
                 return {success:true,message:"Job created successfully"}
             }else{
                 return {success:false,message:"Failed to create job"}
             }
+        }
         } catch (error) {
             console.error(error);
             throw error

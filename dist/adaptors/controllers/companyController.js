@@ -83,7 +83,7 @@ class CompanyController {
                 const { name, email, isGoogle } = req.body;
                 const companyname = name;
                 const is_google = isGoogle;
-                const companydata = { companyname, email, is_google };
+                const companydata = { companyname, email, is_google, is_verified: true };
                 const companySaveddata = yield this.companyusecase.googleSavecompany(companydata);
                 if (companySaveddata.success) {
                     const { token } = companySaveddata;
@@ -163,9 +163,10 @@ class CompanyController {
             try {
                 const { id } = req;
                 const company_id = id;
-                const { jobtitle, description, responsibilities, requirements, qualification, location, type, skills } = req.body;
-                const jobData = { description, responsibilities, requirements, skills, qualification, jobtitle, location, type, company_id: new mongoose_1.default.Types.ObjectId(company_id) };
-                const jobs = yield this.companyusecase.savingJobs(jobData);
+                const { jobtitle, description, responsibilities, requirements, qualification, location, type, skills, closedate, _id } = req.body;
+                const job_id = _id ? _id : "";
+                const jobData = { description, responsibilities, requirements, skills, qualification, jobtitle, location, type, company_id: new mongoose_1.default.Types.ObjectId(company_id), unlistTime: closedate, closedate };
+                const jobs = yield this.companyusecase.savingJobs(jobData, job_id);
                 if (jobs.success) {
                     res.status(200).json({ success: true, message: jobs.message });
                 }
@@ -514,6 +515,25 @@ class CompanyController {
                 }
                 else {
                     res.status(400).json({ success: false, message: data.message });
+                }
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: "Internal server error" });
+            }
+        });
+    }
+    listJob(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { job_id, status } = req.body;
+                console.log(req.body);
+                const handleListJob = yield this.companyusecase.jobList(job_id, status);
+                if (handleListJob.success) {
+                    res.status(200).json({ success: true, message: handleListJob.message });
+                }
+                else {
+                    res.status(400).json({ success: false, message: handleListJob.message });
                 }
             }
             catch (error) {

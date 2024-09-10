@@ -38,6 +38,8 @@ interface ICompanyInterface {
     deleteApplicant(job_id:string,user_id:string):Promise<boolean>
     findInbox(reciever_id:string):Promise<inbox[]|inbox|null>
     listJob(job_id:string,status:string):Promise<string>
-}
+    findJobById(job_id:string):Promise<jobs | null>
+    editJob(job_id:string,jobData:jobs):Promise<boolean>
+}   
 
 export default ICompanyInterface

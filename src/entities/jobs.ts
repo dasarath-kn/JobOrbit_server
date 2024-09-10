@@ -12,7 +12,9 @@ interface jobs{
     company_id:mongoose.Types.ObjectId;
     applicants_id:mongoose.Types.ObjectId[];
     time: Date;
-    list:boolean
+    list:boolean;
+    unlistTime:any;
+    closedate:string;
 }
 export default jobs
 export interface jobApplied{

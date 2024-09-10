@@ -42,7 +42,7 @@ interface IUserInterface {
     updateSkill(skill: [], id: string, percentage: number): Promise<boolean>
     updateResume(id: string, resume_url: string, percentage: number): Promise<boolean>
     viewjobs(page:string,type:string,location:string,date:string,user_id:string): Promise<jobData | null>
-    getPosts(): Promise<Post[] | null>
+    getPosts(page:string): Promise<Post[] | null>
     likePost(post_id: string, user_id: string): Promise<boolean | null>
     unlikePost(post_id: string, user_id: string): Promise<boolean | null>
     savePost(postData: savedPost,message:string): Promise<boolean>
@@ -78,7 +78,7 @@ interface IUserInterface {
     updateOnlineStatus(user_id:string,status:boolean):Promise<boolean>
     removeSkills(val:string,id:string):Promise<boolean>
     removeExperience(field:string,id:string):Promise<boolean>
-
+    addRewards(user_id:string,rewardData:user):Promise<boolean>
 }   
 
 

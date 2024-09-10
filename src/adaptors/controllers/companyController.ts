@@ -152,9 +152,10 @@ class CompanyController {
         try {
             const { id } = req
             const company_id = id
-            const { jobtitle, description, responsibilities, requirements, qualification, location, type,skills } = req.body
-            const jobData = { description, responsibilities, requirements,skills, qualification, jobtitle, location, type, company_id: new mongoose.Types.ObjectId(company_id) }
-            const jobs = await this.companyusecase.savingJobs(jobData as jobs)
+            const { jobtitle, description, responsibilities, requirements, qualification, location, type,skills,closedate,_id } = req.body
+            const job_id = _id ? _id : "";
+            const jobData = { description, responsibilities, requirements,skills, qualification, jobtitle, location, type, company_id: new mongoose.Types.ObjectId(company_id),unlistTime:closedate,closedate }
+            const jobs = await this.companyusecase.savingJobs(jobData as jobs,job_id as string)
             if (jobs.success) {
                 res.status(200).json({ success: true, message: jobs.message })
             } else {

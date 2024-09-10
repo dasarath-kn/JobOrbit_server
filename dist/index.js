@@ -14,6 +14,7 @@ const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
 const http_1 = __importDefault(require("http"));
 const socket_1 = require("./infrastructure/utils/socket");
+const cronJob_1 = require("./infrastructure/utils/cronJob");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT;
@@ -35,6 +36,7 @@ app.use('/public', express_1.default.static(path_1.default.join(__dirname, '../.
 app.use('/', userRoute_1.default);
 app.use('/admin', adminRoute_1.default);
 app.use('/company', companyRoute_1.default);
+new cronJob_1.CronJobService();
 server.listen(port, () => {
     console.log(`Server is running at ${url}:${port}`);
 });

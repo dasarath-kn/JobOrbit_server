@@ -391,5 +391,48 @@ class CompanyRepositories {
             }
         });
     }
+    listJob(job_id, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (status == "block") {
+                    const jobListing = yield jobModel_1.default.updateOne({ _id: job_id }, { $set: { list: false } });
+                    return jobListing.acknowledged ? "Job unlisted from user" : "";
+                }
+                else {
+                    const jobListing = yield jobModel_1.default.updateOne({ _id: job_id }, { $set: { list: true } });
+                    return jobListing.acknowledged ? "Job listed to user" : "";
+                }
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error("Unable to listjob ");
+            }
+        });
+    }
+    findJobById(job_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const job = yield jobModel_1.default.findOne({ _id: job_id });
+                return job ? job : null;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error("Unable to findJob ");
+            }
+        });
+    }
+    editJob(job_id, jobData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log(jobData);
+                const job = yield jobModel_1.default.updateOne({ _id: job_id }, { $set: jobData });
+                return job.acknowledged;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error("Unable to editjob ");
+            }
+        });
+    }
 }
 exports.default = CompanyRepositories;

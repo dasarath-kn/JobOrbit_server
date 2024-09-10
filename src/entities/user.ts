@@ -37,6 +37,12 @@ interface user {
     }]
     companies:[{
         company_id:mongoose.Schema.Types.ObjectId,
+    }],
+    rewards:[{
+        awardTitle:String,
+        issuedBy:String,
+        details:String,
+        img_url:String     
     }]
 }
 

@@ -124,8 +124,7 @@ class userController {
                 const { name, email, isGoogle } = req.body;
                 const firstname = name;
                 const is_google = isGoogle;
-                const userdata = { firstname, email, is_google };
-                console.log(userdata);
+                const userdata = { firstname, email, is_google, is_verified: true };
                 const userSaveddata = yield this.userUsecases.googleSaveuser(userdata);
                 if (userSaveddata === null || userSaveddata === void 0 ? void 0 : userSaveddata.success) {
                     const { token } = userSaveddata;
@@ -227,8 +226,8 @@ class userController {
     getjobs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { page, type, location, date } = req.query;
-                const findJobs = yield this.userUsecases.jobs(page, type, location, date);
+                const { page, type, location, date, user_id } = req.query;
+                const findJobs = yield this.userUsecases.jobs(page, type, location, date, user_id);
                 if (findJobs.success) {
                     const { jobs, count } = findJobs;
                     res.status(200).json({ success: true, message: findJobs.message, jobs, count });
@@ -246,7 +245,8 @@ class userController {
     getPosts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const getPosts = yield this.userUsecases.posts();
+                const { page } = req.query;
+                const getPosts = yield this.userUsecases.posts(page);
                 if (getPosts.success) {
                     const { posts } = getPosts;
                     res.status(200).json({ success: true, messge: getPosts.message, posts });
@@ -428,7 +428,6 @@ class userController {
             try {
                 const { id } = req;
                 const { job_id, company_id, resume_url } = req.body;
-                console.log(req.body);
                 const applyJob = yield this.userUsecases.jobApplication(job_id, id, company_id, resume_url);
                 if (applyJob.success) {
                     res.status(200).json({ success: true, message: applyJob.message });
@@ -546,10 +545,11 @@ class userController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req;
-                const applied = yield this.userUsecases.findAppliedJobsByUserid(id);
+                const { page } = req.query;
+                const applied = yield this.userUsecases.findAppliedJobsByUserid(id, page);
                 if (applied.success) {
-                    const { appliedJobs } = applied;
-                    res.status(200).json({ success: true, message: applied.message, appliedJobs });
+                    const { jobs, count } = applied;
+                    res.status(200).json({ success: true, message: applied.message, appliedJobs: jobs, count });
                 }
                 else {
                     res.status(400).json({ success: false, message: applied.message });
@@ -856,6 +856,17 @@ class userController {
                 else {
                     res.status(400).json({ success: false, message: remove.message });
                 }
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: "Internal server error" });
+            }
+        });
+    }
+    addReward(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { awardtitle, issuedby, details } = req.body;
             }
             catch (error) {
                 console.error(error);
