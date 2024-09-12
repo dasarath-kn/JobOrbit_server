@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const expiryDate_1 = require("../infrastructure/utils/expiryDate");
+const fs_1 = __importDefault(require("fs"));
 class CompanyUsecase {
     constructor(companyRepo, hashPassword, userRepo, otpGenerator, nodeMailer, jwttoken, cloudinary) {
         this.companyRepo = companyRepo;
@@ -535,6 +539,35 @@ class CompanyUsecase {
                 }
                 else {
                     return { success: true, message: handleJoblisting };
+                }
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
+    saveDocuments(messageData, file) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (file) {
+                    const cloudinary = yield this.cloudinary.uploadImage(file, "Image");
+                    messageData.url = cloudinary;
+                }
+                const addDocument = yield this.companyRepo.addDocuments(messageData);
+                if (addDocument) {
+                    fs_1.default.unlink(file, (err) => {
+                        if (err) {
+                            console.error(`Error removing file ${file}:`, err);
+                        }
+                        else {
+                            console.log(`Successfully removed file ${file}`);
+                        }
+                    });
+                    return { success: true, message: "document saved successfully" };
+                }
+                else {
+                    return { success: false, message: "Failed to save document" };
                 }
             }
             catch (error) {

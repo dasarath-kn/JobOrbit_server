@@ -434,5 +434,18 @@ class CompanyRepositories {
             }
         });
     }
+    addDocuments(messageData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const document = new messageModel_1.default(messageData);
+                yield document.save();
+                return true;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error("Unable to addDocuments");
+            }
+        });
+    }
 }
 exports.default = CompanyRepositories;

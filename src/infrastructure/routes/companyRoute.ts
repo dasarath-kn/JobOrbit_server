@@ -48,6 +48,7 @@ companyRoute.get('/messages',companyAuth,(req,res)=>companyController.getMessage
 companyRoute.patch('/replycomment',companyAuth,(req,res)=>companyController.replyComment(req,res))
 companyRoute.get('/conversation',companyAuth,(req,res)=>companyController.conversationData(req,res))
 companyRoute.patch('/listjob',companyAuth,(req,res)=>companyController.listJob(req,res))
+companyRoute.post('/sharedocument',companyAuth,upload.single("image"),(req,res)=>companyController.addDocument(req,res))
 
 
 export default companyRoute

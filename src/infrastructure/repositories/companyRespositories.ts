@@ -372,6 +372,17 @@ class CompanyRepositories implements ICompanyInterface {
          throw new Error("Unable to editjob ")
       }
    }
+   async addDocuments(messageData:message): Promise<boolean> {
+      try {
+          const document = new messageModel(messageData)
+          await document.save()
+          return true
+
+      } catch (error) {
+          console.error(error);
+          throw new Error("Unable to addDocuments")
+      }
+  }
 }
 
 

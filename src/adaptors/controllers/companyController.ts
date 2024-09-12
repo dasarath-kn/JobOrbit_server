@@ -5,6 +5,7 @@ import { Response, Request } from "express"
 import jobs from "../../entities/jobs"
 import jobShedule from "../../entities/jobScheduled"
 import fs from 'fs';
+import message from "../../entities/message"
 
 class CompanyController {
     private companyusecase: CompanyUsecase
@@ -483,6 +484,25 @@ class CompanyController {
                     console.error(error);
                     res.status(500).json({ success: false, message: "Internal server error" })
                     
+                }
+            }
+
+            async addDocument(req:Request,res:Response){
+                try {
+                    const {reciever_id,field} =req.body
+                    const {id}=req
+                    const file = req.file?.path
+                    const data ={sender_id:id,reciever_id,url:'',field}
+                    const documents = await this.companyusecase.saveDocuments(data as message,file as string)
+                    if(documents.success){
+                        res.status(200).json({success:true,message:documents.message})
+                    }else{
+                        res.status(400).json({success:false,message:documents.message})
+                    }
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ success: false, message: "Internal server error" })  
+        
                 }
             }
        

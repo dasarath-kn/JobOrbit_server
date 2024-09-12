@@ -43,6 +43,14 @@ export const initializeSocket = (server: HTTPServer) => {
            }
         
         })
+        socket.on("document",async({reciever_id,message})=>{
+            const recipient = users[reciever_id]
+            if(recipient){
+                io.to(recipient).emit("document",message)
+            }
+            
+            
+        })
 
         
         socket.on('disconnect', (reason) => {

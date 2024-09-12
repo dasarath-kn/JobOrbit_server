@@ -226,8 +226,15 @@ class userRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const skipCount = Number(page) * 2;
+                const count = yield postModel_1.default.find().countDocuments();
                 const posts = yield postModel_1.default.find({}).skip(skipCount).limit(2).sort({ time: -1 }).populate('company_id').populate('like');
-                return posts ? posts : null;
+                if (posts.length == 0) {
+                    return null;
+                }
+                return {
+                    count: Math.ceil(count / 2),
+                    posts: posts
+                };
             }
             catch (error) {
                 console.error(error);
@@ -650,8 +657,6 @@ class userRepository {
     connectCompany(user_id, company_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("id", user_id);
-                console.log("connection", company_id);
                 const connect = { company_id };
                 const user = { user_id: user_id };
                 const updaterUser = yield userModel_1.default.updateOne({ _id: user_id }, { $addToSet: { companies: connect } });
@@ -831,6 +836,19 @@ class userRepository {
             catch (error) {
                 console.error(error);
                 throw new Error("Unable to addRewards ");
+            }
+        });
+    }
+    addDocuments(messageData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const document = new messageModel_1.default(messageData);
+                yield document.save();
+                return true;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error("Unable to addDocuments");
             }
         });
     }

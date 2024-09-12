@@ -162,7 +162,7 @@ const userSchema = new mongoose_1.Schema({
             }
         }],
     rewards: [{
-            awardTitle: { type: String },
+            awardTittle: { type: String },
             issuedBy: { type: String },
             details: { type: String },
             img_url: {

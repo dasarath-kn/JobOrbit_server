@@ -11,6 +11,8 @@ import Jwt from "../infrastructure/utils/jwtToken";
 import NodeMailer from "../infrastructure/utils/nodeMailer";
 import Otpgenerator from "../infrastructure/utils/otpGenerator";
 import { getExpiryDay } from "../infrastructure/utils/expiryDate";
+import message from "../entities/message";
+import fs from 'fs';
 
 class CompanyUsecase {
     private companyRepo:CompanyRepositories
@@ -491,5 +493,30 @@ class CompanyUsecase {
             throw error   
         }
     }
+    async saveDocuments(messageData:message,file:string){
+        try {
+           if(file){
+            const cloudinary = await this.cloudinary.uploadImage(file,"Image")
+            messageData.url=cloudinary
+           } 
+           const addDocument = await this.companyRepo.addDocuments(messageData)
+           if(addDocument){
+            fs.unlink(file, (err) => {
+                if (err) {
+                  console.error(`Error removing file ${file}:`, err);
+                } else {
+                  console.log(`Successfully removed file ${file}`);
+                }
+              });
+              return {success:true,message:"document saved successfully"}
+           }else{
+            return {success:false,message:"Failed to save document"}
+           }
+        } catch (error) {
+            console.log(error)
+            throw error 
+        }
+    }
+
 }
 export default CompanyUsecase

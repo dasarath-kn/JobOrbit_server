@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import user, { reviews } from '../../entities/user'
+import user, { reviews, rewards } from '../../entities/user'
 import userUsecase from "../../useCases/userUsecase";
 import Cloudinary from "../../infrastructure/utils/cloudinary";
 import mongoose from "mongoose";
@@ -8,6 +8,7 @@ import { comment } from "../../entities/comment";
 import subscriptedUser from "../../entities/subscribedUser";
 import postreport from "../../entities/postreport";
 import getExpiryDate from "../../infrastructure/utils/expiryDate";
+import message from "../../entities/message";
 class userController {
     private userUsecases: userUsecase
     private Cloudinary: Cloudinary
@@ -237,8 +238,8 @@ class userController {
             const {page}=req.query
             const getPosts = await this.userUsecases.posts(page as string)
             if (getPosts.success) {
-                const { posts } = getPosts
-                res.status(200).json({ success: true, messge: getPosts.message, posts })
+                const { posts,count } = getPosts
+                res.status(200).json({ success: true, messge: getPosts.message, posts,count })
             } else {
                 res.status(400).json({ success: false, message: getPosts.message })
             }
@@ -789,7 +790,35 @@ class userController {
     }
     async addReward(req:Request,res:Response){
         try {
-            const {awardtitle,issuedby,details} =req.body
+            const {id} =req
+            const {awardTittle,issuedBy,details} =req.body
+            const file =req.file?.path 
+            const rewardData ={awardTittle,issuedBy,details,img_url:""}
+            const reward = await this.userUsecases.rewards(id as string,rewardData as rewards,file as string)
+            if(reward.success){
+                res.status(200).json({success:true,message:reward.message})
+            }else{
+                res.status(400).json({success:false,message:reward.message})
+            }
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })  
+
+        }
+    }
+   async addDocument(req:Request,res:Response){
+        try {
+            const {reciever_id,field} =req.body
+            const {id}=req
+            const file = req.file?.path
+            const data ={sender_id:id,reciever_id,url:'',field}
+            const documents = await this.userUsecases.saveDocuments(data as message,file as string)
+            if(documents.success){
+                res.status(200).json({success:true,message:documents.message})
+            }else{
+                res.status(400).json({success:false,message:documents.message})
+            }
         } catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: "Internal server error" })  

@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { comment } from "../entities/comment";
 import { savedPost } from "../entities/savedPost";
-import user, { experienceData, reviews } from "../entities/user";
+import user, { experienceData, reviews, rewards } from "../entities/user";
 import userRepository from "../infrastructure/repositories/userRepositories";
 import Cloudinary from "../infrastructure/utils/cloudinary";
 import HashPassword from "../infrastructure/utils/hashedPassword";
@@ -13,13 +13,15 @@ import StripePayment from "../infrastructure/utils/stripe";
 import subscriptedUser from "../entities/subscribedUser";
 import postreport from "../entities/postreport";
 import message from "../entities/message";
+import fs from 'fs';
+
 class userUsecase {
     private userRepo: userRepository;
     private hashPassword: HashPassword
     private otpGenerator: Otpgenerator
     private nodeMailer: NodeMailer
     private jwttoken: Jwt
-    private cloundinary: Cloudinary
+    private cloudinary: Cloudinary
     private stripe:StripePayment
     constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer, jwttoken: Jwt, cloudinary: Cloudinary,stripe:StripePayment) {
         this.userRepo = userRepo
@@ -27,7 +29,7 @@ class userUsecase {
         this.otpGenerator = otpGenerator
         this.nodeMailer = nodeMailer
         this.jwttoken = jwttoken
-        this.cloundinary = cloudinary
+        this.cloudinary = cloudinary
         this.stripe =stripe
     }
 
@@ -202,7 +204,7 @@ class userUsecase {
     async updateProfile(id: string, user: user, file: string,percentage:number) {
         try {
             if (file) {
-                const cloudinary = await this.cloundinary.uploadImage(file, "User Profile")
+                const cloudinary = await this.cloudinary.uploadImage(file, "User Profile")
                 user.img_url = cloudinary
             }
 
@@ -252,9 +254,10 @@ class userUsecase {
     }
     async posts(page:string) {
         try {
-            const posts = await this.userRepo.getPosts(page)
-            if (posts) {
-                return { success: true, message: "Posts sent sucessfully", posts }
+            const postData = await this.userRepo.getPosts(page)
+            if (postData) {
+                const {posts,count}=postData
+                return { success: true, message: "Posts sent sucessfully", posts,count }
             } else {
                 return { success: false, message: "Failed to sent posts" }
             }
@@ -386,7 +389,7 @@ class userUsecase {
         try {
             let resume_url =''
             if(file){
-                const cloudinary = await this.cloundinary.uploaddocuments(file,"Resume")
+                const cloudinary = await this.cloudinary.uploaddocuments(file,"Resume")
                 resume_url=cloudinary
             }
             const upload = await this.userRepo.updateResume(user_id,resume_url,percentage)
@@ -735,14 +738,49 @@ class userUsecase {
             throw error 
         }
     }
-    async rewards(user_id:string,rewardData:user){
+    async rewards(user_id:string,rewardData:rewards,file:string){
         try {
+            if(file){
+                const cloudinary = await this.cloudinary.uploadImage(file,"Image")
+                rewardData.img_url=cloudinary
+            }
             const reward = await this.userRepo.addRewards(user_id,rewardData)
             if(reward){
+                fs.unlink(file, (err) => {
+                    if (err) {
+                      console.error(`Error removing file ${file}:`, err);
+                    } else {
+                      console.log(`Successfully removed file ${file}`);
+                    }
+                  });
                 return {success:true,message:"Reward added"}
             }else{
                 return {success:false,message:"Failed to add reward"}
             }
+        } catch (error) {
+            console.log(error)
+            throw error 
+        }
+    }
+    async saveDocuments(messageData:message,file:string){
+        try {
+           if(file){
+            const cloudinary = await this.cloudinary.uploadImage(file,"Image")
+            messageData.url=cloudinary
+           } 
+           const addDocument = await this.userRepo.addDocuments(messageData)
+           if(addDocument){
+            fs.unlink(file, (err) => {
+                if (err) {
+                  console.error(`Error removing file ${file}:`, err);
+                } else {
+                  console.log(`Successfully removed file ${file}`);
+                }
+              });
+              return {success:true,message:"document saved successfully"}
+           }else{
+            return {success:false,message:"Failed to save document"}
+           }
         } catch (error) {
             console.log(error)
             throw error 

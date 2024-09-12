@@ -14,7 +14,13 @@ const messageSchema:Schema<message> = new Schema({
     },
     message:{
         type:String,
-        required:true
+    },
+    url:{
+        type:String
+       
+    },
+    field:{
+        type:String
     },
     timeStamp:{
         type:Date,

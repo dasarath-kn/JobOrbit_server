@@ -11,7 +11,7 @@ export class CronJobService {
     private scheduleJobs() {
         cron.schedule('*/1 * * * *', async () => {
             try {
-                console.log("Cron job working");
+                
                  
                 const now = new Date();
                 const jobsToUnlist = await jobModel.find({

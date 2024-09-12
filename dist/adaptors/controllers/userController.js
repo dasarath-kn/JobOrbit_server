@@ -248,8 +248,8 @@ class userController {
                 const { page } = req.query;
                 const getPosts = yield this.userUsecases.posts(page);
                 if (getPosts.success) {
-                    const { posts } = getPosts;
-                    res.status(200).json({ success: true, messge: getPosts.message, posts });
+                    const { posts, count } = getPosts;
+                    res.status(200).json({ success: true, messge: getPosts.message, posts, count });
                 }
                 else {
                     res.status(400).json({ success: false, message: getPosts.message });
@@ -864,9 +864,42 @@ class userController {
         });
     }
     addReward(req, res) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { awardtitle, issuedby, details } = req.body;
+                const { id } = req;
+                const { awardTittle, issuedBy, details } = req.body;
+                const file = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
+                const rewardData = { awardTittle, issuedBy, details, img_url: "" };
+                const reward = yield this.userUsecases.rewards(id, rewardData, file);
+                if (reward.success) {
+                    res.status(200).json({ success: true, message: reward.message });
+                }
+                else {
+                    res.status(400).json({ success: false, message: reward.message });
+                }
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: "Internal server error" });
+            }
+        });
+    }
+    addDocument(req, res) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { reciever_id, field } = req.body;
+                const { id } = req;
+                const file = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
+                const data = { sender_id: id, reciever_id, url: '', field };
+                const documents = yield this.userUsecases.saveDocuments(data, file);
+                if (documents.success) {
+                    res.status(200).json({ success: true, message: documents.message });
+                }
+                else {
+                    res.status(400).json({ success: false, message: documents.message });
+                }
             }
             catch (error) {
                 console.error(error);

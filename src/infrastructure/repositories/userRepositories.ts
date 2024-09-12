@@ -10,9 +10,9 @@ import { Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
 import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
-import user, { experienceData, reviews } from "../../entities/user";
+import user, { experienceData, reviews, rewards } from "../../entities/user";
 import { UserDataResult } from "../../useCases/interfaces/IAdminInterface";
-import IUserInterface, { data, jobAppliedData, jobData, messages } from '../../useCases/interfaces/IUserInterface'
+import IUserInterface, { data, jobAppliedData, jobData, messages, postData } from '../../useCases/interfaces/IUserInterface'
 import commentModel from "../database/commentModel";
 import companyModel from "../database/companyModel";
 import inboxModel from "../database/inboxModel";
@@ -225,11 +225,18 @@ class userRepository implements IUserInterface {
     }
 
 
-    async getPosts(page:string): Promise<Post[] | null> {
+    async getPosts(page:string): Promise<postData | null> {
         try {
             const skipCount = Number(page)*2
+            const count = await postModel.find().countDocuments()
             const posts = await postModel.find({}).skip(skipCount).limit(2).sort({ time: -1 }).populate('company_id').populate('like')
-            return posts ? posts : null
+           if(posts.length ==0){
+            return null
+           }
+           return{
+            count:Math.ceil(count/2),
+            posts:posts
+           }
         } catch (error) {
             console.error(error);
             throw new Error("Unable to get posts")
@@ -620,8 +627,6 @@ class userRepository implements IUserInterface {
 
     async connectCompany(user_id: string, company_id: string): Promise<boolean> {
         try {
-            console.log("id", user_id);
-            console.log("connection", company_id);
             const connect = { company_id }
             const user = { user_id: user_id }
             const updaterUser = await userModel.updateOne({ _id: user_id }, { $addToSet: { companies: connect } })
@@ -771,7 +776,7 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to removeskills ")
         }
     }
-  async addRewards(user_id:string,rewardData: user): Promise<boolean> {
+  async addRewards(user_id:string,rewardData: rewards): Promise<boolean> {
        try {
         const reward = await userModel.updateOne({_id:user_id},{$addToSet:{rewards:rewardData}})
         return reward.acknowledged
@@ -779,6 +784,17 @@ class userRepository implements IUserInterface {
         console.error(error);
         throw new Error("Unable to addRewards ")
        } 
+    }
+    async addDocuments(messageData:message): Promise<boolean> {
+        try {
+            const document = new messageModel(messageData)
+            await document.save()
+            return true
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Unable to addDocuments")
+        }
     }
 }
 

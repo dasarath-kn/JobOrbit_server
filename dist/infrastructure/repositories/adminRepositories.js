@@ -56,7 +56,6 @@ class AdminRespositories {
             try {
                 const skipCount = Number(page) * 3;
                 const Count = yield companyModel_1.default.find().countDocuments();
-                console.log(Count);
                 const companyData = yield companyModel_1.default.find().skip(skipCount).limit(3);
                 if (companyData.length === 0) {
                     return null;

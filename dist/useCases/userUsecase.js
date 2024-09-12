@@ -8,7 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(require("fs"));
 class userUsecase {
     constructor(userRepo, hashPassword, otpGenerator, nodeMailer, jwttoken, cloudinary, stripe) {
         this.userRepo = userRepo;
@@ -16,7 +20,7 @@ class userUsecase {
         this.otpGenerator = otpGenerator;
         this.nodeMailer = nodeMailer;
         this.jwttoken = jwttoken;
-        this.cloundinary = cloudinary;
+        this.cloudinary = cloudinary;
         this.stripe = stripe;
     }
     findUser(userData) {
@@ -196,7 +200,7 @@ class userUsecase {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (file) {
-                    const cloudinary = yield this.cloundinary.uploadImage(file, "User Profile");
+                    const cloudinary = yield this.cloudinary.uploadImage(file, "User Profile");
                     user.img_url = cloudinary;
                 }
                 const updatedData = yield this.userRepo.updateProfile(id, user, percentage);
@@ -252,9 +256,10 @@ class userUsecase {
     posts(page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const posts = yield this.userRepo.getPosts(page);
-                if (posts) {
-                    return { success: true, message: "Posts sent sucessfully", posts };
+                const postData = yield this.userRepo.getPosts(page);
+                if (postData) {
+                    const { posts, count } = postData;
+                    return { success: true, message: "Posts sent sucessfully", posts, count };
                 }
                 else {
                     return { success: false, message: "Failed to sent posts" };
@@ -408,7 +413,7 @@ class userUsecase {
             try {
                 let resume_url = '';
                 if (file) {
-                    const cloudinary = yield this.cloundinary.uploaddocuments(file, "Resume");
+                    const cloudinary = yield this.cloudinary.uploaddocuments(file, "Resume");
                     resume_url = cloudinary;
                 }
                 const upload = yield this.userRepo.updateResume(user_id, resume_url, percentage);
@@ -817,15 +822,56 @@ class userUsecase {
             }
         });
     }
-    rewards(user_id, rewardData) {
+    rewards(user_id, rewardData, file) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                if (file) {
+                    const cloudinary = yield this.cloudinary.uploadImage(file, "Image");
+                    rewardData.img_url = cloudinary;
+                }
                 const reward = yield this.userRepo.addRewards(user_id, rewardData);
                 if (reward) {
+                    fs_1.default.unlink(file, (err) => {
+                        if (err) {
+                            console.error(`Error removing file ${file}:`, err);
+                        }
+                        else {
+                            console.log(`Successfully removed file ${file}`);
+                        }
+                    });
                     return { success: true, message: "Reward added" };
                 }
                 else {
                     return { success: false, message: "Failed to add reward" };
+                }
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
+    saveDocuments(messageData, file) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (file) {
+                    const cloudinary = yield this.cloudinary.uploadImage(file, "Image");
+                    messageData.url = cloudinary;
+                }
+                const addDocument = yield this.userRepo.addDocuments(messageData);
+                if (addDocument) {
+                    fs_1.default.unlink(file, (err) => {
+                        if (err) {
+                            console.error(`Error removing file ${file}:`, err);
+                        }
+                        else {
+                            console.log(`Successfully removed file ${file}`);
+                        }
+                    });
+                    return { success: true, message: "document saved successfully" };
+                }
+                else {
+                    return { success: false, message: "Failed to save document" };
                 }
             }
             catch (error) {

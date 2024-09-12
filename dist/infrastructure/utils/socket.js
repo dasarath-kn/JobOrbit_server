@@ -46,6 +46,12 @@ const initializeSocket = (server) => {
                 io.emit("notification", { message, data });
             }
         }));
+        socket.on("document", ({ reciever_id, message }) => __awaiter(void 0, void 0, void 0, function* () {
+            const recipient = users[reciever_id];
+            if (recipient) {
+                io.to(recipient).emit("document", message);
+            }
+        }));
         socket.on('disconnect', (reason) => {
             console.log(`A user disconnected: ${socket.id}, reason: ${reason}`);
             for (const userId in users) {

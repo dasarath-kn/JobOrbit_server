@@ -40,6 +40,8 @@ interface ICompanyInterface {
     listJob(job_id:string,status:string):Promise<string>
     findJobById(job_id:string):Promise<jobs | null>
     editJob(job_id:string,jobData:jobs):Promise<boolean>
+    addDocuments(data:message):Promise<boolean>
+
 }   
 
 export default ICompanyInterface

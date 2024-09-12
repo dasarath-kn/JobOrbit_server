@@ -39,14 +39,20 @@ interface user {
         company_id:mongoose.Schema.Types.ObjectId,
     }],
     rewards:[{
-        awardTitle:String,
-        issuedBy:String,
-        details:String,
-        img_url:String     
+        awardTitle:string,
+        issuedBy:string,
+        details:string,
+        img_url:string     
     }]
 }
 
 export default user
+export interface rewards{
+    awardTittle:string,
+    issuedBy:string,
+    details:string,
+    img_url:string     
+}
 export interface experienceData {
     experiencefield: string,
     mode: string,

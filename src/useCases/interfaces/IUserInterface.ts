@@ -9,7 +9,7 @@ import { Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
 import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
-import user, { experienceData, reviews } from "../../entities/user";
+import user, { experienceData, reviews, rewards } from "../../entities/user";
 export interface data {
     review:reviews[]
     counts:number[]
@@ -28,6 +28,10 @@ export interface jobAppliedData {
     jobs:jobApplied[]
 
 }
+export interface postData{
+    count:number
+    posts:Post[]
+}
 interface IUserInterface {
     findUserById(id: string): Promise<user | null>
     findUserByEmail(email: string): Promise<user | null>
@@ -42,7 +46,7 @@ interface IUserInterface {
     updateSkill(skill: [], id: string, percentage: number): Promise<boolean>
     updateResume(id: string, resume_url: string, percentage: number): Promise<boolean>
     viewjobs(page:string,type:string,location:string,date:string,user_id:string): Promise<jobData | null>
-    getPosts(page:string): Promise<Post[] | null>
+    getPosts(page:string): Promise<postData | null>
     likePost(post_id: string, user_id: string): Promise<boolean | null>
     unlikePost(post_id: string, user_id: string): Promise<boolean | null>
     savePost(postData: savedPost,message:string): Promise<boolean>
@@ -78,7 +82,8 @@ interface IUserInterface {
     updateOnlineStatus(user_id:string,status:boolean):Promise<boolean>
     removeSkills(val:string,id:string):Promise<boolean>
     removeExperience(field:string,id:string):Promise<boolean>
-    addRewards(user_id:string,rewardData:user):Promise<boolean>
+    addRewards(user_id:string,rewardData:rewards):Promise<boolean>
+    addDocuments(data:message):Promise<boolean>
 }   
 
 

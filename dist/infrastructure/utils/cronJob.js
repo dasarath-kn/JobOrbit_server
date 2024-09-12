@@ -25,7 +25,6 @@ class CronJobService {
     scheduleJobs() {
         node_cron_1.default.schedule('*/1 * * * *', () => __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("Cron job working");
                 const now = new Date();
                 const jobsToUnlist = yield jobModel_1.default.find({
                     unlistTime: {

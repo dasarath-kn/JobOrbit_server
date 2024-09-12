@@ -47,9 +47,7 @@ class AdminRespositories implements IAdminInterface {
     async getCompanydatas(page: string): Promise<CompanyDataResult | null> {
         try {
             const skipCount = Number(page) * 3
-            const Count: number = await companyModel.find().countDocuments()
-            console.log(Count);
-            
+            const Count: number = await companyModel.find().countDocuments()            
             const companyData: company[] = await companyModel.find().skip(skipCount).limit(3)
             if (companyData.length === 0) {
                 return null;

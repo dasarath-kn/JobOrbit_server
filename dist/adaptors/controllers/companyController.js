@@ -542,5 +542,27 @@ class CompanyController {
             }
         });
     }
+    addDocument(req, res) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { reciever_id, field } = req.body;
+                const { id } = req;
+                const file = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
+                const data = { sender_id: id, reciever_id, url: '', field };
+                const documents = yield this.companyusecase.saveDocuments(data, file);
+                if (documents.success) {
+                    res.status(200).json({ success: true, message: documents.message });
+                }
+                else {
+                    res.status(400).json({ success: false, message: documents.message });
+                }
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: "Internal server error" });
+            }
+        });
+    }
 }
 exports.default = CompanyController;

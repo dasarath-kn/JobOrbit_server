@@ -67,5 +67,6 @@ router.post('/inbox', userAuth_1.default, (req, res) => UserController.saveInbox
 router.get('/conversation', userAuth_1.default, (req, res) => UserController.conversationData(req, res));
 router.delete('/removeskill', userAuth_1.default, (req, res) => UserController.removeSkill(req, res));
 router.delete('/removeexperience', userAuth_1.default, (req, res) => UserController.removeExperience(req, res));
-router.patch('/rewards', userAuth_1.default, (req, res) => UserController.addReward(req, res));
+router.patch('/rewards', userAuth_1.default, Multer_1.default.single("image"), (req, res) => UserController.addReward(req, res));
+router.post('/sharedocument', userAuth_1.default, Multer_1.default.single("image"), (req, res) => UserController.addDocument(req, res));
 exports.default = router;
