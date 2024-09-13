@@ -40,7 +40,7 @@ router.patch('/uploadresume', userAuth_1.default, Multer_1.default.single("image
 router.get('/jobs', (req, res) => UserController.getjobs(req, res));
 router.get('/viewjobdetails', userAuth_1.default, (req, res) => UserController.viewJobdetails(req, res));
 router.get('/posts', (req, res) => UserController.getPosts(req, res));
-router.patch('/likeunlike', userAuth_1.default, (req, res) => UserController.likeUnlike(req, res));
+router.post('/likeunlike', userAuth_1.default, (req, res) => UserController.likeUnlike(req, res));
 router.post('/savepost', userAuth_1.default, (req, res) => UserController.savePost(req, res));
 router.get('/getsavedpost', userAuth_1.default, (req, res) => UserController.getsavedPost(req, res));
 router.post('/comment', userAuth_1.default, (req, res) => UserController.postComment(req, res));
@@ -69,4 +69,5 @@ router.delete('/removeskill', userAuth_1.default, (req, res) => UserController.r
 router.delete('/removeexperience', userAuth_1.default, (req, res) => UserController.removeExperience(req, res));
 router.patch('/rewards', userAuth_1.default, Multer_1.default.single("image"), (req, res) => UserController.addReward(req, res));
 router.post('/sharedocument', userAuth_1.default, Multer_1.default.single("image"), (req, res) => UserController.addDocument(req, res));
+router.get('/likedposts', userAuth_1.default, (req, res) => UserController.likedPost(req, res));
 exports.default = router;

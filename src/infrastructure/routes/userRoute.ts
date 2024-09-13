@@ -36,7 +36,7 @@ router.patch('/uploadresume',Auth,upload.single("image"),(req,res)=>UserControll
 router.get('/jobs',(req,res)=>UserController.getjobs(req,res))
 router.get('/viewjobdetails',Auth,(req,res)=>UserController.viewJobdetails(req,res))
 router.get('/posts',(req,res)=>UserController.getPosts(req,res))
-router.patch('/likeunlike',Auth,(req,res)=>UserController.likeUnlike(req,res))
+router.post('/likeunlike',Auth,(req,res)=>UserController.likeUnlike(req,res))
 router.post('/savepost',Auth,(req,res)=>UserController.savePost(req,res))
 router.get('/getsavedpost',Auth,(req,res)=>UserController.getsavedPost(req,res))
 router.post('/comment',Auth,(req,res)=>UserController.postComment(req,res))
@@ -65,6 +65,7 @@ router.delete('/removeskill',Auth,(req,res)=>UserController.removeSkill(req,res)
 router.delete('/removeexperience',Auth,(req,res)=>UserController.removeExperience(req,res))
 router.patch('/rewards',Auth,upload.single("image"),(req,res)=>UserController.addReward(req,res))
 router.post('/sharedocument',Auth,upload.single("image"),(req,res)=>UserController.addDocument(req,res))
+router.get('/likedposts',Auth,(req,res)=>UserController.likedPost(req,res))
 
 
 

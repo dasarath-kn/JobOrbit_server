@@ -8,3 +8,8 @@ export interface Post{
     time: Date;
 
 }
+export interface liked{
+    company_id:mongoose.Types.ObjectId|string,
+    user_id:mongoose.Types.ObjectId|string,
+    post_id:mongoose.Types.ObjectId|string,
+}

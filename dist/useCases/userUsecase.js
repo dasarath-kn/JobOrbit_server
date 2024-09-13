@@ -271,11 +271,12 @@ class userUsecase {
             }
         });
     }
-    manageLikeUnlike(post_id, user_id, status) {
+    manageLikeUnlike(post_id, user_id, status, company_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const likedData = { post_id, user_id, company_id };
                 if (status == "Like") {
-                    const liked = yield this.userRepo.likePost(post_id, user_id);
+                    const liked = yield this.userRepo.likePost(likedData);
                     if (liked) {
                         return { success: true, message: " Post linked successfully" };
                     }
@@ -291,6 +292,23 @@ class userUsecase {
                     else {
                         return { success: false, message: " Failed to unlike post" };
                     }
+                }
+            }
+            catch (error) {
+                console.error(error);
+                throw error;
+            }
+        });
+    }
+    getLikedPosts(user_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const likedPosts = yield this.userRepo.likedPosts(user_id);
+                if (likedPosts) {
+                    return { success: true, message: "Post sent successfully", likedPosts };
+                }
+                else {
+                    return { success: false, message: "Failed to sent post" };
                 }
             }
             catch (error) {

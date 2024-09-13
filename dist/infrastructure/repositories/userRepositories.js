@@ -17,6 +17,7 @@ const companyModel_1 = __importDefault(require("../database/companyModel"));
 const inboxModel_1 = __importDefault(require("../database/inboxModel"));
 const jobApplied_1 = __importDefault(require("../database/jobApplied"));
 const jobModel_1 = __importDefault(require("../database/jobModel"));
+const likedPostModel_1 = __importDefault(require("../database/likedPostModel"));
 const messageModel_1 = __importDefault(require("../database/messageModel"));
 const notification_1 = __importDefault(require("../database/notification"));
 const otpModel_1 = __importDefault(require("../database/otpModel"));
@@ -242,11 +243,14 @@ class userRepository {
             }
         });
     }
-    likePost(post_id, user_id) {
+    likePost(likeData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const liked = yield postModel_1.default.updateOne({ _id: post_id }, { $addToSet: { like: user_id } });
-                return liked.acknowledged ? liked.acknowledged : null;
+                const { post_id, user_id } = likeData;
+                const liked = new likedPostModel_1.default(likeData);
+                yield liked.save();
+                const like = yield postModel_1.default.updateOne({ _id: post_id }, { $addToSet: { like: user_id } });
+                return true;
             }
             catch (error) {
                 console.error(error);
@@ -257,7 +261,8 @@ class userRepository {
     unlikePost(post_id, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const unLiked = yield postModel_1.default.updateOne({ _id: post_id }, { $pull: { like: user_id } });
+                const unLiked = yield likedPostModel_1.default.deleteOne({ post_id: post_id });
+                const unLike = yield postModel_1.default.updateOne({ _id: post_id }, { $pull: { like: user_id } });
                 return unLiked.acknowledged ? unLiked.acknowledged : null;
             }
             catch (error) {
@@ -283,6 +288,18 @@ class userRepository {
             catch (error) {
                 console.error(error);
                 throw new Error(`Unable to save post`);
+            }
+        });
+    }
+    likedPosts(user_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const postData = yield likedPostModel_1.default.find({ user_id: user_id });
+                return postData ? postData : null;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error(`Unable to get liked post`);
             }
         });
     }

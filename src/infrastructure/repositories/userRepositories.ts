@@ -6,7 +6,7 @@ import message, { inbox } from "../../entities/message";
 import Notification from "../../entities/notification";
 import otp from "../../entities/otp";
 import postreport from "../../entities/postreport";
-import { Post } from "../../entities/posts";
+import { liked, Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
 import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
@@ -19,6 +19,7 @@ import inboxModel from "../database/inboxModel";
 import appliedJobModel from "../database/jobApplied";
 import appliedJobModels from "../database/jobApplied";
 import jobModel from "../database/jobModel";
+import likeModel from "../database/likedPostModel";
 import messageModel from "../database/messageModel";
 import notificationModel from "../database/notification";
 import otpModel from "../database/otpModel";
@@ -242,19 +243,24 @@ class userRepository implements IUserInterface {
             throw new Error("Unable to get posts")
         }
     }
-    async likePost(post_id: string, user_id: string): Promise<boolean | null> {
+    async likePost(likeData:liked): Promise<boolean> {
         try {
-            const liked = await postModel.updateOne({ _id: post_id }, { $addToSet: { like: user_id } })
-            return liked.acknowledged ? liked.acknowledged : null
+            const {post_id,user_id} =likeData
+            const liked = new likeModel(likeData)
+            await liked.save()
+            const like = await postModel.updateOne({ _id: post_id }, { $addToSet: { like: user_id } })
 
+            return true
         } catch (error) {
             console.error(error);
             throw new Error(`Unable to like post`)
         }
     }
-    async unlikePost(post_id: string, user_id: string): Promise<boolean | null> {
+    async unlikePost(post_id: string,user_id:string): Promise<boolean | null> {
         try {
-            const unLiked = await postModel.updateOne({ _id: post_id }, { $pull: { like: user_id } })
+            const unLiked = await likeModel.deleteOne({post_id: post_id })
+            const unLike = await postModel.updateOne({ _id: post_id }, { $pull: { like: user_id } })
+
             return unLiked.acknowledged ? unLiked.acknowledged : null
         } catch (error) {
             console.error(error);
@@ -276,6 +282,16 @@ class userRepository implements IUserInterface {
         } catch (error) {
             console.error(error);
             throw new Error(`Unable to save post`)
+        }
+    }
+    async likedPosts(user_id: string): Promise<liked[] | null> {
+        try {
+            const postData = await likeModel.find({user_id:user_id})
+            return postData?postData:null
+            
+        } catch (error) {
+            console.error(error);
+            throw new Error(`Unable to get liked post`)
         }
     }
     async getSavedpost(id: string): Promise<savedPost[] | null> {

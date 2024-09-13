@@ -5,7 +5,7 @@ import jobs from "../../entities/jobs";
 import message, { inbox } from "../../entities/message";
 import Notification from "../../entities/notification";
 import postreport from "../../entities/postreport";
-import { Post } from "../../entities/posts";
+import { liked, Post } from "../../entities/posts";
 import { savedPost } from "../../entities/savedPost";
 import subscriptedUser from "../../entities/subscribedUser";
 import subscriptions from "../../entities/subscriptions";
@@ -47,8 +47,9 @@ interface IUserInterface {
     updateResume(id: string, resume_url: string, percentage: number): Promise<boolean>
     viewjobs(page:string,type:string,location:string,date:string,user_id:string): Promise<jobData | null>
     getPosts(page:string): Promise<postData | null>
-    likePost(post_id: string, user_id: string): Promise<boolean | null>
-    unlikePost(post_id: string, user_id: string): Promise<boolean | null>
+    likePost(likeData:liked): Promise<boolean >
+    unlikePost(post_id: string,user_id:string): Promise<boolean | null>
+    likedPosts(user_id:string):Promise<liked[]|null> 
     savePost(postData: savedPost,message:string): Promise<boolean>
     getSavedpost(id: string): Promise<savedPost[] | null>
     postcomment(commentData: comment): Promise<boolean>
@@ -84,6 +85,7 @@ interface IUserInterface {
     removeExperience(field:string,id:string):Promise<boolean>
     addRewards(user_id:string,rewardData:rewards):Promise<boolean>
     addDocuments(data:message):Promise<boolean>
+
 }   
 
 

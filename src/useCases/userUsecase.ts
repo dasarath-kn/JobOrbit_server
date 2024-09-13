@@ -14,6 +14,7 @@ import subscriptedUser from "../entities/subscribedUser";
 import postreport from "../entities/postreport";
 import message from "../entities/message";
 import fs from 'fs';
+import { liked } from "../entities/posts";
 
 class userUsecase {
     private userRepo: userRepository;
@@ -22,15 +23,15 @@ class userUsecase {
     private nodeMailer: NodeMailer
     private jwttoken: Jwt
     private cloudinary: Cloudinary
-    private stripe:StripePayment
-    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer, jwttoken: Jwt, cloudinary: Cloudinary,stripe:StripePayment) {
+    private stripe: StripePayment
+    constructor(userRepo: userRepository, hashPassword: HashPassword, otpGenerator: Otpgenerator, nodeMailer: NodeMailer, jwttoken: Jwt, cloudinary: Cloudinary, stripe: StripePayment) {
         this.userRepo = userRepo
         this.hashPassword = hashPassword
         this.otpGenerator = otpGenerator
         this.nodeMailer = nodeMailer
         this.jwttoken = jwttoken
         this.cloudinary = cloudinary
-        this.stripe =stripe
+        this.stripe = stripe
     }
 
     async findUser(userData: user) {
@@ -73,8 +74,8 @@ class userUsecase {
                     }
                     else {
                         const token = await this.jwttoken.generateToken(userExistdata._id, "user")
-                        const refreshtoken = await this.jwttoken.generateRefreshtoken(userExistdata._id,"user")
-                        return { success: true, userExistdata, message: "User logined successfully", token,refreshtoken }
+                        const refreshtoken = await this.jwttoken.generateRefreshtoken(userExistdata._id, "user")
+                        return { success: true, userExistdata, message: "User logined successfully", token, refreshtoken }
                     }
                 }
                 else {
@@ -201,7 +202,7 @@ class userUsecase {
             throw error
         }
     }
-    async updateProfile(id: string, user: user, file: string,percentage:number) {
+    async updateProfile(id: string, user: user, file: string, percentage: number) {
         try {
             if (file) {
                 const cloudinary = await this.cloudinary.uploadImage(file, "User Profile")
@@ -209,7 +210,7 @@ class userUsecase {
             }
 
 
-            const updatedData = await this.userRepo.updateProfile(id, user,percentage)
+            const updatedData = await this.userRepo.updateProfile(id, user, percentage)
             if (updatedData) {
                 const userData = await this.userRepo.getUserdata(id)
                 return { success: true, message: "User profile updated successfully", userData }
@@ -223,25 +224,25 @@ class userUsecase {
 
         }
     }
-    async manageSkill(skill:[],id:string,percentage:number){
+    async manageSkill(skill: [], id: string, percentage: number) {
         try {
-            const updateSkill =await this.userRepo.updateSkill(skill,id,percentage)
-            if(updateSkill){
-                return {success:true,message:"Skill added successfully"}
-            }else{
-                return {success:false,message:"Failed to add skill"}
+            const updateSkill = await this.userRepo.updateSkill(skill, id, percentage)
+            if (updateSkill) {
+                return { success: true, message: "Skill added successfully" }
+            } else {
+                return { success: false, message: "Failed to add skill" }
             }
         } catch (error) {
             console.error(error);
             throw error
         }
     }
-    async jobs(page:string,type:string,location:string,date:string,user_id:string) {
+    async jobs(page: string, type: string, location: string, date: string, user_id: string) {
         try {
-            const jobData = await this.userRepo.viewjobs(page,type,location,date,user_id)
+            const jobData = await this.userRepo.viewjobs(page, type, location, date, user_id)
             if (jobData) {
-                const {jobs,count}=jobData
-                return { success: true, message: "Jobs sent successfully", jobs,count }
+                const { jobs, count } = jobData
+                return { success: true, message: "Jobs sent successfully", jobs, count }
             } else {
                 return { success: false, message: "Failed to sent job" }
             }
@@ -252,12 +253,12 @@ class userUsecase {
 
         }
     }
-    async posts(page:string) {
+    async posts(page: string) {
         try {
             const postData = await this.userRepo.getPosts(page)
             if (postData) {
-                const {posts,count}=postData
-                return { success: true, message: "Posts sent sucessfully", posts,count }
+                const { posts, count } = postData
+                return { success: true, message: "Posts sent sucessfully", posts, count }
             } else {
                 return { success: false, message: "Failed to sent posts" }
             }
@@ -267,12 +268,13 @@ class userUsecase {
             throw error
         }
     }
-    async manageLikeUnlike(post_id: string, user_id: string, status: string) {
+    async manageLikeUnlike(post_id: string, user_id: string, status: string, company_id: string) {
         try {
-            
+            const likedData = { post_id, user_id, company_id }
+
             if (status == "Like") {
-                
-                const liked = await this.userRepo.likePost(post_id, user_id)
+
+                const liked = await this.userRepo.likePost(likedData as liked)
                 if (liked) {
                     return { success: true, message: " Post linked successfully" }
                 } else {
@@ -280,7 +282,7 @@ class userUsecase {
 
                 }
             } else {
-                const unliked = await this.userRepo.unlikePost(post_id, user_id)
+                const unliked = await this.userRepo.unlikePost(post_id,user_id)
                 if (unliked) {
                     return { success: true, message: " Post unlinked successfully" }
 
@@ -295,161 +297,174 @@ class userUsecase {
             throw error
         }
     }
-
-    async postSave(postData:savedPost,message:string){
+    async getLikedPosts(user_id: string) {
         try {
-            const savePost =await this.userRepo.savePost(postData,message)
-            if(savePost){
-                return {success:true,message:`Post ${message}`}
-            }else{
-                return {success:false,message:"Failed to save post"}
+            const likedPosts = await this.userRepo.likedPosts(user_id)
+            if (likedPosts) {
+                return { success: true, message: "Post sent successfully", likedPosts }
+            } else {
+                return { success: false, message: "Failed to sent post" }
             }
-            
         } catch (error) {
             console.error(error);
-            throw error 
+            throw error
         }
     }
-    async savedPosts(post_id:string){
+
+    async postSave(postData: savedPost, message: string) {
+        try {
+            const savePost = await this.userRepo.savePost(postData, message)
+            if (savePost) {
+                return { success: true, message: `Post ${message}` }
+            } else {
+                return { success: false, message: "Failed to save post" }
+            }
+
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async savedPosts(post_id: string) {
         try {
             const savedPosts = await this.userRepo.getSavedpost(post_id)
-            if(savedPosts){
-                return {success:true,message:"Saved posts sent succcessfully",savedPosts}
-            }else{
-                return{success:false,message:"Failed to sent savedpost "}
-            }
-        } catch (error) {
-            console.error(error);
-            throw error  
-        }
-    }
-
-    async shareComment(commentData:comment){
-        try {
-        const comment = await this.userRepo.postcomment(commentData)
-        if(comment){
-            return {success:true,message:"Comment added successfully"}
-        }else{
-            return {success:false,message:"Failed to add comment"}
-        }
-            
-        } catch (error) {
-            console.error(error);
-            throw error  
-        }
-    }
-    async comments(post_id:string){
-        try {
-            const comments =await this.userRepo.getcomment(post_id)
-            if(comments){
-                return {success:true,message:"Comments sent successfully",comments}
-            }
-            else{
-                return {success:false,message:"Failed to sent comments"}
+            if (savedPosts) {
+                return { success: true, message: "Saved posts sent succcessfully", savedPosts }
+            } else {
+                return { success: false, message: "Failed to sent savedpost " }
             }
         } catch (error) {
             console.error(error);
             throw error
         }
     }
-    async jobDetails(job_id:string,user_id:string){
+
+    async shareComment(commentData: comment) {
+        try {
+            const comment = await this.userRepo.postcomment(commentData)
+            if (comment) {
+                return { success: true, message: "Comment added successfully" }
+            } else {
+                return { success: false, message: "Failed to add comment" }
+            }
+
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async comments(post_id: string) {
+        try {
+            const comments = await this.userRepo.getcomment(post_id)
+            if (comments) {
+                return { success: true, message: "Comments sent successfully", comments }
+            }
+            else {
+                return { success: false, message: "Failed to sent comments" }
+            }
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
+    }
+    async jobDetails(job_id: string, user_id: string) {
         try {
             const jobDetails = await this.userRepo.findJobdetails(job_id)
-            if(jobDetails){
+            if (jobDetails) {
                 const userData = await this.userRepo.findUserById(user_id)
-                if(userData){
-                    const {plan_id}=userData                    
-                return {success:true,message:"Jobdetails sent successfully",jobDetails,plan_id}
-                }else{
-                    return {success:false}
+                if (userData) {
+                    const { plan_id } = userData
+                    return { success: true, message: "Jobdetails sent successfully", jobDetails, plan_id }
+                } else {
+                    return { success: false }
                 }
-            }else{
-                return {success:false,message:"Failed to send jobdetails"}
+            } else {
+                return { success: false, message: "Failed to send jobdetails" }
             }
         } catch (error) {
             console.error(error);
             throw error
         }
     }
-    async experience(experienceData:experienceData,percentage:number,user_id:string){
+    async experience(experienceData: experienceData, percentage: number, user_id: string) {
         try {
-            
-            const experience = await this.userRepo.addExperience(experienceData as experienceData,percentage as number,user_id as string)
-            if(experience){
-                return {success:true,message:'User experience added successfully'}
-            }else{
-                return {success:false,message:'Failed to add user experience'}
+
+            const experience = await this.userRepo.addExperience(experienceData as experienceData, percentage as number, user_id as string)
+            if (experience) {
+                return { success: true, message: 'User experience added successfully' }
+            } else {
+                return { success: false, message: 'Failed to add user experience' }
             }
         } catch (error) {
             console.error(error);
-            throw error  
+            throw error
         }
     }
-    async resume(user_id:string,file:string,percentage:number){
+    async resume(user_id: string, file: string, percentage: number) {
         try {
-            let resume_url =''
-            if(file){
-                const cloudinary = await this.cloudinary.uploaddocuments(file,"Resume")
-                resume_url=cloudinary
+            let resume_url = ''
+            if (file) {
+                const cloudinary = await this.cloudinary.uploaddocuments(file, "Resume")
+                resume_url = cloudinary
             }
-            const upload = await this.userRepo.updateResume(user_id,resume_url,percentage)
-            if(upload){
-                return {success:true,message:"Resume uploaded successfully"}
-            }else{
-                return {success:false,message:"Failed to upload resume"}
+            const upload = await this.userRepo.updateResume(user_id, resume_url, percentage)
+            if (upload) {
+                return { success: true, message: "Resume uploaded successfully" }
+            } else {
+                return { success: false, message: "Failed to upload resume" }
             }
-            
+
         } catch (error) {
             console.error(error);
-            throw error  
+            throw error
         }
     }
-    async jobApplication(job_id:string,user_id:string,company_id:string,resume_url:string){
+    async jobApplication(job_id: string, user_id: string, company_id: string, resume_url: string) {
         try {
-            const job = await this.userRepo.applyJob(job_id,user_id,company_id,resume_url)
-            if(job){
-                return {success:true,message:"Job applied successfully"}
-            }else{
-                return {success:false,message:'Failed to apply job'}
+            const job = await this.userRepo.applyJob(job_id, user_id, company_id, resume_url)
+            if (job) {
+                return { success: true, message: "Job applied successfully" }
+            } else {
+                return { success: false, message: 'Failed to apply job' }
 
             }
-            
+
         } catch (error) {
             console.error(error);
-            throw error  
+            throw error
         }
     }
-    async subscriptionPlans(){
+    async subscriptionPlans() {
         try {
             const subscriptionplan = await this.userRepo.getsubscriptionplan()
-            if(subscriptionplan){
-                return {success:true,message:"Subscription plans sent successfully",subscriptionplan}
-            }else{
-                return {success:false,message:"Failed to sent subscription"}
+            if (subscriptionplan) {
+                return { success: true, message: "Subscription plans sent successfully", subscriptionplan }
+            } else {
+                return { success: false, message: "Failed to sent subscription" }
             }
         } catch (error) {
             console.error(error);
             throw error
         }
     }
-    async subscriptionPayment(price:string,subscribedData:subscriptedUser){
+    async subscriptionPayment(price: string, subscribedData: subscriptedUser) {
         try {
-            
-            const payment_id = await this.stripe.createCheckoutSession(price)
-            if(payment_id){
-                subscribedData.session_id =payment_id
-                const save = await this.userRepo.savesubscribedUsers(subscribedData)
-                if(save){
-                    return {success:true,message:"Payment id sent successfully",payment_id}
 
-                }else{
-                    return {success:false,message:"Failed to sent payment id"}
- 
+            const payment_id = await this.stripe.createCheckoutSession(price)
+            if (payment_id) {
+                subscribedData.session_id = payment_id
+                const save = await this.userRepo.savesubscribedUsers(subscribedData)
+                if (save) {
+                    return { success: true, message: "Payment id sent successfully", payment_id }
+
+                } else {
+                    return { success: false, message: "Failed to sent payment id" }
+
                 }
-        }else{
-            return {success:false,message:'Failed to complete transaction'}
-           }
-            
+            } else {
+                return { success: false, message: 'Failed to complete transaction' }
+            }
+
         } catch (error) {
             console.error(error);
             throw error
@@ -457,80 +472,80 @@ class userUsecase {
     }
     async updateSubscribedUsers(datas: any) {
         try {
-          switch (datas.type) {
-            case 'checkout.session.completed':
-              const session = datas.data.object;
-              const id = session.id;
-              const message = "success";
-              const update = await this.userRepo.updatesubscribedUsers(id, message);
-              if (update) {
-                return { success: true, message: 'Updated successfully' };
-              } else {
-                return { success: false, message: "Failed to update" };
-              }
-      
-            case 'checkout.session.async_payment_failed':
-              return { success: false, message: "Payment failed" }; // Provide a response for this case
-      
-            default:
-              console.log(`Unhandled event type: ${datas.type}`);
-              return { success: false, message: `Unhandled event type: ${datas.type}` }; // Provide a response for unhandled event types
-          }
-        } catch (error) {
-          console.error(error);
-          throw new Error("Error updating subscribed users"); // Provide a clearer error message
-        }
-      }
-      async subscribedUserdetails(user_id:string){
-        try {
-            const subscribedUser= await this.userRepo.findSubscribedUserById(user_id)
-            if(subscribedUser){
-                return {success:true,messsage:'Subscribed User details sent successfully',subscribedUser}
+            switch (datas.type) {
+                case 'checkout.session.completed':
+                    const session = datas.data.object;
+                    const id = session.id;
+                    const message = "success";
+                    const update = await this.userRepo.updatesubscribedUsers(id, message);
+                    if (update) {
+                        return { success: true, message: 'Updated successfully' };
+                    } else {
+                        return { success: false, message: "Failed to update" };
+                    }
 
-            }else{
-                return {success:false,messsage:'Subscribed User details sent failed'}
+                case 'checkout.session.async_payment_failed':
+                    return { success: false, message: "Payment failed" }; // Provide a response for this case
+
+                default:
+                    console.log(`Unhandled event type: ${datas.type}`);
+                    return { success: false, message: `Unhandled event type: ${datas.type}` }; // Provide a response for unhandled event types
+            }
+        } catch (error) {
+            console.error(error);
+            throw new Error("Error updating subscribed users"); // Provide a clearer error message
+        }
+    }
+    async subscribedUserdetails(user_id: string) {
+        try {
+            const subscribedUser = await this.userRepo.findSubscribedUserById(user_id)
+            if (subscribedUser) {
+                return { success: true, messsage: 'Subscribed User details sent successfully', subscribedUser }
+
+            } else {
+                return { success: false, messsage: 'Subscribed User details sent failed' }
 
             }
         } catch (error) {
             console.error(error);
-            throw error  
+            throw error
         }
-      }
+    }
 
-      async postReportsave(post_id:string,postreportData:postreport){
+    async postReportsave(post_id: string, postreportData: postreport) {
         try {
-            const reportPost = await this.userRepo.savePostReport(post_id,postreportData)
-            if(reportPost){
-                return {success:true,message:"Post reported successfully"}
+            const reportPost = await this.userRepo.savePostReport(post_id, postreportData)
+            if (reportPost) {
+                return { success: true, message: "Post reported successfully" }
 
-            }else{
-                return {success:false,message:"Failed to report post"}
+            } else {
+                return { success: false, message: "Failed to report post" }
             }
         } catch (error) {
             console.error(error);
-            throw error 
+            throw error
         }
-      }
+    }
 
-      async findAppliedJobsByUserid(user_id:string,page:string){
+    async findAppliedJobsByUserid(user_id: string, page: string) {
         try {
-            const appliedJobs = await this.userRepo.findAppliedJobs(user_id,page)
-            if(appliedJobs){
-                const {jobs,count}=appliedJobs
-                return {success:true,message:"User Applied jobs sent successfully",jobs,count}
-            }else{
-                return {success:false,message:"Failed to sent user applied jobs"}
+            const appliedJobs = await this.userRepo.findAppliedJobs(user_id, page)
+            if (appliedJobs) {
+                const { jobs, count } = appliedJobs
+                return { success: true, message: "User Applied jobs sent successfully", jobs, count }
+            } else {
+                return { success: false, message: "Failed to sent user applied jobs" }
             }
         } catch (error) {
             console.error(error);
-            throw error 
+            throw error
         }
-      }
-      async findUsers() {
+    }
+    async findUsers() {
         try {
             const userDatas = await this.userRepo.getUserdatas()
             if (userDatas) {
-                
+
                 return { success: true, message: "Userdatas sent suceessfully", userDatas }
             } else {
                 return { success: false, message: "Failed to send userdata" }
@@ -546,7 +561,7 @@ class userUsecase {
         try {
             const companyDatas = await this.userRepo.getCompanydatas()
             if (companyDatas) {
-               return { success: true, message: "Companydatas sent successfully",companyDatas }
+                return { success: true, message: "Companydatas sent successfully", companyDatas }
             } else {
                 return { success: false, message: "Failed to sent companydata" }
             }
@@ -555,13 +570,13 @@ class userUsecase {
             throw error
         }
     }
-    async viewCompany(company_id:string){
+    async viewCompany(company_id: string) {
         try {
             const companyData = await this.userRepo.findCompanyById(company_id)
-            if(companyData){
-                return{success:true,message:"Companydata sent successfully",companyData}
-            }else{
-                return{success:false,message:"Unable to sent companydata"}
+            if (companyData) {
+                return { success: true, message: "Companydata sent successfully", companyData }
+            } else {
+                return { success: false, message: "Unable to sent companydata" }
             }
         } catch (error) {
             console.error(error);
@@ -569,221 +584,221 @@ class userUsecase {
         }
     }
 
-    async findUserdetails(user_id:string){
+    async findUserdetails(user_id: string) {
         try {
             const userData = await this.userRepo.findUserById(user_id)
-            if(userData){
-                return{success:true,message:"Userdata sent successfully",userData}
-            }else{
-                return{success:false,message:"Failed to sent userdata"}
+            if (userData) {
+                return { success: true, message: "Userdata sent successfully", userData }
+            } else {
+                return { success: false, message: "Failed to sent userdata" }
             }
-            
+
         } catch (error) {
-            
+
         }
     }
-    async addreviews(reviewData:reviews){
+    async addreviews(reviewData: reviews) {
         try {
             const saveReview = await this.userRepo.saveReviews(reviewData)
-            if(saveReview){
-                return {success:true,message:"Review added successfully",}
-            }else{
-                return {success:false,message:"Failed to save review"}
+            if (saveReview) {
+                return { success: true, message: "Review added successfully", }
+            } else {
+                return { success: false, message: "Failed to save review" }
             }
         } catch (error) {
             console.error(error);
-            throw error  
+            throw error
         }
     }
-    async reviews(company_id :string){
+    async reviews(company_id: string) {
         try {
             const reviews = await this.userRepo.getReviews(company_id as string)
-            
-            if(reviews){
-                console.log(reviews,"rrrrr ");
-                
-                return {success:true,message:"Reviews sent successfully",reviews}
-            }else{
-                return {success:false,message:"Failed to sent reviews"}
+
+            if (reviews) {
+                console.log(reviews, "rrrrr ");
+
+                return { success: true, message: "Reviews sent successfully", reviews }
+            } else {
+                return { success: false, message: "Failed to sent reviews" }
             }
         } catch (error) {
             console.error(error);
-            throw error 
+            throw error
         }
     }
 
-    async addConnection(user_id:string,connection_id:string){
+    async addConnection(user_id: string, connection_id: string) {
         try {
-            const connection = await this.userRepo.connectUser(user_id,connection_id)
-            if(connection){
-                return {success:true,message:"Connection request sent successfully"}
-            }else{
-                return {success:false,message:"Failed to sent  connection"}
+            const connection = await this.userRepo.connectUser(user_id, connection_id)
+            if (connection) {
+                return { success: true, message: "Connection request sent successfully" }
+            } else {
+                return { success: false, message: "Failed to sent  connection" }
             }
         } catch (error) {
             console.log(error);
             throw error
-            
+
         }
     }
-    async message(reciever_id:string,sender_id:string){
+    async message(reciever_id: string, sender_id: string) {
         try {
-            const messages = await this.userRepo.getMessages(reciever_id,sender_id)
-            if(messages){
-                return {success:true,message:"Messages sent successfully",messages}
-            }else{
-                return {success:false,message:"Failed to sent message"}
+            const messages = await this.userRepo.getMessages(reciever_id, sender_id)
+            if (messages) {
+                return { success: true, message: "Messages sent successfully", messages }
+            } else {
+                return { success: false, message: "Failed to sent message" }
             }
         } catch (error) {
             console.log(error);
             throw error
-            
+
         }
     }
-    async addCompanyConnection(user_id:string,company_id:string){
+    async addCompanyConnection(user_id: string, company_id: string) {
         try {
-            const connection = await this.userRepo.connectCompany(user_id,company_id)
-            if(connection){
-                return {success:true,message:"Connection request sent successfully"}
-            }else{
-                return {success:false,message:"Failed to sent  connection"}
+            const connection = await this.userRepo.connectCompany(user_id, company_id)
+            if (connection) {
+                return { success: true, message: "Connection request sent successfully" }
+            } else {
+                return { success: false, message: "Failed to sent  connection" }
             }
         } catch (error) {
             console.log(error);
             throw error
-            
+
         }
     }
-    async connections(reciever_id:string){
+    async connections(reciever_id: string) {
         try {
 
             const connectRequests = await this.userRepo.findConnectionRequest(reciever_id)
-            if(connectRequests){
-                return {success:true,message:"Connect Request data sent successfully",connectRequests}
-            }else{
-                return {success:false,message:"Failed to sent connect request data"}
+            if (connectRequests) {
+                return { success: true, message: "Connect Request data sent successfully", connectRequests }
+            } else {
+                return { success: false, message: "Failed to sent connect request data" }
             }
         } catch (error) {
             console.log(error);
             throw error
-             
+
         }
     }
 
-    async connectionManage(user_id: string,connection_id:string, notification_id: string, message: string){
+    async connectionManage(user_id: string, connection_id: string, notification_id: string, message: string) {
         try {
-           const connect = await this.userRepo.manageConnection(user_id,connection_id,notification_id,message)
-           if(connect){
-            return {success:true,message:"Connection updated"}
-           }else{
-            return {success:false,message:"Failed to update  connection"}
-           } 
-        } catch (error) {
-            console.log(error);
-            throw error
-        }
-    }
-
-    async inbox(sender_id:string,reciever_id:string,role:string){
-        try {
-            const saveData = await this.userRepo.saveInbox(sender_id,reciever_id,role)
-            if(saveData){
-                return {success:true,message:"Inbox saved"}
-            }else{
-                return {success:false,message:"Failed to save"}
+            const connect = await this.userRepo.manageConnection(user_id, connection_id, notification_id, message)
+            if (connect) {
+                return { success: true, message: "Connection updated" }
+            } else {
+                return { success: false, message: "Failed to update  connection" }
             }
-            
         } catch (error) {
             console.log(error);
             throw error
         }
     }
-    async conversation(sender_id:string,role:string){
+
+    async inbox(sender_id: string, reciever_id: string, role: string) {
         try {
-            const conversationData = await this.userRepo.findInbox(sender_id,role)
-            if(conversationData){
-                return {success:true,message:"Conversation list sent successfully",conversationData}
-            }else{
-             return {success:false,messsage:"Failed to sent conversation data"}
+            const saveData = await this.userRepo.saveInbox(sender_id, reciever_id, role)
+            if (saveData) {
+                return { success: true, message: "Inbox saved" }
+            } else {
+                return { success: false, message: "Failed to save" }
+            }
+
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+    }
+    async conversation(sender_id: string, role: string) {
+        try {
+            const conversationData = await this.userRepo.findInbox(sender_id, role)
+            if (conversationData) {
+                return { success: true, message: "Conversation list sent successfully", conversationData }
+            } else {
+                return { success: false, messsage: "Failed to sent conversation data" }
             }
         } catch (error) {
             console.log(error);
-            throw error  
+            throw error
         }
     }
 
-    async deleteExperience(field:string,user_id:string){
+    async deleteExperience(field: string, user_id: string) {
         try {
-            const removeExperience = await this.userRepo.removeExperience(field,user_id)
-            if(removeExperience){
-                return {success:true,message:"Experience deleted"}
-            }else{
-                return {success:false,message:"Failed to delete experience"}
+            const removeExperience = await this.userRepo.removeExperience(field, user_id)
+            if (removeExperience) {
+                return { success: true, message: "Experience deleted" }
+            } else {
+                return { success: false, message: "Failed to delete experience" }
             }
         } catch (error) {
             console.log(error);
-            throw error 
+            throw error
         }
     }
-    async deleteSkills(val:string,id:string){
+    async deleteSkills(val: string, id: string) {
         try {
-            const remove = await this.userRepo.removeSkills(val,id)
-            if(remove){
-                return {success:true,message:"Skill removed"}
-            }else{
-                return {success:false,message:"Failed to remove skill"}
+            const remove = await this.userRepo.removeSkills(val, id)
+            if (remove) {
+                return { success: true, message: "Skill removed" }
+            } else {
+                return { success: false, message: "Failed to remove skill" }
             }
         } catch (error) {
             console.log(error)
-            throw error 
+            throw error
         }
     }
-    async rewards(user_id:string,rewardData:rewards,file:string){
+    async rewards(user_id: string, rewardData: rewards, file: string) {
         try {
-            if(file){
-                const cloudinary = await this.cloudinary.uploadImage(file,"Image")
-                rewardData.img_url=cloudinary
+            if (file) {
+                const cloudinary = await this.cloudinary.uploadImage(file, "Image")
+                rewardData.img_url = cloudinary
             }
-            const reward = await this.userRepo.addRewards(user_id,rewardData)
-            if(reward){
+            const reward = await this.userRepo.addRewards(user_id, rewardData)
+            if (reward) {
                 fs.unlink(file, (err) => {
                     if (err) {
-                      console.error(`Error removing file ${file}:`, err);
+                        console.error(`Error removing file ${file}:`, err);
                     } else {
-                      console.log(`Successfully removed file ${file}`);
+                        console.log(`Successfully removed file ${file}`);
                     }
-                  });
-                return {success:true,message:"Reward added"}
-            }else{
-                return {success:false,message:"Failed to add reward"}
+                });
+                return { success: true, message: "Reward added" }
+            } else {
+                return { success: false, message: "Failed to add reward" }
             }
         } catch (error) {
             console.log(error)
-            throw error 
+            throw error
         }
     }
-    async saveDocuments(messageData:message,file:string){
+    async saveDocuments(messageData: message, file: string) {
         try {
-           if(file){
-            const cloudinary = await this.cloudinary.uploadImage(file,"Image")
-            messageData.url=cloudinary
-           } 
-           const addDocument = await this.userRepo.addDocuments(messageData)
-           if(addDocument){
-            fs.unlink(file, (err) => {
-                if (err) {
-                  console.error(`Error removing file ${file}:`, err);
-                } else {
-                  console.log(`Successfully removed file ${file}`);
-                }
-              });
-              return {success:true,message:"document saved successfully"}
-           }else{
-            return {success:false,message:"Failed to save document"}
-           }
+            if (file) {
+                const cloudinary = await this.cloudinary.uploadImage(file, "Image")
+                messageData.url = cloudinary
+            }
+            const addDocument = await this.userRepo.addDocuments(messageData)
+            if (addDocument) {
+                fs.unlink(file, (err) => {
+                    if (err) {
+                        console.error(`Error removing file ${file}:`, err);
+                    } else {
+                        console.log(`Successfully removed file ${file}`);
+                    }
+                });
+                return { success: true, message: "document saved successfully" }
+            } else {
+                return { success: false, message: "Failed to save document" }
+            }
         } catch (error) {
             console.log(error)
-            throw error 
+            throw error
         }
     }
 }

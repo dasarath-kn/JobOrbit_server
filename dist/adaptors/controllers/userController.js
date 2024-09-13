@@ -264,15 +264,36 @@ class userController {
     likeUnlike(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { post_id, status } = req.query;
+                const { post_id, status, company_id } = req.body;
                 const { id } = req;
-                const userid = id;
-                const manageLikeUnlike = yield this.userUsecases.manageLikeUnlike(post_id, userid, status);
+                const user_id = id;
+                const manageLikeUnlike = yield this.userUsecases.manageLikeUnlike(post_id, user_id, status, company_id);
                 if (manageLikeUnlike.success) {
                     res.status(200).json({ success: true, message: manageLikeUnlike.message });
                 }
                 else {
                     res.status(400).json({ success: false, message: manageLikeUnlike.message });
+                }
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: "Internal server error" });
+            }
+        });
+    }
+    likedPost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req;
+                console.log("adddad");
+                const post = yield this.userUsecases.getLikedPosts(id);
+                if (post.success) {
+                    const { likedPosts } = post;
+                    console.log(likedPosts);
+                    res.status(200).json({ success: true, message: post.message, likedPosts });
+                }
+                else {
+                    res.status(400).json({ success: false, message: post.message });
                 }
             }
             catch (error) {

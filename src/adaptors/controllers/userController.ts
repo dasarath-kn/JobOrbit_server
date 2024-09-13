@@ -250,10 +250,11 @@ class userController {
     }
     async likeUnlike(req: Request, res: Response) {
         try {
-            const { post_id, status } = req.query
+            const { post_id, status,company_id } = req.body
             const { id } = req
-            const userid = id
-            const manageLikeUnlike = await this.userUsecases.manageLikeUnlike(post_id as string, userid as string, status as string)
+            const user_id = id
+            
+            const manageLikeUnlike = await this.userUsecases.manageLikeUnlike(post_id as string, user_id as string, status as string,company_id as string)
             if (manageLikeUnlike.success) {
                 res.status(200).json({ success: true, message: manageLikeUnlike.message })
             } else {
@@ -263,6 +264,25 @@ class userController {
         } catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async likedPost(req:Request,res:Response){
+        try {
+            const {id}=req
+            console.log("adddad");
+            
+            const post =await this.userUsecases.getLikedPosts(id as string)
+            if(post.success){
+                const {likedPosts}=post
+                console.log(likedPosts);
+                
+                res.status(200).json({success:true,message:post.message,likedPosts})
+            }else{
+                res.status(400).json({success:false,message:post.message})
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" })  
         }
     }
     async savePost(req: Request, res: Response) {
