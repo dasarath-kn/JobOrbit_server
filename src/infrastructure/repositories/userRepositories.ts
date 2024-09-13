@@ -288,6 +288,7 @@ class userRepository implements IUserInterface {
         try {
             const postData = await likeModel.find({user_id:user_id})
             return postData?postData:null
+            console.log("s;sksk;");
             
         } catch (error) {
             console.error(error);
