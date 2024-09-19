@@ -217,7 +217,9 @@ class userController {
 
     async getjobs(req: Request, res: Response) {
         try {
-            const { page,type,location,date,user_id} = req.query            
+            const { page,type,location,date,user_id} = req.query 
+            console.log(req.query);
+                       
             const findJobs = await this.userUsecases.jobs(page as string,type as string,location as string,date as string,user_id as string)
             if (findJobs.success) {
                 const { jobs, count } = findJobs

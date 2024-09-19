@@ -201,8 +201,10 @@ class userRepository implements IUserInterface {
                 }
                 filter.time = { $gte: dateFilter };
             }
-            filter["applicants_id.user_id"] = { $nin: [user_id] };
+            if(user_id){
+                filter["applicants_id.user_id"] = { $nin: [user_id] };
             filter.list = true;
+            }
             const jobCount = await jobModel.find(filter).countDocuments();
             const jobs = await jobModel.find(filter)
                 .sort({ time: -1 })
