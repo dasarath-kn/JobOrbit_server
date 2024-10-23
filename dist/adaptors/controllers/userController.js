@@ -227,6 +227,7 @@ class userController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { page, type, location, date, user_id } = req.query;
+                console.log(req.query);
                 const findJobs = yield this.userUsecases.jobs(page, type, location, date, user_id);
                 if (findJobs.success) {
                     const { jobs, count } = findJobs;

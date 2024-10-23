@@ -201,8 +201,10 @@ class userRepository {
                     }
                     filter.time = { $gte: dateFilter };
                 }
-                filter["applicants_id.user_id"] = { $nin: [user_id] };
-                filter.list = true;
+                if (user_id) {
+                    filter["applicants_id.user_id"] = { $nin: [user_id] };
+                    filter.list = true;
+                }
                 const jobCount = yield jobModel_1.default.find(filter).countDocuments();
                 const jobs = yield jobModel_1.default.find(filter)
                     .sort({ time: -1 })
@@ -296,6 +298,7 @@ class userRepository {
             try {
                 const postData = yield likedPostModel_1.default.find({ user_id: user_id });
                 return postData ? postData : null;
+                console.log("s;sksk;");
             }
             catch (error) {
                 console.error(error);
